@@ -83,7 +83,7 @@ class IndexPage extends React.Component<IndexPageProps & IndexPageStyles, { inpu
 
     handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        this.props.dispatch(searchQuestion(this.state.input));
+        this.props.dispatch(searchQuestion({query: this.state.input}));
     }
 
     handleChange = (event: ChangeEvent<HTMLInputElement>) => {

@@ -3,26 +3,28 @@ import * as $ from 'jquery';
 import actionCreatorFactory from 'typescript-fsa';
 import { Dispatch } from 'redux';
 import bindThunkAction from 'typescript-fsa-redux-thunk';
-import { DocumentResult, Neo4jd3, Relation } from '../model';
+import { DocumentResult, Question, Relation, RichQuestion } from '../model';
+import { NodesState, RelationListsState } from './reducer';
+import { Neo4jD3 } from '../neo4jd3';
 
 const URL = 'http://162.105.88.181:8080';
 
 const actionCreator = actionCreatorFactory();
 
-export const searchQuestion = actionCreator<string>('SEARCH_QUESTION');
-export const setQuestion = actionCreator<string>('SET_QUESTION');
+export const searchQuestion = actionCreator<Question>('SEARCH_QUESTION');
+export const setQuestion = actionCreator<Question>('SET_QUESTION');
 
 export const requestDocumentResult = actionCreator<{}>('REQUEST_DOCUMENT_RESULT');
 export const receivedDocumentResult = actionCreator<DocumentResult>('RECEIVED_DOCUMENT_RESULT');
 
-export function fetchDocumentResult(question: { query: string }) {
+export function fetchDocumentResult(question: Question) {
     if (question.query === '') {
         return function (dispatch: Dispatch<{}>) {
             $.post(`${URL}/Random`, {})
-                .done(q => {
+                .done((q: RichQuestion) => {
                     dispatch(setQuestion(q));
                     dispatch(requestDocumentResult({}));
-                    $.post(`${URL}/Rank`, question)
+                    $.post(`${URL}/Rank`, q)
                         .done((result: DocumentResult) => {
                             dispatch(receivedDocumentResult(result));
                             dispatch(fetchGraphWorker({query: result.query}));
@@ -44,7 +46,7 @@ export const selectNode = actionCreator<number>('SELECT_NODE');
 export const requestNode = actionCreator<number>('REQUEST_NODE');
 export const receivedNode = actionCreator<{ id: number, node: Node }>('RECEIVED_NODE');
 
-export function fetchNode(id: number, nodes: Array<number>, graph: Neo4jd3) {
+export function fetchNode(id: number, nodes: NodesState, graph: Neo4jD3) {
     return function (dispatch: Dispatch<{}>) {
         if (id in nodes) {
             return;
@@ -71,7 +73,7 @@ export const requestRelationList = actionCreator<number>('REQUEST_RELATION_LIST'
 export const receivedRelationList =
     actionCreator<{ id: number, relationList: Array<Relation> }>('RECEIVED_RELATION_LIST');
 
-export function fetchRelationList(id: number, relationLists: Array<Relation>, graph: Neo4jd3) {
+export function fetchRelationList(id: number, relationLists: RelationListsState, graph: Neo4jD3) {
     return function (dispatch: Dispatch<{}>) {
         if (id in relationLists) {
             return;
@@ -87,15 +89,15 @@ export function fetchRelationList(id: number, relationLists: Array<Relation>, gr
 
 export const requestShowRelation =
     actionCreator<{ id: number, relationIndex: number, relation: Relation }>('REQUEST_SHOW_REALTION');
-export const receivedShowRelation = actionCreator<{ id: number, graph: Neo4jd3 }>('RECEIVED_SHOW_REALTION');
+export const receivedShowRelation = actionCreator<{ id: number, graph: Neo4jD3 }>('RECEIVED_SHOW_REALTION');
 
 export const requestGraph = actionCreator<{}>('REQUEST_GRAPH');
-export const receivedGraph = actionCreator<string>('RECEIVED_GRAPH');
-export const drawGraph = actionCreator<Neo4jd3>('DRAW_GRAPH');
-export const fetchGraph = actionCreator.async<{query: string}, {}>('FETCH_GRAPH');
+export const receivedGraph = actionCreator<{searchResult: {}}>('RECEIVED_GRAPH');
+export const drawGraph = actionCreator<Neo4jD3>('DRAW_GRAPH');
+export const fetchGraph = actionCreator.async<{ query: string }, {}>('FETCH_GRAPH');
 export const fetchGraphWorker = bindThunkAction(
     fetchGraph,
-    async (params , dispatch) => {
+    async (params, dispatch) => {
         dispatch(requestGraph({}));
         const result = await $.post(`${URL}/CypherQuery`, {query: params.query});
         dispatch(receivedGraph(result));

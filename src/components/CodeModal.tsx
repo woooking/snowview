@@ -1,8 +1,9 @@
-import React, {Component} from 'react';
-import {Dialog, withStyles, Button} from "material-ui";
-import Prism from 'prismjs';
+import * as React from 'react';
+import { Dialog, withStyles, Button, WithStyles } from "material-ui";
+import * as Prism from 'prismjs';
+import { Theme } from 'material-ui/styles';
 
-const styles = theme => ({
+const styles = (theme: Theme) => ({
     container: {
         margin: theme.spacing.unit * 2,
         overflow: "auto",
@@ -12,9 +13,19 @@ const styles = theme => ({
     button: {
         display: "inline",
     }
-});
+}) as React.CSSProperties;
 
-class CodeModal extends Component {
+interface CodeModalProps {
+    content: string;
+    contrast: boolean;
+    label: string;
+    code: boolean;
+}
+
+type CodeModalStyle =
+    WithStyles<'container' | 'button'>
+
+class CodeModal extends React.Component<CodeModalProps & CodeModalStyle, {open: boolean}> {
     state = {
         open: false
     };
@@ -46,4 +57,4 @@ class CodeModal extends Component {
     }
 }
 
-export default withStyles(styles)(CodeModal);
+export default withStyles(styles)<CodeModalProps>(CodeModal);

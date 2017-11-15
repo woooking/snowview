@@ -11,19 +11,44 @@ import {
     selectNode, setQuestion
 } from './action';
 import { combineReducers } from 'redux';
-import { DocumentResult, Neo4jd3, Question } from '../model';
+import { DocumentResult, Question, Relation, Node } from '../model';
+import { Neo4jD3 } from '../neo4jd3';
+
+export type NodesState = {
+    [key: number]: {
+        fetched: boolean;
+        node: Node;
+    }
+};
+
+export type RelationListsState = {
+    [key: number]: {
+        fetched: boolean;
+        relationList: Array<{shown: boolean, raw: Relation}>;
+    }
+};
 
 export interface GraphState {
     fetching: boolean;
     toBeDrawn: boolean;
-    instance?: Neo4jd3;
+    instance?: Neo4jD3;
+    result?: { searchResult: {} };
+}
+
+export interface DocumentResultState {
+    fetching: boolean;
+    result?: DocumentResult;
 }
 
 export interface RootState {
+    selectedNode: number;
+    nodes: NodesState;
+    relationLists: RelationListsState;
     graph: GraphState;
     page: string;
     tab: string;
     question ?: Question;
+    documentResult: DocumentResultState;
 }
 
 const selectedNode = reducerWithInitialState<number | null>(null)
@@ -52,7 +77,7 @@ const nodes = reducerWithInitialState<{}>({})
         });
     });
 
-const relationLists = reducerWithInitialState<{}>({})
+const relationLists = reducerWithInitialState<RelationListsState>({})
     .case(requestGraph, (state, payload) => ({}))
     .case(requestRelationList, (state, payload) => Object.assign({}, state, {
         [payload]: {
@@ -101,11 +126,10 @@ const waitingRelationLists = reducerWithInitialState<{}>({})
 const graph = reducerWithInitialState<GraphState>({fetching: false, toBeDrawn: false})
     .case(requestGraph, (state, payload) => ({fetching: true, toBeDrawn: false, instance: state.instance}))
     .case(receivedGraph, (state, payload) => {
-        // if (payload.result === null) {
-        //     return {fetching: false, toBeDrawn: false, graph: state.instance};
-        // }
-        // return {fetching: false, toBeDrawn: true, result: action.result};
-        return state;
+        if (payload === null) {
+            return {fetching: false, toBeDrawn: false, graph: state.instance};
+        }
+        return {fetching: false, toBeDrawn: true, result: payload};
     })
     .case(drawGraph, (state, payload) => ({fetching: false, toBeDrawn: false, instance: payload}));
 
@@ -117,13 +141,13 @@ const tab = reducerWithInitialState<string>('document')
     .case(gotoIndex, (state, payload) => 'document')
     .case(changeTab, (state, payload) => payload);
 
-const question = reducerWithInitialState<string | null>(null)
+const question = reducerWithInitialState<Question | null>(null)
     .case(searchQuestion, (state, payload) => payload)
     .case(setQuestion, (state, payload) => payload);
 
 const documentResult =
-    reducerWithInitialState<{ fetching: boolean, result: DocumentResult | null }>({fetching: false, result: null})
-        .case(requestDocumentResult, (state, payload) => ({fetching: true, result: null}))
+    reducerWithInitialState<DocumentResultState>({fetching: false})
+        .case(requestDocumentResult, (state, payload) => ({fetching: true}))
         .case(receivedDocumentResult, (state, payload) => ({fetching: false, result: payload}));
 
 export const appReducer = combineReducers({

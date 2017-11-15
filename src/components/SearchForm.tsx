@@ -2,7 +2,7 @@ import * as React from 'react';
 import { fetchDocumentResult } from '../redux/action';
 import { connect } from 'react-redux';
 import { Button, Input, withStyles, WithStyles } from 'material-ui';
-import CodeModal from './CodeModal';
+// import CodeModal from './CodeModal';
 import { RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
 import { Theme } from 'material-ui/styles';
@@ -87,8 +87,8 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
                         multiline={true}
                     />
                     <Button type="submit" color="contrast">Search</Button>
-                    {this.props.question.query2 &&
-                    <CodeModal contrast={true} label="Detail" content={this.props.question.query2}/>}
+                    {/*{this.props.question.query2 &&*/
+                    /*<CodeModal code={false} contrast={true} label="Detail" content={this.props.question.query2}/>}*/}
                 </form>
             </div>
 

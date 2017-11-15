@@ -1,10 +1,13 @@
-import React, {Component} from 'react';
-import {connect} from "react-redux";
+import * as React from 'react';
+import { connect } from "react-redux";
 import {
     Card, CardContent, CardHeader, LinearProgress,
-    Table, TableBody, TableCell, TableRow, Typography, withStyles
-} from "material-ui";
-import CodeModal from "./CodeModal";
+    Table, TableBody, TableCell, TableRow, Typography, WithStyles
+} from 'material-ui';
+import CodeModal from './CodeModal';
+import { NodesState, RootState } from '../redux/reducer';
+import { Theme } from 'material-ui/styles';
+import withStyles from 'material-ui/styles/withStyles';
 
 const codePropertyCnName = {
     "name": "名称", "fullName": "全名", "access": "访问修饰符", "superClass": "父类", "implements": "实现接口",
@@ -19,13 +22,14 @@ const docPropertyCnName = {
 
 const propertyCnName = Object.assign({}, codePropertyCnName, docPropertyCnName);
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: RootState) => {
     return {
-        selectedNode: state.nodes[state.selectedNode],
+        selectedNode: state.selectedNode,
+        nodes: state.nodes
     }
 }
 
-const styles = theme => ({
+const styles = (theme: Theme) => ({
     normalCell: {
         wordWrap: "break-word",
         whiteSpace: "pre-wrap",
@@ -33,23 +37,30 @@ const styles = theme => ({
     }
 });
 
-class InformationPanel extends Component {
+interface InformationPanelProps {
+    selectedNode: number;
+    nodes: NodesState;
+}
+
+class InformationPanel extends React.Component<InformationPanelProps & WithStyles<'normalCell'>, {}> {
     render() {
         let body = null;
-
-        const {classes} = this.props;
-
-        if (this.props.selectedNode && this.props.selectedNode.fetched) {
+        
+        const {classes, selectedNode, nodes} = this.props;
+        
+        const selected = nodes[selectedNode];
+        
+        if (selected && selected.fetched) {
             const properties = Object.keys(propertyCnName)
-                .filter(x => this.props.selectedNode.node.data.hasOwnProperty(x))
+                .filter(x => selected.node.data.hasOwnProperty(x))
                 .map(x => {
-                    let content = this.props.selectedNode.node.data[x];
+                    let content = selected.node.data[x];
                     content = (x === "content" || x === "comment") ?
-                        <CodeModal code label="SHOW" content={content}/> :
+                        <CodeModal code={true} label="SHOW" content={content} contrast={false}/> :
                         <div className={classes.normalCell}>{content.toString()}</div>;
                     return {key: x, label: x, content};
                 });
-            const label = this.props.selectedNode.node["metadata"].labels[0];
+            const label = selected.node["metadata"].labels[0];
             body = <Table>
                 <TableBody>
                     <TableRow>
@@ -67,7 +78,7 @@ class InformationPanel extends Component {
         } else {
             body = <Typography component="p"> Please select a node first </Typography>;
         }
-
+        
         return (
             <Card>
                 <CardHeader title="Entity Properties"/>
@@ -79,6 +90,4 @@ class InformationPanel extends Component {
     }
 }
 
-InformationPanel = connect(mapStateToProps)(InformationPanel)
-
-export default withStyles(styles)(InformationPanel);
+export default withStyles(styles)<{}>(connect(mapStateToProps)(InformationPanel));
