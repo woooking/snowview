@@ -1,0 +1,38 @@
+{
+  "name": "snowview",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@types/jquery": "^3.2.16",
+    "@types/lodash": "^4.14.85",
+    "@types/react-redux": "^5.0.12",
+    "jquery": "^3.2.1",
+    "lodash": "^4.17.4",
+    "material-ui": "^1.0.0-beta.21",
+    "material-ui-icons": "^1.0.0-beta.17",
+    "material-ui-next-types": "^1.0.0",
+    "react": "^16.1.1",
+    "react-dom": "^16.1.1",
+    "react-redux": "^5.0.6",
+    "react-scripts-ts": "2.8.0",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
+    "typeface-roboto": "0.0.45",
+    "typescript-fsa": "^2.5.0",
+    "typescript-fsa-reducers": "^0.4.4",
+    "typescript-fsa-redux-thunk": "^2.0.0-beta.6"
+  },
+  "scripts": {
+    "start": "react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test --env=jsdom",
+    "eject": "react-scripts-ts eject"
+  },
+  "devDependencies": {
+    "@types/jest": "^21.1.6",
+    "@types/node": "^8.0.51",
+    "@types/react": "^16.0.22",
+    "@types/react-dom": "^16.0.3",
+    "redux-devtools-extension": "^2.13.2"
+  }
+}
