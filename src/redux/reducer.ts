@@ -11,7 +11,7 @@ import {
     selectNode, setQuestion
 } from './action';
 import { combineReducers } from 'redux';
-import { DocumentResult, Neo4jd3 } from '../model';
+import { DocumentResult, Neo4jd3, Question } from '../model';
 
 export interface GraphState {
     fetching: boolean;
@@ -23,6 +23,7 @@ export interface RootState {
     graph: GraphState;
     page: string;
     tab: string;
+    question ?: Question;
 }
 
 const selectedNode = reducerWithInitialState<number | null>(null)

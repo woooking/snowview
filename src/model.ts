@@ -20,6 +20,11 @@ export interface DocumentResult {
     query: string;
 }
 
+export interface Question {
+    query: string;
+    query2: string;
+}
+
 export interface Neo4jd3 {
     updateWithNeo4jData: Function;
 }

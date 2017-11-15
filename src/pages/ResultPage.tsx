@@ -1,14 +1,14 @@
 import * as React from 'react';
 import SearchForm from '../components/SearchForm';
-import { AppBar, Tabs, Tab, Toolbar, Typography, withStyles, IconButton } from 'material-ui';
+import { AppBar, Tabs, Tab, Toolbar, Typography, withStyles, IconButton, WithStyles } from 'material-ui';
 import SearchIcon from 'material-ui-icons/Search';
-import { changeTab, gotoIndex } from '../redux/action';
 import { connect } from 'react-redux';
 import GraphTab from '../components/GraphTab';
 import DocumentTab from '../components/DocumentTab';
 import { Theme } from 'material-ui/styles';
 import { RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
+import { changeTab, gotoIndex } from '../redux/action';
 
 const styles = (theme: Theme) => ({
     brand: {
@@ -27,7 +27,7 @@ interface ResultPageProps {
     dispatch: Dispatch<RootState>;
 }
 
-class ResultPage extends React.Component<> {
+class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, {}> {
     state = {
         open: false
     };
@@ -37,13 +37,18 @@ class ResultPage extends React.Component<> {
     }
 
     render() {
-        const {classes} = this.props;
+        const {classes, dispatch} = this.props;
         return (
             <div>
                 <AppBar color="primary" position="static">
                     <Toolbar>
-                        <Typography className={classes.brand} href="#" type="title" color="inherit" component="a"
-                                    onClick={this.props.gotoIndex}>
+                        <Typography
+                            className={classes.brand}
+                            type="title"
+                            color="inherit"
+                            component="a"
+                            onClick={() => dispatch(gotoIndex({}))}
+                        >
                             SEI SNOW Project
                         </Typography>
                         <IconButton color="contrast" onClick={this.handleSearchClick}>
@@ -53,7 +58,7 @@ class ResultPage extends React.Component<> {
                     {this.state.open && <SearchForm/>}
                 </AppBar>
 
-                <Tabs value={this.props.tab} onChange={(e, v) => this.props.changeTab(v)}>
+                <Tabs value={this.props.tab} onChange={(e, v) => dispatch(changeTab(v))}>
                     <Tab value="document" label="Document"/>
                     <Tab value="api-graph" label="API Graph"/>
                 </Tabs>
@@ -65,6 +70,4 @@ class ResultPage extends React.Component<> {
     }
 }
 
-ResultPage = connect(mapStateToProps, mapDispatchToProps)(ResultPage);
-
-export default withStyles(styles)(ResultPage);
+export default withStyles(styles)<{}>(connect(mapStateToProps)(ResultPage));
