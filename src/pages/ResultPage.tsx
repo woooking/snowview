@@ -48,6 +48,7 @@ class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, 
                             color="inherit"
                             component="a"
                             onClick={() => dispatch(gotoIndex({}))}
+                            {...{href: '#'}}
                         >
                             SEI SNOW Project
                         </Typography>
