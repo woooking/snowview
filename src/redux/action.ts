@@ -1,52 +1,38 @@
-import { node2format, relation2format } from '../utils';
 import * as $ from 'jquery';
 import actionCreatorFactory from 'typescript-fsa';
 import { Dispatch } from 'redux';
 import bindThunkAction from 'typescript-fsa-redux-thunk';
-import { DocumentResult, Question, Relation, RichQuestion } from '../model';
+import { CypherQueryResult, DocumentResult, RandomResult, Relation } from '../model';
 import { NodesState, RelationListsState } from './reducer';
-import { Neo4jD3 } from '../neo4jd3';
+import { Node } from '../model';
 
-const URL = 'http://162.105.88.181:8080';
+const URL = 'http://162.105.88.181:8080/SnowGraph';
 
 const actionCreator = actionCreatorFactory();
 
-export const searchQuestion = actionCreator<Question>('SEARCH_QUESTION');
-export const setQuestion = actionCreator<Question>('SET_QUESTION');
-
-export const requestDocumentResult = actionCreator<{}>('REQUEST_DOCUMENT_RESULT');
-export const receivedDocumentResult = actionCreator<DocumentResult>('RECEIVED_DOCUMENT_RESULT');
-
-export function fetchDocumentResult(question: Question) {
-    if (question.query === '') {
-        return function (dispatch: Dispatch<{}>) {
-            $.post(`${URL}/Random`, {})
-                .done((q: RichQuestion) => {
-                    dispatch(setQuestion(q));
-                    dispatch(requestDocumentResult({}));
-                    $.post(`${URL}/Rank`, q)
-                        .done((result: DocumentResult) => {
-                            dispatch(receivedDocumentResult(result));
-                            dispatch(fetchGraphWorker({query: result.query}));
-                        });
-                });
-        };
+export const fetchRandomQuestion = actionCreator.async<{ callback: Function }, RandomResult>('FETCH_RANDOM_QUESTION');
+export const fetchRandomQuestionWorker = bindThunkAction(
+    fetchRandomQuestion,
+    async () => {
+        return await $.post(`${URL}/Random`, {});
     }
-    return function (dispatch: Dispatch<{}>) {
-        dispatch(requestDocumentResult({}));
-        $.post(`${URL}/Rank`, question)
-            .done(result => {
-                dispatch(receivedDocumentResult(result));
-                dispatch(fetchGraphWorker({query: result.query}));
-            });
-    };
-}
+);
+
+export const fetchDocumentResult =
+    actionCreator.async<{ query: string }, DocumentResult>('FETCH_DOCUMENT_RESULT');
+export const fetchDocumentResultWorker = bindThunkAction(
+    fetchDocumentResult,
+    async (params) => {
+        return await $.post(`${URL}/Rank`, params);
+    }
+);
 
 export const selectNode = actionCreator<number>('SELECT_NODE');
 export const requestNode = actionCreator<number>('REQUEST_NODE');
 export const receivedNode = actionCreator<{ id: number, node: Node }>('RECEIVED_NODE');
+export const addNodes = actionCreator<Node[]>('ADD_NODES');
 
-export function fetchNode(id: number, nodes: NodesState, graph: Neo4jD3) {
+export function fetchNode(id: number, nodes: NodesState) {
     return function (dispatch: Dispatch<{}>) {
         if (id in nodes) {
             return;
@@ -55,9 +41,9 @@ export function fetchNode(id: number, nodes: NodesState, graph: Neo4jD3) {
         $.post(`${URL}/GetNode`, {id})
             .done(result => {
                 dispatch(receivedNode({id, node: result}));
-                const nodeJson = node2format(result);
-                graph.updateWithNeo4jData({results: [{data: [{graph: {nodes: [nodeJson], relationships: []}}]}]});
-                dispatch(receivedShowRelation({id, graph}));
+                // const nodeJson = node2format(result);
+                // graph.updateWithNeo4jData({results: [{data: [{graph: {nodes: [nodeJson], relationships: []}}]}]});
+                dispatch(receivedShowRelation({id}));
             })
             .fail(() => {
                 // show({
@@ -69,11 +55,13 @@ export function fetchNode(id: number, nodes: NodesState, graph: Neo4jD3) {
     };
 }
 
+export const addShownRelation = actionCreator<Relation>('ADD_SHOWN_RELATION');
+
 export const requestRelationList = actionCreator<number>('REQUEST_RELATION_LIST');
 export const receivedRelationList =
     actionCreator<{ id: number, relationList: Array<Relation> }>('RECEIVED_RELATION_LIST');
 
-export function fetchRelationList(id: number, relationLists: RelationListsState, graph: Neo4jD3) {
+export function fetchRelationList(id: number, relationLists: RelationListsState) {
     return function (dispatch: Dispatch<{}>) {
         if (id in relationLists) {
             return;
@@ -81,29 +69,39 @@ export function fetchRelationList(id: number, relationLists: RelationListsState,
         dispatch(requestRelationList(id));
         return $.post(`${URL}/OutGoingRelation`, {id}, result => {
             dispatch(receivedRelationList({id, relationList: result}));
-            const relationsJson = result.map(relation2format);
-            graph.updateWithNeo4jData({results: [{data: [{graph: {nodes: [], relationships: relationsJson}}]}]});
+            // const relationsJson = result.map(relation2format);
+            // graph.updateWithNeo4jData({results: [{data: [{graph: {nodes: [], relationships: relationsJson}}]}]});
         });
     };
 }
 
 export const requestShowRelation =
     actionCreator<{ id: number, relationIndex: number, relation: Relation }>('REQUEST_SHOW_REALTION');
-export const receivedShowRelation = actionCreator<{ id: number, graph: Neo4jD3 }>('RECEIVED_SHOW_REALTION');
+export const receivedShowRelation = actionCreator<{ id: number }>('RECEIVED_SHOW_REALTION');
 
 export const requestGraph = actionCreator<{}>('REQUEST_GRAPH');
-export const receivedGraph = actionCreator<{searchResult: {}}>('RECEIVED_GRAPH');
-export const drawGraph = actionCreator<Neo4jD3>('DRAW_GRAPH');
+export const receivedGraph = actionCreator<{}>('RECEIVED_GRAPH');
+export const drawGraph = actionCreator<{}>('DRAW_GRAPH');
 export const fetchGraph = actionCreator.async<{ query: string }, {}>('FETCH_GRAPH');
 export const fetchGraphWorker = bindThunkAction(
     fetchGraph,
     async (params, dispatch) => {
         dispatch(requestGraph({}));
-        const result = await $.post(`${URL}/CypherQuery`, {query: params.query});
-        dispatch(receivedGraph(result));
+        const result: CypherQueryResult = await $.post(`${URL}/CypherQuery`, {query: params.query});
+        const nodes = result.searchResult.results[0].data[0].graph.nodes;
+        const relations = result.searchResult.results[0].data[0].graph.relationships;
+        
+        dispatch(addNodes(nodes));
+        relations.forEach(r => {
+            r.source = r.startNode;
+            r.target = r.endNode;
+            dispatch(addShownRelation(r))
+        });
+        dispatch(receivedGraph({}));
         return {};
     });
 
 export const gotoIndex = actionCreator<{}>('GOTO_INDEX');
+export const gotoResult = actionCreator<{}>('GOTO_RESULT');
 
 export const changeTab = actionCreator<string>('CHANGE_TAB');

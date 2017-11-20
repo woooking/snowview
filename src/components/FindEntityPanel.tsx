@@ -7,14 +7,13 @@ import {
 import { Theme } from 'material-ui/styles';
 import { NodesState, RelationListsState, RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
-import { Neo4jD3 } from '../neo4jd3';
 import Select from 'material-ui/Select';
 import Input from 'material-ui/Input';
-import { getNodeIDFromRelation, rename } from '../utils';
+import { rename } from '../utils';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import { FormEvent } from 'react';
-import { fetchNode, fetchRelationList, requestShowRelation } from '../redux/action';
+import { requestShowRelation } from '../redux/action';
 
 const styles = (theme: Theme) => ({
     formControl: {
@@ -27,14 +26,12 @@ const mapStateToProps = (state: RootState) => ({
     selectedNode: state.selectedNode,
     nodes: state.nodes,
     relationLists: state.relationLists,
-    graph: state.graph.instance
 });
 
 interface FindEntityPanelProps {
     selectedNode: number;
     nodes: NodesState;
     relationLists: RelationListsState;
-    graph: Neo4jD3;
     dispatch: Dispatch<RootState>;
 }
 
@@ -46,11 +43,11 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
         event.preventDefault();
         
         const catalog = this.input.value;
-        const {dispatch, relationLists, selectedNode, nodes, graph} = this.props;
+        const {dispatch, relationLists, selectedNode} = this.props;
         
         const updateRelations = [];
         const relationList = relationLists[selectedNode].relationList;
-        //
+
         if (relationList.filter(x => !x.shown).filter(x => x.raw.type === catalog).length !== 0) {
             let remain = 5, i = 0;
             while (i < relationList.length && remain > 0) {
@@ -69,10 +66,10 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
         }
         
         updateRelations.forEach((relation) => {
-            const [startID, endID] = getNodeIDFromRelation(relation.raw);
-            const otherID = startID === selectedNode ? endID : startID;
-            dispatch(fetchNode(otherID, nodes, graph));
-            dispatch(fetchRelationList(otherID, relationLists, graph));
+            // const [startID, endID] = getNodeIDFromRelation(relation.raw);
+            // const otherID = startID === selectedNode ? endID : startID;
+            // dispatch(fetchNode(otherID, nodes, graph));
+            // dispatch(fetchRelationList(otherID, relationLists, graph));
         });
     }
     
@@ -114,9 +111,4 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
     }
 }
 
-export default withStyles(styles)
-
-< {}
-
->
-(connect(mapStateToProps)(FindEntityPanel));
+export default withStyles(styles)<{}>(connect(mapStateToProps)(FindEntityPanel));

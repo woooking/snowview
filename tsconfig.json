@@ -16,7 +16,8 @@
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
-    "pretty": true
+    "pretty": true,
+    "typeRoots": ["src/library", "node_modules/@types"]
   },
   "exclude": [
     "node_modules",
@@ -25,6 +26,7 @@
     "acceptance-tests",
     "webpack",
     "jest",
-    "src/setupTests.ts"
+    "src/setupTests.ts",
+    "src/neo4jd3.ts"
   ]
 }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, CircularProgress, Input, Typography, withStyles, WithStyles } from 'material-ui';
 import SearchIcon from 'material-ui-icons/Search';
-import { searchQuestion } from '../redux/action';
+import { fetchDocumentResultWorker, fetchGraphWorker, fetchRandomQuestionWorker, gotoResult } from '../redux/action';
 import { connect } from 'react-redux';
 import { Theme } from 'material-ui/styles';
 import { GraphState, RootState } from '../redux/reducer';
@@ -57,14 +57,14 @@ const styles = (theme: Theme) => ({
     }
 }) as React.CSSProperties;
 
-const mapStateToProps = (state: RootState) => {
-    return {
-        graph: state.graph
-    };
-};
+const mapStateToProps = (state: RootState) => ({
+    graph: state.graph,
+    fetchingRandomQuestion: state.fetchingRandomQuestion
+});
 
 interface IndexPageProps {
     graph: GraphState;
+    fetchingRandomQuestion: boolean;
     dispatch: Dispatch<RootState>;
 }
 
@@ -72,71 +72,86 @@ type IndexPageStyles =
     WithStyles<'page' | 'container' | 'title' | 'introduction' | 'featureList' | 'search' | 'searchInput'>;
 
 class IndexPage extends React.Component<IndexPageProps & IndexPageStyles, { input: string }> {
-
+    
     constructor(props: IndexPageProps & IndexPageStyles) {
         super(props);
-
+        
         this.state = {
             input: ''
         };
     }
-
+    
     handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        this.props.dispatch(searchQuestion({query: this.state.input}));
+        const { dispatch } = this.props;
+        if (this.state.input === '') {
+            this.props.dispatch(fetchRandomQuestionWorker(
+                {callback: (result: string) => this.setState({input: result})})
+            );
+        } else {
+            dispatch(fetchDocumentResultWorker({query: this.state.input}));
+            dispatch(fetchGraphWorker({query: this.state.input}));
+            dispatch(gotoResult({}));
+        }
     }
-
+    
     handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         this.setState({input: event.target.value});
     }
-
+    
+    
     render() {
         const {classes} = this.props;
         return (
-            <div className={classes.page}>
-                <div className={classes.container}>
-                    <Typography component="h1" type="display4" className={classes.title}>SEI SnowGraph</Typography>
-                    <Typography component="h2" type="headline" className={classes.introduction}>
-                        SnowGraph (Software Knowledge Graph) is a project for creating software-specific
-                        question-answering
-                        bot. Given a software project and various software engineering data of it, you can use SnowGraph
-                        to:
-                    </Typography>
-                    <ul className={classes.featureList}>
-                        <li>
-                            <Typography component="h3" type="body1" className={classes.introduction}>
-                                Creating a software-specific knowledge graph automatically. SnowGraph will extract
-                                entities
-                                from software engineering data, analyze relationships between them, and fuse them into a
-                                uniform graph database. Software developers can access the software-specific knowledge
-                                graph
-                                through graphic user interface or graph query language.
-                            </Typography>
-                        </li>
-                        <li>
-                            <Typography component="h3" type="body1" className={classes.introduction}>
-                                Creating a software-specific question answering bot automatically. Given a natural
-                                language
-                                user question about the software project, the QA bot can return passages from software
-                                engineering data to answer the question.
-                            </Typography>
-                        </li>
-                    </ul>
-                    <Typography component="h2" type="headline" className={classes.introduction}>
-                        Get Started:
-                    </Typography>
-                    <form className={classes.search} onSubmit={this.handleSubmit}>
-                        <Input
-                            className={classes.searchInput}
-                            placeholder="Please enter your question..."
-                            onChange={this.handleChange}
-                            value={this.state.input}
-                            multiline={true}
-                        />
-                        {this.props.graph.fetching ?
-                            <CircularProgress color="accent" size={55}/> :
-                            <Button fab={true} type="submit" color="accent"><SearchIcon/></Button>}
-                    </form>
+            <div>
+                <div className={classes.page}>
+                    <div className={classes.container}>
+                        <Typography component="h1" type="display4" className={classes.title}>SEI SnowGraph</Typography>
+                        <Typography component="h2" type="headline" className={classes.introduction}>
+                            SnowGraph (Software Knowledge Graph) is a project for creating software-specific
+                            question-answering
+                            bot. Given a software project and various software engineering data of it, you can use
+                            SnowGraph
+                            to:
+                        </Typography>
+                        <ul className={classes.featureList}>
+                            <li>
+                                <Typography component="h3" type="body1" className={classes.introduction}>
+                                    Creating a software-specific knowledge graph automatically. SnowGraph will extract
+                                    entities
+                                    from software engineering data, analyze relationships between them, and fuse them
+                                    into a
+                                    uniform graph database. Software developers can access the software-specific
+                                    knowledge
+                                    graph
+                                    through graphic user interface or graph query language.
+                                </Typography>
+                            </li>
+                            <li>
+                                <Typography component="h3" type="body1" className={classes.introduction}>
+                                    Creating a software-specific question answering bot automatically. Given a natural
+                                    language
+                                    user question about the software project, the QA bot can return passages from
+                                    software
+                                    engineering data to answer the question.
+                                </Typography>
+                            </li>
+                        </ul>
+                        <Typography component="h2" type="headline" className={classes.introduction}>
+                            Get Started:
+                        </Typography>
+                        <form className={classes.search} onSubmit={this.handleSubmit}>
+                            <Input
+                                className={classes.searchInput}
+                                placeholder="Please enter your question..."
+                                onChange={this.handleChange}
+                                value={this.state.input}
+                            />
+                            {this.props.fetchingRandomQuestion ?
+                                <CircularProgress color="accent" size={55}/> :
+                                <Button fab={true} type="submit" color="accent"><SearchIcon/></Button>}
+                        </form>
+                    </div>
                 </div>
             </div>
         );

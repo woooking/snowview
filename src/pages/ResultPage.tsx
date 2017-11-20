@@ -1,7 +1,6 @@
 import * as React from 'react';
 import SearchForm from '../components/SearchForm';
-import { AppBar, Tabs, Tab, Toolbar, Typography, withStyles, IconButton, WithStyles } from 'material-ui';
-import SearchIcon from 'material-ui-icons/Search';
+import { AppBar, Tabs, Tab, Toolbar, Typography, withStyles, WithStyles } from 'material-ui';
 import { connect } from 'react-redux';
 import GraphTab from '../components/GraphTab';
 import DocumentTab from '../components/DocumentTab';
@@ -28,13 +27,6 @@ interface ResultPageProps {
 }
 
 class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, {}> {
-    state = {
-        open: false
-    };
-
-    handleSearchClick = () => {
-        this.setState({open: !this.state.open});
-    }
 
     render() {
         const {classes, dispatch} = this.props;
@@ -52,11 +44,8 @@ class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, 
                         >
                             SEI SNOW Project
                         </Typography>
-                        <IconButton color="contrast" onClick={this.handleSearchClick}>
-                            <SearchIcon/>
-                        </IconButton>
+                        <SearchForm/>
                     </Toolbar>
-                    {this.state.open && <SearchForm/>}
                 </AppBar>
 
                 <Tabs value={this.props.tab} onChange={(e, v) => dispatch(changeTab(v))}>
@@ -64,8 +53,8 @@ class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, 
                     <Tab value="api-graph" label="API Graph"/>
                 </Tabs>
 
-                <DocumentTab visibility={this.props.tab === 'document'}/>
-                <GraphTab visibility={this.props.tab === 'api-graph'}/>
+                {this.props.tab === 'document' && <DocumentTab/>}
+                {this.props.tab === 'api-graph' && <GraphTab/>}
             </div>
         );
     }

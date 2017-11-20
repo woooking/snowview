@@ -1,68 +1,79 @@
 import { cloneDeep } from 'lodash';
-import { getNodeIDFromRelation, relation2format } from '../utils';
+import { getNodeIDFromRelation } from '../utils';
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 import {
+    addNodes, addShownRelation,
     changeTab,
-    drawGraph, gotoIndex, receivedDocumentResult,
+    drawGraph, fetchDocumentResult, fetchRandomQuestion, gotoIndex, gotoResult,
     receivedGraph,
-    receivedNode, receivedRelationList, receivedShowRelation, requestDocumentResult, requestGraph, requestNode,
+    receivedNode, receivedRelationList, receivedShowRelation,
+    requestGraph, requestNode,
     requestRelationList,
-    requestShowRelation, searchQuestion,
-    selectNode, setQuestion
+    requestShowRelation,
+    selectNode
 } from './action';
 import { combineReducers } from 'redux';
-import { DocumentResult, Question, Relation, Node } from '../model';
-import { Neo4jD3 } from '../neo4jd3';
+import { DocumentResult, Relation, Node } from '../model';
+import { Map } from 'immutable';
+import { none, Option, some } from 'ts-option';
+import { show } from 'js-snackbar';
 
-export type NodesState = {
-    [key: number]: {
-        fetched: boolean;
-        node: Node;
-    }
-};
+require('../../node_modules/js-snackbar/dist/snackbar.css');
+
+function showError(message: string) {
+    show({
+        text: message,
+        pos: 'bottom-center',
+        duration: 1000
+    })
+}
+
+export type NodesState = Map<number, Option<Node>>;
+
+export type RelationsState = Map<number, Option<Relation>>;
 
 export type RelationListsState = {
     [key: number]: {
         fetched: boolean;
-        relationList: Array<{shown: boolean, raw: Relation}>;
+        relationList: Array<{ shown: boolean, raw: Relation }>;
     }
 };
 
-export interface GraphState {
-    fetching: boolean;
-    toBeDrawn: boolean;
-    instance?: Neo4jD3;
-    result?: { searchResult: {} };
-}
-
 export interface DocumentResultState {
     fetching: boolean;
+    query: string;
     result?: DocumentResult;
 }
 
 export interface RootState {
+    fetchingRandomQuestion: boolean;
     selectedNode: number;
     nodes: NodesState;
+    relations: RelationsState;
     relationLists: RelationListsState;
-    graph: GraphState;
     page: string;
     tab: string;
-    question ?: Question;
     documentResult: DocumentResultState;
 }
+
+const fetchingRandomQuestion = reducerWithInitialState<boolean>(false)
+    .case(fetchRandomQuestion.started, (state, payload) => true)
+    .case(fetchRandomQuestion.done, (state, payload) => {
+        payload.params.callback(payload.result.query);
+        return false;
+    })
+    .case(fetchRandomQuestion.failed, () => {
+        showError('Failed to get a random question');
+        return false;
+    });
 
 const selectedNode = reducerWithInitialState<number | null>(null)
     .case(requestGraph, (state, payload) => null)
     .case(selectNode, (state, payload) => payload);
 
-const nodes = reducerWithInitialState<{}>({})
-    .case(requestGraph, (state, payload) => ({}))
-    .case(requestNode, (state, payload) => Object.assign({}, state, {
-        [payload]: {
-            fetched: false,
-            node: null
-        }
-    }))
+const nodes = reducerWithInitialState<NodesState>(Map())
+    .case(requestGraph, (state, payload) => (Map()))
+    .case(requestNode, (state, payload) => state.set(payload, none))
     .case(receivedNode, (state, payload) => {
         if (payload.node == null) {
             const newState = Object.assign({}, state);
@@ -75,7 +86,18 @@ const nodes = reducerWithInitialState<{}>({})
                 node: payload.node
             }
         });
+    })
+    .case(addNodes, (state, payload) => {
+        let newState = state;
+        for (let node of payload) {
+            newState = newState.set(node._id, some(node));
+        }
+        return newState;
     });
+
+const relations = reducerWithInitialState<RelationsState>(Map())
+    .case(requestGraph, (state, payload) => (Map()))
+    .case(addShownRelation, (state, payload) => state.set(payload.id, some(payload)));
 
 const relationLists = reducerWithInitialState<RelationListsState>({})
     .case(requestGraph, (state, payload) => ({}))
@@ -116,40 +138,33 @@ const waitingRelationLists = reducerWithInitialState<{}>({})
         if (!relationList) {
             return state;
         }
-        const relationsJson = relationList.map(relation2format);
-        payload.graph.updateWithNeo4jData({results: [{data: [{graph: {nodes: [], relationships: relationsJson}}]}]});
+        // const relationsJson = relationList.map(relation2format);
+        // payload.graph.updateWithNeo4jData({results: [{data: [{graph: {nodes: [], relationships: relationsJson}}]}]});
         return Object.assign({}, state, {
             [payload.id]: []
         });
     });
 
-const graph = reducerWithInitialState<GraphState>({fetching: false, toBeDrawn: false})
-    .case(requestGraph, (state, payload) => ({fetching: true, toBeDrawn: false, instance: state.instance}))
-    .case(receivedGraph, (state, payload) => {
-        if (payload === null) {
-            return {fetching: false, toBeDrawn: false, graph: state.instance};
-        }
-        return {fetching: false, toBeDrawn: true, result: payload};
-    })
-    .case(drawGraph, (state, payload) => ({fetching: false, toBeDrawn: false, instance: payload}));
-
 const page = reducerWithInitialState<string>('index')
     .case(gotoIndex, (state, payload) => 'index')
-    .case(searchQuestion, (state, payload) => 'result');
+    .case(gotoResult, (state, payload) => 'result');
 
 const tab = reducerWithInitialState<string>('document')
     .case(gotoIndex, (state, payload) => 'document')
     .case(changeTab, (state, payload) => payload);
 
-const question = reducerWithInitialState<Question | null>(null)
-    .case(searchQuestion, (state, payload) => payload)
-    .case(setQuestion, (state, payload) => payload);
-
 const documentResult =
-    reducerWithInitialState<DocumentResultState>({fetching: false})
-        .case(requestDocumentResult, (state, payload) => ({fetching: true}))
-        .case(receivedDocumentResult, (state, payload) => ({fetching: false, result: payload}));
+    reducerWithInitialState<DocumentResultState>({fetching: false, query: ''})
+        .case(fetchDocumentResult.started, (state, payload) => ({fetching: true, query: payload.query}))
+        .case(fetchDocumentResult.done, (state, payload) => ({
+            fetching: false, query: payload.params.query, result: payload.result
+        }))
+        .case(fetchDocumentResult.failed, (state, payload) => {
+            showError('Failed to rank');
+            return {fetching: false, query: payload.params.query};
+        });
 
 export const appReducer = combineReducers({
-    selectedNode, nodes, relationLists, waitingRelationLists, graph, page, tab, question, documentResult
+    fetchingRandomQuestion,
+    selectedNode, nodes, relations, relationLists, waitingRelationLists, graph, page, tab, documentResult
 });

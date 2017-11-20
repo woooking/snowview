@@ -49,6 +49,8 @@ class InformationPanel extends React.Component<InformationPanelProps & WithStyle
         const {classes, selectedNode, nodes} = this.props;
 
         const selected = nodes[selectedNode];
+    
+        body = <LinearProgress/>;
 
         if (selected && selected.fetched) {
             const properties = Object.keys(propertyCnName)
