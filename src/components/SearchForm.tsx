@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { fetchDocumentResultWorker } from '../redux/action';
+import { fetchDocumentResultWorker, fetchGraphWorker } from '../redux/action';
 import { connect } from 'react-redux';
 import { Input, withStyles, WithStyles } from 'material-ui';
 import { RootState } from '../redux/reducer';
@@ -66,6 +66,7 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
     handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         this.props.dispatch(fetchDocumentResultWorker({query: this.state.input}));
+        this.props.dispatch(fetchGraphWorker({query: this.state.input}));
     }
     
     handleChange = (event: ChangeEvent<HTMLInputElement>) => {

@@ -58,7 +58,7 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
             .append('text')
             .attr('class', 'link-label')
             .attr('text-anchor', 'middle')
-            .attr('filter', 'url(#text-background)')
+            // .attr('filter', 'url(#text-background)')
             .style('background', '#FFFFFF')
             .append('textPath')
             .attr('href', d => `#p${d.raw.id}`)
@@ -110,7 +110,7 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
             .attr('cy', nodeRadius)
             .style('fill', (d: D3Node) => {
                 const l = translation.classes[d.raw._labels[0]]
-                return l ? l.nodeFillColor : '#DDDDDD';
+                return l && l.nodeFillColor ? l.nodeFillColor : '#DDDDDD';
             });
         
         node.append('text')
@@ -202,6 +202,8 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
         this.simulation.force<ForceLink<any, any>>('link')!
             .links(this.links)
             .strength(0.03);
+        
+        this.simulation.restart();
     }
     
     render() {

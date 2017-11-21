@@ -7,7 +7,7 @@ import DocumentTab from '../components/DocumentTab';
 import { Theme } from 'material-ui/styles';
 import { RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
-import { changeTab, gotoIndex } from '../redux/action';
+import { gotoIndex } from '../redux/action';
 
 const styles = (theme: Theme) => ({
     brand: {
@@ -15,18 +15,16 @@ const styles = (theme: Theme) => ({
     }
 });
 
-const mapStateToProps = (state: RootState) => {
-    return {
-        tab: state.tab
-    };
-};
-
 interface ResultPageProps {
-    tab: string;
     dispatch: Dispatch<RootState>;
 }
 
-class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, {}> {
+type TabType = 'document' | 'api-graph'
+
+class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, {tab: TabType}> {
+    state: {tab: TabType} = {
+        tab: 'document'
+    }
 
     render() {
         const {classes, dispatch} = this.props;
@@ -48,16 +46,16 @@ class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, 
                     </Toolbar>
                 </AppBar>
 
-                <Tabs value={this.props.tab} onChange={(e, v) => dispatch(changeTab(v))}>
+                <Tabs value={this.state.tab} onChange={(e, v) => this.setState({tab: v})}>
                     <Tab value="document" label="Document"/>
                     <Tab value="api-graph" label="API Graph"/>
                 </Tabs>
 
-                {this.props.tab === 'document' && <DocumentTab/>}
-                {this.props.tab === 'api-graph' && <GraphTab/>}
+                {this.state.tab === 'document' && <DocumentTab/>}
+                {this.state.tab === 'api-graph' && <GraphTab/>}
             </div>
         );
     }
 }
 
-export default withStyles(styles)<{}>(connect(mapStateToProps)(ResultPage));
+export default withStyles(styles)<{}>(connect()(ResultPage));

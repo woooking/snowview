@@ -2,7 +2,6 @@ import * as $ from 'jquery';
 import actionCreatorFactory from 'typescript-fsa';
 import bindThunkAction from 'typescript-fsa-redux-thunk';
 import { CypherQueryResult, DocumentResult, RandomResult, Relation } from '../model';
-// import { RelationListsState } from './reducer';
 import { Node } from '../model';
 import { RootState } from './reducer';
 
@@ -81,5 +80,3 @@ export const fetchGraphWorker = bindThunkAction(
 
 export const gotoIndex = actionCreator<{}>('GOTO_INDEX');
 export const gotoResult = actionCreator<{}>('GOTO_RESULT');
-
-export const changeTab = actionCreator<string>('CHANGE_TAB');
