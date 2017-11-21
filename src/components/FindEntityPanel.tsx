@@ -66,7 +66,7 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
         });
         
         dispatch(showRelations(readyToShow.map(x => x.id)));
-        
+
     }
     
     render() {
