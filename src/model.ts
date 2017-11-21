@@ -23,17 +23,27 @@ export interface Relation {
     endNode: number;
     id: number;
     type: string;
-    source: number;
-    target: number;
 }
 
 export interface Node {
     _id: number;
     _labels: string[];
+}
+
+export interface D3Relation {
+    raw: Relation;
+    source: string;
+    target: string;
+}
+
+export interface D3Node {
+    raw: Node;
     x?: number;
     y?: number;
-    r?: number;
-    color?: string;
+    vx?: number;
+    vy?: number;
+    fx?: number | null;
+    fy?: number | null;
 }
 
 export interface RankedResult {

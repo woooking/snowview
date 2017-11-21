@@ -5,13 +5,13 @@ import { NodesState, RelationsState, RootState } from '../redux/reducer';
 // import { translation } from '../translation';
 import { Dispatch } from 'redux';
 import D3Graph from './D3Graph';
-import { Node, Relation } from '../model';
+import { Node } from '../model';
 import { Option } from 'ts-option';
 // import { drawGraph, fetchNode, fetchRelationList, selectNode } from '../redux/action';
 
 const mapStateToProps = (state: RootState) => ({
-    nodes: state.nodes,
-    relations: state.relations,
+    nodes: state.graph.nodes,
+    relations: state.graph.relations,
 });
 
 interface GraphPanelProps {
@@ -23,14 +23,28 @@ interface GraphPanelProps {
 class GraphPanel extends React.Component<GraphPanelProps, {}> {
     
     render() {
+        const nodes = this.props.nodes
+            .valueSeq()
+            .flatMap<number, Node>((x?: Option<Node>) => x!.toArray)
+            .toArray();
+        
+        const links = this.props.relations
+            .valueSeq()
+            .filter(x => x!.shown)
+            .map(x => x!.relation)
+            .toArray();
+        
+        const filteredLinks = links.
+            filter(x => nodes.some(n => n._id === x!.startNode) && nodes.some(n => n._id === x!.endNode));
+        
         return (
             <Card>
                 <CardHeader title="Related API Code Graph"/>
                 <CardContent>
                     <D3Graph
                         id="neo4jd3"
-                        nodes={this.props.nodes.valueSeq().flatMap<number, Node>((x?: Option<Node>) => x!.toArray).toArray()}
-                        links={this.props.relations.valueSeq().flatMap<number, Relation>((x?: Option<Relation>) => x!.toArray).toArray()}
+                        nodes={nodes}
+                        links={filteredLinks}
                     />
                 </CardContent>
             </Card>

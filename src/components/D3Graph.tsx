@@ -3,10 +3,10 @@ import { RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import * as d3 from 'd3';
-import { ForceLink } from 'd3-force';
 import { translation } from '../translation';
-import { Node, Relation } from '../model';
-
+import { D3Node, D3Relation, Node, Relation } from '../model';
+import { fetchRelationListWorker, selectNode } from '../redux/action';
+import { ForceLink } from 'd3-force';
 
 interface D3GraphProps {
     id: string;
@@ -19,29 +19,123 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
     
     svg: d3.Selection<SVGGElement, {}, HTMLElement, {}>;
     
-    // link: Selection<BaseType, { source: Number; target: Number }, BaseType, any> = this.svg.append('g')
-    //     .attr('class', 'links')
-    //     .selectAll('line')
-    //     .data(this.props.edges)
-    //     .enter()
-    //     .append('line')
-    //     .attr('stroke', 'black');
-    //
-    // node = this.svg.append('g')
-    //     .attr('class', 'nodes')
-    //     .selectAll('node')
-    //     .data(this.props.nodes)
-    //     .enter()
-    //     .append('circle')
-    //     .attr('r', 20);
-    //
-    // force = d3.forceSimulation()
-    //     .nodes(this.props.nodes)
-    //     .force('link', d3.forceLink(this.props.edges))
-    //     .on('tick', () => {
-    //     });
+    nodeG: d3.Selection<SVGGElement, {}, HTMLElement, {}>;
+    
+    linkG: d3.Selection<SVGGElement, {}, HTMLElement, {}>;
+    
+    nodeSelection: d3.Selection<SVGGElement, D3Node, SVGGElement, {}>;
+    
+    linkSelection: d3.Selection<SVGLineElement, D3Relation, SVGGElement, {}>;
+    
+    nodes: D3Node[] = [];
+    
+    links: D3Relation[] = [];
+    
+    simulation: d3.Simulation<D3Node, D3Relation>;
+    
+    updateLinks = () => {
+        const newLinks = this.props.links.filter(l => !this.links.some(link => link.raw.id === l.id));
+    
+        this.links = [...this.links, ...newLinks.map(
+            l => ({raw: l, source: l.startNode.toString(), target: l.endNode.toString()})
+        )];
+        
+        const link = this.linkG
+            .selectAll('.link')
+            .data(this.links)
+            .enter()
+            .append<SVGLineElement>('line')
+            .attr('class', 'link')
+            .attr('stroke', 'black');
+        
+        return link;
+    }
+    
+    updateNodes = () => {
+        const newNodes = this.props.nodes.filter(n => !this.nodes.some(node => node.raw._id === n._id));
+        
+        this.nodes = [...this.nodes, ...newNodes.map(n => ({index: n._id.toString(), raw: n}))];
+        
+        const nodeRadius = 40;
+        
+        const {dispatch} = this.props;
+        
+        const node = this.nodeG
+            .selectAll('.node')
+            .data(this.nodes)
+            .enter()
+            .append<SVGGElement>('g')
+            .attr('class', 'node')
+            .on('click', (d: D3Node) => {
+                dispatch(fetchRelationListWorker(d.raw._id))
+                dispatch(selectNode(d.raw._id));
+            })
+            .call(d3.drag<SVGCircleElement, D3Node>()
+                .on('start', () => {
+                    if (!d3.event.active) {
+                        this.simulation.alphaTarget(0.3).restart();
+                    }
+                })
+                .on('drag', (d: D3Node) => {
+                    d.x = d3.event.x;
+                    d.y = d3.event.y;
+                })
+                .on('end', () => {
+                    if (!d3.event.active) {
+                        this.simulation.alphaTarget(0);
+                    }
+                })
+            );
+        
+        node.append('circle')
+            .attr('r', nodeRadius)
+            .attr('cx', nodeRadius)
+            .attr('cy', nodeRadius)
+            .style('fill', (d: D3Node) => {
+                const l = translation.classes[d.raw._labels[0]]
+                return l === null ? '#DDDDDD' : l.nodeFillColor;
+            });
+        
+        node.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('x', nodeRadius)
+            .attr('y', nodeRadius - 5)
+            .html((d: D3Node) => {
+                const label = d.raw._labels[0];
+                const c = translation.classes[label];
+                if (c == null) {
+                    return label;
+                }
+                if (c.englishName == null) {
+                    return label;
+                }
+                return c.englishName;
+            });
+        
+        node.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('x', nodeRadius)
+            .attr('y', nodeRadius + 15)
+            .html((d: D3Node) => {
+                const label = d.raw._labels[0];
+                if (translation.classes[label] === undefined) {
+                    return d.raw._id;
+                }
+                if (translation.classes[label]["displayName"] === undefined) {
+                    return d.raw._id;
+                }
+                if (!d.raw[translation.classes[label]["displayName"]]) {
+                    return d.raw._id;
+                }
+                return d.raw[translation.classes[label]["displayName"]];
+            });
+        
+        return node;
+    }
     
     componentDidMount() {
+        const nodeRadius = 40;
+        
         this.svg = d3.select<HTMLDivElement, {}>(`#${this.props.id}`)
             .append<SVGSVGElement>('svg')
             .style('width', '100%')
@@ -56,94 +150,49 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
             .append<SVGGElement>('g')
             .attr('width', '100%')
             .attr('height', '100%');
-    
         
-        const width = this.svg.node()!.getBoundingClientRect().width;
+        this.linkG = this.svg.append<SVGGElement>('g').attr('class', 'links');
         
-        const height = this.svg.node()!.getBoundingClientRect().height;
+        this.nodeG = this.svg.append<SVGGElement>('g').attr('class', 'nodes');
         
-        const force = d3.forceSimulation<Node>()
-            .force('link', d3.forceLink().id((d: Node) => d._id.toString()))
+        this.nodeSelection = this.updateNodes();
+        
+        this.linkSelection = this.updateLinks();
+        
+        this.simulation = d3.forceSimulation<D3Node>()
+            .force('link', d3.forceLink().id((d: D3Node) => d.raw._id.toString()))
             .force('charge', d3.forceManyBody())
-            .force('center', d3.forceCenter(width / 2, height / 2));
+            .force('collide', d3.forceCollide(nodeRadius * 1.5));
         
         
-        const link = this.svg.append('g')
-            .attr('class', 'links')
-            .selectAll('line')
-            .data(this.props.links)
-            .enter()
-            .append('line')
-            .attr('stroke', 'black');
-        
-        const node = this.svg.append('g')
-            .attr('class', 'nodes')
-            .selectAll('circle')
-            .data(this.props.nodes)
-            .enter()
-            .append('svg')
-            .attr('width', '60')
-            .attr('height', '60')
-            .attr('viewBox', '0 0 60 60')
-            .call(d3.drag<SVGCircleElement, Node>()
-                .on('start', () => {
-                    if (!d3.event.active) {
-                        force.alphaTarget(0.3).restart();
-                    }
-                })
-                .on('drag', (d: Node) => {
-                    d.x = d3.event.x;
-                    d.y = d3.event.y;
-                })
-                .on('end', () => {
-                    if (!d3.event.active) {
-                        force.alphaTarget(0);
-                    }
-                })
-            );
-        
-        node.append('circle')
-            .attr('r', 30)
-            .attr('cx', 30)
-            .attr('cy', 30)
-            .style('fill', (d: Node) => {
-                const l = translation.classes[d._labels[0]]
-                return l === null ? '#DDDDDD' : l.nodeFillColor;
-            });
-        
-        node.append('text')
-            .attr('text-anchor', 'middle')
-            .attr('x', 30)
-            .attr('y', 25)
-            .html((d: Node) => {
-                const label = d._labels[0];
-                const c = translation.classes[label];
-                if (c == null) return label;
-                if (c.englishName == null) return label;
-                return c.englishName;
-            });
-        
-        
-        force.nodes(this.props.nodes).on('tick', () => {
-            link
-                .attr('x1', (d: any) => d.source.x + 30)
-                .attr('y1', (d: any) => d.source.y + 30)
-                .attr('x2', (d: any) => d.target.x + 30)
-                .attr('y2', (d: any) => d.target.y + 30);
-            
-            node
-                .attr('x', (d: any) => d.x)
-                .attr('y', (d: any) => d.y);
+        this.simulation.nodes(this.nodes).on('tick', () => {
+            this.linkSelection
+                .attr('x1', (d: any) => d.source.x + nodeRadius)
+                .attr('y1', (d: any) => d.source.y + nodeRadius)
+                .attr('x2', (d: any) => d.target.x + nodeRadius)
+                .attr('y2', (d: any) => d.target.y + nodeRadius);
+
+            this.nodeSelection.attr('transform', (d: any) => `translate(${d.x}, ${d.y})`);
         });
         
-        force.force<ForceLink<any, any>>('link')!
-            .links(this.props.links)
+        this.simulation.force<ForceLink<any, any>>('link')!
+            .links(this.links)
             .strength(0.03);
         
     }
     
     componentDidUpdate() {
-        // TODO
+        const newNodes = this.updateNodes();
+        this.nodeSelection = newNodes.merge(this.nodeSelection);
+    
+        const newLinks = this.updateLinks();
+        this.linkSelection = newLinks.merge(this.linkSelection);
+        
+        this.simulation.nodes(this.nodes);
+        
+        this.simulation.force<ForceLink<any, any>>('link')!
+            .links(this.links)
+            .strength(0.03);
     }
     
     render() {

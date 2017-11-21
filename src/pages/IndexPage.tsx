@@ -1,12 +1,12 @@
 import * as React from 'react';
+import { ChangeEvent, FormEvent, Component } from 'react';
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
 import { Button, CircularProgress, Input, Typography, withStyles, WithStyles } from 'material-ui';
+import { Theme } from 'material-ui/styles';
 import SearchIcon from 'material-ui-icons/Search';
 import { fetchDocumentResultWorker, fetchGraphWorker, fetchRandomQuestionWorker, gotoResult } from '../redux/action';
-import { connect } from 'react-redux';
-import { Theme } from 'material-ui/styles';
-import { GraphState, RootState } from '../redux/reducer';
-import { Dispatch } from 'redux';
-import { ChangeEvent, FormEvent } from 'react';
+import { RootState } from '../redux/reducer';
 
 const styles = (theme: Theme) => ({
     page: {
@@ -58,12 +58,10 @@ const styles = (theme: Theme) => ({
 }) as React.CSSProperties;
 
 const mapStateToProps = (state: RootState) => ({
-    graph: state.graph,
     fetchingRandomQuestion: state.fetchingRandomQuestion
 });
 
 interface IndexPageProps {
-    graph: GraphState;
     fetchingRandomQuestion: boolean;
     dispatch: Dispatch<RootState>;
 }
@@ -71,23 +69,17 @@ interface IndexPageProps {
 type IndexPageStyles =
     WithStyles<'page' | 'container' | 'title' | 'introduction' | 'featureList' | 'search' | 'searchInput'>;
 
-class IndexPage extends React.Component<IndexPageProps & IndexPageStyles, { input: string }> {
+class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: string }> {
     
-    constructor(props: IndexPageProps & IndexPageStyles) {
-        super(props);
-        
-        this.state = {
-            input: ''
-        };
-    }
+    state = {
+        input: ''
+    };
     
     handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const { dispatch } = this.props;
+        const {dispatch} = this.props;
         if (this.state.input === '') {
-            this.props.dispatch(fetchRandomQuestionWorker(
-                {callback: (result: string) => this.setState({input: result})})
-            );
+            dispatch(fetchRandomQuestionWorker((result: string) => this.setState({input: result})));
         } else {
             dispatch(fetchDocumentResultWorker({query: this.state.input}));
             dispatch(fetchGraphWorker({query: this.state.input}));
@@ -99,9 +91,8 @@ class IndexPage extends React.Component<IndexPageProps & IndexPageStyles, { inpu
         this.setState({input: event.target.value});
     }
     
-    
     render() {
-        const {classes} = this.props;
+        const {classes, fetchingRandomQuestion} = this.props;
         return (
             <div>
                 <div className={classes.page}>
@@ -147,7 +138,7 @@ class IndexPage extends React.Component<IndexPageProps & IndexPageStyles, { inpu
                                 onChange={this.handleChange}
                                 value={this.state.input}
                             />
-                            {this.props.fetchingRandomQuestion ?
+                            {fetchingRandomQuestion ?
                                 <CircularProgress color="accent" size={55}/> :
                                 <Button fab={true} type="submit" color="accent"><SearchIcon/></Button>}
                         </form>

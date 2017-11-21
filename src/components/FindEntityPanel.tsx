@@ -5,15 +5,17 @@ import {
     WithStyles
 } from 'material-ui';
 import { Theme } from 'material-ui/styles';
-import { NodesState, RelationListsState, RootState } from '../redux/reducer';
+import { NodesState, RelationListsState, RelationsState, RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
 import Select from 'material-ui/Select';
 import Input from 'material-ui/Input';
-import { rename } from '../utils';
+import { getNodeIDFromRelation, rename } from '../utils';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import { FormEvent } from 'react';
-import { requestShowRelation } from '../redux/action';
+import { Option } from 'ts-option';
+import * as _ from 'lodash';
+import { fetchNodeWorker, showRelations } from '../redux/action';
 
 const styles = (theme: Theme) => ({
     formControl: {
@@ -23,14 +25,16 @@ const styles = (theme: Theme) => ({
 });
 
 const mapStateToProps = (state: RootState) => ({
-    selectedNode: state.selectedNode,
-    nodes: state.nodes,
-    relationLists: state.relationLists,
+    selectedNode: state.graph.selectedNode,
+    nodes: state.graph.nodes,
+    relations: state.graph.relations,
+    relationLists: state.graph.relationLists,
 });
 
 interface FindEntityPanelProps {
-    selectedNode: number;
+    selectedNode: Option<number>;
     nodes: NodesState;
+    relations: RelationsState;
     relationLists: RelationListsState;
     dispatch: Dispatch<RootState>;
 }
@@ -43,62 +47,65 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
         event.preventDefault();
         
         const catalog = this.input.value;
-        const {dispatch, relationLists, selectedNode} = this.props;
+        const {dispatch} = this.props;
+        const selectedNode = this.props.selectedNode;
+        const relationLists = this.props.relationLists;
+        const relations = this.props.relations;
         
-        const updateRelations = [];
-        const relationList = relationLists[selectedNode].relationList;
-
-        if (relationList.filter(x => !x.shown).filter(x => x.raw.type === catalog).length !== 0) {
-            let remain = 5, i = 0;
-            while (i < relationList.length && remain > 0) {
-                const relation = relationList[i];
-                ++i;
-                if (relation.shown) {
-                    continue;
-                }
-                if (relation.raw.type !== catalog) {
-                    continue;
-                }
-                dispatch(requestShowRelation({id: selectedNode, relationIndex: i, relation: relation.raw}));
-                --remain;
-                updateRelations.push(relation);
-            }
-        }
+        const relationList = relationLists.get(selectedNode.get);
         
-        updateRelations.forEach((relation) => {
-            // const [startID, endID] = getNodeIDFromRelation(relation.raw);
-            // const otherID = startID === selectedNode ? endID : startID;
-            // dispatch(fetchNode(otherID, nodes, graph));
-            // dispatch(fetchRelationList(otherID, relationLists, graph));
+        const readyToShow =
+            relationList.get
+                .map(x => relations.get(x))
+                .filter(x => !x.shown)
+                .filter(x => x.relation.type === catalog)
+                .map(x => x.relation)
+                .slice(0, 5);
+    
+        readyToShow.forEach(r => {
+            const [startID, endID] = getNodeIDFromRelation(r);
+            const otherID = startID === selectedNode.get ? endID : startID;
+            dispatch(fetchNodeWorker(otherID));
         });
+        
+        dispatch(showRelations(readyToShow.map(x => x.id)));
+        
     }
     
     render() {
         let body = null;
         
-        const selectedRelationList = this.props.relationLists[this.props.selectedNode];
+        const selectedNode = this.props.selectedNode;
+        const relationLists = this.props.relationLists;
+        const relations = this.props.relations;
         
-        if (selectedRelationList && selectedRelationList.fetched) {
-            const relationTypes = [...new Set(selectedRelationList.relationList.map(x => x.raw.type))];
-            body = (
-                <form onSubmit={this.handleSubmit}>
-                    <FormControl className={this.props.classes.formControl}>
-                        <InputLabel htmlFor="relation-type">Relation Type</InputLabel>
-                        <Select
-                            native={true}
-                            input={<Input id="relation-type" inputRef={(input) => this.input = input}/>}
-                        >
-                            {relationTypes.map(t => <option key={t} value={t}>{rename(t)}</option>)}
-                        </Select>
-                    </FormControl>
-                    <Button type="submit">Submit</Button>
-                </form>
-            );
+        if (selectedNode.isEmpty) {
+            body = <Typography component="p"> Please select a node first </Typography>;
         } else {
-            body = selectedRelationList ?
-                <LinearProgress/> : <Typography component="p"> Please select a node first </Typography>;
+            const selected = selectedNode.get;
+            const selectedRelationList = relationLists.get(selected);
             
+            if (selectedRelationList.isEmpty) {
+                body = <LinearProgress/>;
+            } else {
+                const relationTypes = _.uniq(selectedRelationList.get.map(x => relations.get(x).relation.type));
+                body = (
+                    <form onSubmit={this.handleSubmit}>
+                        <FormControl className={this.props.classes.formControl}>
+                            <InputLabel htmlFor="relation-type">Relation Type</InputLabel>
+                            <Select
+                                native={true}
+                                input={<Input id="relation-type" inputRef={(input) => this.input = input}/>}
+                            >
+                                {relationTypes.map(t => <option key={t} value={t}>{rename(t)}</option>)}
+                            </Select>
+                        </FormControl>
+                        <Button type="submit">Submit</Button>
+                    </form>
+                );
+            }
         }
+        
         return (
             <Card>
                 <CardHeader title="Expand Related Entity"/>
