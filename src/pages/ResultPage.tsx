@@ -1,14 +1,13 @@
 import * as React from 'react';
 import SearchForm from '../components/SearchForm';
-import { AppBar, Tabs, Tab, Toolbar, Typography, withStyles, IconButton, WithStyles } from 'material-ui';
-import SearchIcon from 'material-ui-icons/Search';
+import { AppBar, Tabs, Tab, Toolbar, Typography, withStyles, WithStyles } from 'material-ui';
 import { connect } from 'react-redux';
 import GraphTab from '../components/GraphTab';
 import DocumentTab from '../components/DocumentTab';
 import { Theme } from 'material-ui/styles';
 import { RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
-import { changeTab, gotoIndex } from '../redux/action';
+import { gotoIndex } from '../redux/action';
 
 const styles = (theme: Theme) => ({
     brand: {
@@ -16,24 +15,15 @@ const styles = (theme: Theme) => ({
     }
 });
 
-const mapStateToProps = (state: RootState) => {
-    return {
-        tab: state.tab
-    };
-};
-
 interface ResultPageProps {
-    tab: string;
     dispatch: Dispatch<RootState>;
 }
 
-class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, {}> {
-    state = {
-        open: false
-    };
+type TabType = 'document' | 'api-graph'
 
-    handleSearchClick = () => {
-        this.setState({open: !this.state.open});
+class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, {tab: TabType}> {
+    state: {tab: TabType} = {
+        tab: 'document'
     }
 
     render() {
@@ -52,23 +42,20 @@ class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, 
                         >
                             SEI SNOW Project
                         </Typography>
-                        <IconButton color="contrast" onClick={this.handleSearchClick}>
-                            <SearchIcon/>
-                        </IconButton>
+                        <SearchForm/>
                     </Toolbar>
-                    {this.state.open && <SearchForm/>}
                 </AppBar>
 
-                <Tabs value={this.props.tab} onChange={(e, v) => dispatch(changeTab(v))}>
+                <Tabs value={this.state.tab} onChange={(e, v) => this.setState({tab: v})}>
                     <Tab value="document" label="Document"/>
                     <Tab value="api-graph" label="API Graph"/>
                 </Tabs>
 
-                <DocumentTab visibility={this.props.tab === 'document'}/>
-                <GraphTab visibility={this.props.tab === 'api-graph'}/>
+                {this.state.tab === 'document' && <DocumentTab/>}
+                {this.state.tab === 'api-graph' && <GraphTab/>}
             </div>
         );
     }
 }
 
-export default withStyles(styles)<{}>(connect(mapStateToProps)(ResultPage));
+export default withStyles(styles)<{}>(connect()(ResultPage));

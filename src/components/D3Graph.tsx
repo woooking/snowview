@@ -1,0 +1,230 @@
+import * as React from 'react';
+import { RootState } from '../redux/reducer';
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
+import * as d3 from 'd3';
+import { translation } from '../translation';
+import { D3Node, D3Relation, Node, Relation } from '../model';
+import { fetchRelationListWorker, selectNode } from '../redux/action';
+import { ForceLink } from 'd3-force';
+
+interface D3GraphProps {
+    id: string;
+    nodes: Node[];
+    links: Relation[];
+    dispatch: Dispatch<RootState>;
+}
+
+class D3Graph extends React.Component<D3GraphProps, {}> {
+    
+    svg: d3.Selection<SVGGElement, {}, HTMLElement, {}>;
+    
+    nodeG: d3.Selection<SVGGElement, {}, HTMLElement, {}>;
+    
+    linkG: d3.Selection<SVGGElement, {}, HTMLElement, {}>;
+    
+    nodeSelection: d3.Selection<SVGGElement, D3Node, SVGGElement, {}>;
+    
+    linkSelection: d3.Selection<SVGPathElement, D3Relation, SVGGElement, {}>;
+    
+    nodes: D3Node[] = [];
+    
+    links: D3Relation[] = [];
+    
+    simulation: d3.Simulation<D3Node, D3Relation>;
+    
+    updateLinks = () => {
+        const newLinks = this.props.links.filter(l => !this.links.some(link => link.raw.id === l.id));
+        
+        this.links = [...this.links, ...newLinks.map(
+            l => ({raw: l, source: l.startNode.toString(), target: l.endNode.toString()})
+        )];
+        
+        const link = this.linkG
+            .selectAll('.link')
+            .data(this.links)
+            .enter()
+            .append<SVGPathElement>('path')
+            .attr('id', (d) => `p${d.raw.id}`)
+            .attr('class', 'link')
+            .attr('stroke', 'black')
+            .attr('stroke-width', '3')
+            .attr('marker-end', 'url(#arrow)');
+    
+        this.linkG
+            .selectAll('.link-label')
+            .data(this.links)
+            .enter()
+            .append('text')
+            .attr('class', 'link-label')
+            .attr('text-anchor', 'middle')
+            // .attr('filter', 'url(#text-background)')
+            .style('background', '#FFFFFF')
+            .append('textPath')
+            .attr('href', d => `#p${d.raw.id}`)
+            .attr('startOffset', '50%')
+            .html(d => d.raw.type);
+        
+        return link;
+    }
+    
+    updateNodes = () => {
+        const newNodes = this.props.nodes.filter(n => !this.nodes.some(node => node.raw._id === n._id));
+        
+        this.nodes = [...this.nodes, ...newNodes.map(n => ({index: n._id.toString(), raw: n}))];
+        
+        const nodeRadius = 40;
+        
+        const {dispatch} = this.props;
+        
+        const node = this.nodeG
+            .selectAll('.node')
+            .data(this.nodes)
+            .enter()
+            .append<SVGGElement>('g')
+            .attr('class', 'node')
+            .on('click', (d: D3Node) => {
+                dispatch(fetchRelationListWorker(d.raw._id))
+                dispatch(selectNode(d.raw._id));
+            })
+            .call(d3.drag<SVGCircleElement, D3Node>()
+                .on('start', () => {
+                    if (!d3.event.active) {
+                        this.simulation.alphaTarget(0.3).restart();
+                    }
+                })
+                .on('drag', (d: D3Node) => {
+                    d.fx = d3.event.x;
+                    d.fy = d3.event.y;
+                })
+                .on('end', () => {
+                    if (!d3.event.active) {
+                        this.simulation.alphaTarget(0);
+                    }
+                })
+            );
+        
+        node.append('circle')
+            .attr('r', nodeRadius)
+            .attr('cx', nodeRadius)
+            .attr('cy', nodeRadius)
+            .style('fill', (d: D3Node) => {
+                const l = translation.classes[d.raw._labels[0]]
+                return l && l.nodeFillColor ? l.nodeFillColor : '#DDDDDD';
+            });
+        
+        node.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('x', nodeRadius)
+            .attr('y', nodeRadius - 5)
+            .html((d: D3Node) => d.raw._labels[0]);
+        
+        node.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('x', nodeRadius)
+            .attr('y', nodeRadius + 15)
+            .html((d: D3Node) => {
+                const label = d.raw._labels[0];
+                if (translation.classes[label] === undefined) {
+                    return d.raw._id;
+                }
+                if (translation.classes[label]["displayName"] === undefined) {
+                    return d.raw._id;
+                }
+                if (!d.raw[translation.classes[label]["displayName"]]) {
+                    return d.raw._id;
+                }
+                return d.raw[translation.classes[label]["displayName"]];
+            });
+        
+        return node;
+    }
+    
+    componentDidMount() {
+        const nodeRadius = 40;
+        
+        this.svg = d3.select<SVGSVGElement, {}>(`#${this.props.id}`)
+            .style('width', '100%')
+            .style('height', '800px')
+            .call(d3.zoom().on('zoom', () => {
+                let scale = d3.event.transform.k;
+                const {x, y} = d3.event.transform;
+                
+                this.svg.attr('transform', `translate(${x}, ${y}) scale(${scale})`);
+            }))
+            .on('dblclick.zoom', null)
+            .append<SVGGElement>('g')
+            .attr('width', '100%')
+            .attr('height', '100%');
+        
+        this.linkG = this.svg.append<SVGGElement>('g').attr('class', 'links');
+        
+        this.nodeG = this.svg.append<SVGGElement>('g').attr('class', 'nodes');
+        
+        this.nodeSelection = this.updateNodes();
+        
+        this.linkSelection = this.updateLinks();
+        
+        this.simulation = d3.forceSimulation<D3Node>()
+            .force('link', d3.forceLink().id((d: D3Node) => d.raw._id.toString()))
+            .force('charge', d3.forceManyBody())
+            .force('collide', d3.forceCollide(nodeRadius * 1.5));
+        
+        
+        this.simulation.nodes(this.nodes).on('tick', () => {
+            this.linkSelection
+                .attr('d', (d: any) => {
+                    const x1 = d.source.x + nodeRadius;
+                    const y1 = d.source.y + nodeRadius;
+                    const x2 = d.target.x + nodeRadius;
+                    const y2 = d.target.y + nodeRadius;
+                    return `M${x1},${y1} L${x2},${y2}`;
+                });
+            
+            this.nodeSelection.attr('transform', (d: any) => `translate(${d.x}, ${d.y})`);
+        });
+        
+        this.simulation.force<ForceLink<any, any>>('link')!
+            .links(this.links)
+            .strength(0.03);
+        
+    }
+    
+    componentDidUpdate() {
+        const newNodes = this.updateNodes();
+        this.nodeSelection = newNodes.merge(this.nodeSelection);
+        
+        const newLinks = this.updateLinks();
+        this.linkSelection = newLinks.merge(this.linkSelection);
+        
+        this.simulation.nodes(this.nodes);
+        
+        this.simulation.force<ForceLink<any, any>>('link')!
+            .links(this.links)
+            .strength(0.03);
+        
+        this.simulation.restart();
+    }
+    
+    render() {
+        return (
+            <div>
+                <svg id={this.props.id}>
+                    <defs>
+                        <filter x="0" y="0" width="1" height="1" id="text-background">
+                            <feFlood floodColor="#FFFFFF"/>
+                            <feComposite in="SourceGraphic"/>
+                        </filter>
+                        <marker id="arrow" markerWidth="52" markerHeight="52" refX="52" refY="26" orient="auto"
+                                markerUnits="userSpaceOnUse">
+                            <path d="M0,20 L0,32 L12,32 L12,20 z" fill="#FFFFFF"/>
+                            <path d="M0,20 L0,32 L12,26 z" fill="#000000"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        );
+    }
+}
+
+export default connect()(D3Graph);

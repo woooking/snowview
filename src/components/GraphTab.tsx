@@ -28,7 +28,6 @@ const mapStateToProps = (state: RootState) => {
 };
 
 interface GraphTabProps {
-    visibility: boolean;
     fetchingGraph: boolean;
     dispatch: Dispatch<RootState>;
 }
@@ -40,7 +39,7 @@ class GraphTab extends React.Component<GraphTabProps & GraphTabStyles, {}> {
     render() {
         const {classes} = this.props;
         const show = (
-            <Grid style={{display: this.props.visibility ? 'flex' : 'none'}} container={true} spacing={0}>
+            <Grid container={true} spacing={0}>
                 <Grid item={true} xs={8} className={classes.leftPanel}>
                     <GraphPanel/>
                 </Grid>
@@ -53,7 +52,7 @@ class GraphTab extends React.Component<GraphTabProps & GraphTabStyles, {}> {
             </Grid>
         );
         const notShow = (
-            <Grid style={{display: this.props.visibility ? 'flex' : 'none'}} container={true} spacing={0}>
+            <Grid container={true} spacing={0}>
                 <LinearProgress/>
             </Grid>
         );
@@ -61,4 +60,4 @@ class GraphTab extends React.Component<GraphTabProps & GraphTabStyles, {}> {
     }
 }
 
-export default withStyles(styles)<{visibility: boolean}>(connect(mapStateToProps)(GraphTab));
+export default withStyles(styles)<{}>(connect(mapStateToProps)(GraphTab));
