@@ -25,7 +25,7 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
     
     nodeSelection: d3.Selection<SVGGElement, D3Node, SVGGElement, {}>;
     
-    linkSelection: d3.Selection<SVGLineElement, D3Relation, SVGGElement, {}>;
+    linkSelection: d3.Selection<SVGPathElement, D3Relation, SVGGElement, {}>;
     
     nodes: D3Node[] = [];
     
@@ -35,7 +35,7 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
     
     updateLinks = () => {
         const newLinks = this.props.links.filter(l => !this.links.some(link => link.raw.id === l.id));
-    
+        
         this.links = [...this.links, ...newLinks.map(
             l => ({raw: l, source: l.startNode.toString(), target: l.endNode.toString()})
         )];
@@ -44,9 +44,26 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
             .selectAll('.link')
             .data(this.links)
             .enter()
-            .append<SVGLineElement>('line')
+            .append<SVGPathElement>('path')
+            .attr('id', (d) => `p${d.raw.id}`)
             .attr('class', 'link')
-            .attr('stroke', 'black');
+            .attr('stroke', 'black')
+            .attr('stroke-width', '3')
+            .attr('marker-end', 'url(#arrow)');
+    
+        this.linkG
+            .selectAll('.link-label')
+            .data(this.links)
+            .enter()
+            .append('text')
+            .attr('class', 'link-label')
+            .attr('text-anchor', 'middle')
+            .attr('filter', 'url(#text-background)')
+            .style('background', '#FFFFFF')
+            .append('textPath')
+            .attr('href', d => `#p${d.raw.id}`)
+            .attr('startOffset', '50%')
+            .html(d => d.raw.type);
         
         return link;
     }
@@ -77,8 +94,8 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
                     }
                 })
                 .on('drag', (d: D3Node) => {
-                    d.x = d3.event.x;
-                    d.y = d3.event.y;
+                    d.fx = d3.event.x;
+                    d.fy = d3.event.y;
                 })
                 .on('end', () => {
                     if (!d3.event.active) {
@@ -93,24 +110,14 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
             .attr('cy', nodeRadius)
             .style('fill', (d: D3Node) => {
                 const l = translation.classes[d.raw._labels[0]]
-                return l === null ? '#DDDDDD' : l.nodeFillColor;
+                return l ? l.nodeFillColor : '#DDDDDD';
             });
         
         node.append('text')
             .attr('text-anchor', 'middle')
             .attr('x', nodeRadius)
             .attr('y', nodeRadius - 5)
-            .html((d: D3Node) => {
-                const label = d.raw._labels[0];
-                const c = translation.classes[label];
-                if (c == null) {
-                    return label;
-                }
-                if (c.englishName == null) {
-                    return label;
-                }
-                return c.englishName;
-            });
+            .html((d: D3Node) => d.raw._labels[0]);
         
         node.append('text')
             .attr('text-anchor', 'middle')
@@ -136,8 +143,7 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
     componentDidMount() {
         const nodeRadius = 40;
         
-        this.svg = d3.select<HTMLDivElement, {}>(`#${this.props.id}`)
-            .append<SVGSVGElement>('svg')
+        this.svg = d3.select<SVGSVGElement, {}>(`#${this.props.id}`)
             .style('width', '100%')
             .style('height', '800px')
             .call(d3.zoom().on('zoom', () => {
@@ -167,11 +173,14 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
         
         this.simulation.nodes(this.nodes).on('tick', () => {
             this.linkSelection
-                .attr('x1', (d: any) => d.source.x + nodeRadius)
-                .attr('y1', (d: any) => d.source.y + nodeRadius)
-                .attr('x2', (d: any) => d.target.x + nodeRadius)
-                .attr('y2', (d: any) => d.target.y + nodeRadius);
-
+                .attr('d', (d: any) => {
+                    const x1 = d.source.x + nodeRadius;
+                    const y1 = d.source.y + nodeRadius;
+                    const x2 = d.target.x + nodeRadius;
+                    const y2 = d.target.y + nodeRadius;
+                    return `M${x1},${y1} L${x2},${y2}`;
+                });
+            
             this.nodeSelection.attr('transform', (d: any) => `translate(${d.x}, ${d.y})`);
         });
         
@@ -184,7 +193,7 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
     componentDidUpdate() {
         const newNodes = this.updateNodes();
         this.nodeSelection = newNodes.merge(this.nodeSelection);
-    
+        
         const newLinks = this.updateLinks();
         this.linkSelection = newLinks.merge(this.linkSelection);
         
@@ -197,7 +206,21 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
     
     render() {
         return (
-            <div id={this.props.id}/>
+            <div>
+                <svg id={this.props.id}>
+                    <defs>
+                        <filter x="0" y="0" width="1" height="1" id="text-background">
+                            <feFlood floodColor="#FFFFFF"/>
+                            <feComposite in="SourceGraphic"/>
+                        </filter>
+                        <marker id="arrow" markerWidth="52" markerHeight="52" refX="52" refY="26" orient="auto"
+                                markerUnits="userSpaceOnUse">
+                            <path d="M0,20 L0,32 L12,32 L12,20 z" fill="#FFFFFF"/>
+                            <path d="M0,20 L0,32 L12,26 z" fill="#000000"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
         );
     }
 }
