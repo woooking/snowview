@@ -78,7 +78,7 @@ class InformationPanel extends React.Component<InformationPanelProps & WithStyle
                         </TableBody>
                     </Table>
                 );
-            } else if (this.props.selectedNode) {
+            } else {
                 body = <LinearProgress/>;
             }
         }

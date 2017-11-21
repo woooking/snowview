@@ -70,7 +70,6 @@ type IndexPageStyles =
     WithStyles<'page' | 'container' | 'title' | 'introduction' | 'featureList' | 'search' | 'searchInput'>;
 
 class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: string }> {
-    
     state = {
         input: ''
     };

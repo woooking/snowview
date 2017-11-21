@@ -47,11 +47,8 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
         event.preventDefault();
         
         const catalog = this.input.value;
-        const {dispatch} = this.props;
-        const selectedNode = this.props.selectedNode;
-        const relationLists = this.props.relationLists;
-        const relations = this.props.relations;
-        
+        const {dispatch, selectedNode, relationLists, relations} = this.props;
+
         const relationList = relationLists.get(selectedNode.get);
         
         const readyToShow =
@@ -74,11 +71,9 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
     
     render() {
         let body = null;
-        
-        const selectedNode = this.props.selectedNode;
-        const relationLists = this.props.relationLists;
-        const relations = this.props.relations;
-        
+
+        const {selectedNode, relationLists, relations} = this.props;
+
         if (selectedNode.isEmpty) {
             body = <Typography component="p"> Please select a node first </Typography>;
         } else {

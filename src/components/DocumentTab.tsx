@@ -29,8 +29,7 @@ interface DocumentTabProps {
     dispatch: Dispatch<RootState>;
 }
 
-type DocumentTabStyle =
-    WithStyles<'container' | 'table' | 'progress'>;
+type DocumentTabStyle = WithStyles<'container' | 'table' | 'progress'>;
 
 class DocumentTab extends React.Component<DocumentTabProps & DocumentTabStyle, {}> {
     

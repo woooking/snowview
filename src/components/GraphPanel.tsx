@@ -2,12 +2,10 @@ import * as React from 'react';
 import { Card, CardContent, CardHeader } from 'material-ui';
 import { connect } from 'react-redux';
 import { NodesState, RelationsState, RootState } from '../redux/reducer';
-// import { translation } from '../translation';
 import { Dispatch } from 'redux';
 import D3Graph from './D3Graph';
 import { Node } from '../model';
 import { Option } from 'ts-option';
-// import { drawGraph, fetchNode, fetchRelationList, selectNode } from '../redux/action';
 
 const mapStateToProps = (state: RootState) => ({
     nodes: state.graph.nodes,

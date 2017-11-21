@@ -43,39 +43,34 @@ interface SearchFormProps {
     dispatch: Dispatch<RootState>;
 }
 
-type SearchFormStyles =
-    WithStyles<'container' | 'form' | 'search'>;
+type SearchFormStyles = WithStyles<'container' | 'form' | 'search'>;
 
 class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { input: string }> {
-    constructor(props: SearchFormProps & SearchFormStyles) {
-        super(props);
-        
-        this.state = {
-            input: ''
-        };
-    }
-    
+    state = {
+        input: ''
+    };
+
     componentDidMount() {
         this.setState({input: this.props.query});
     }
-    
+
     componentWillReceiveProps(nextProps: SearchFormProps & SearchFormStyles) {
         this.setState({input: nextProps.query});
     }
-    
+
     handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         this.props.dispatch(fetchDocumentResultWorker({query: this.state.input}));
         this.props.dispatch(fetchGraphWorker({query: this.state.input}));
     }
-    
+
     handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         this.setState({input: event.target.value});
     }
-    
+
     render() {
         const {classes} = this.props;
-        
+
         return (
             <form className={classes.form} onSubmit={this.handleSubmit}>
                 <Input

@@ -32,8 +32,8 @@ export interface Node {
 
 export interface D3Relation {
     raw: Relation;
-    source: string;
-    target: string;
+    source: string | D3Node;
+    target: string | D3Node;
 }
 
 export interface D3Node {

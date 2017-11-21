@@ -22,8 +22,7 @@ interface CodeModalProps {
     code: boolean;
 }
 
-type CodeModalStyle =
-    WithStyles<'container' | 'button'>;
+type CodeModalStyle = WithStyles<'container' | 'button'>;
 
 class CodeModal extends React.Component<CodeModalProps & CodeModalStyle, { open: boolean }> {
     state = {

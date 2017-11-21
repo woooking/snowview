@@ -19,12 +19,12 @@ interface ResultPageProps {
     dispatch: Dispatch<RootState>;
 }
 
-type TabType = 'document' | 'api-graph'
+type TabType = 'document' | 'api-graph';
 
 class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, {tab: TabType}> {
     state: {tab: TabType} = {
         tab: 'document'
-    }
+    };
 
     render() {
         const {classes, dispatch} = this.props;
