@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { Card, CardContent, CardHeader } from 'material-ui';
 import { connect } from 'react-redux';
-import { NodesState, RelationsState, RootState } from '../redux/reducer';
+import { NodesState, RelationsState, RootState, ShowableNode } from '../redux/reducer';
 import { Dispatch } from 'redux';
 import D3Graph from './D3Graph';
-import { Node } from '../model';
 import { Option } from 'ts-option';
 
 const mapStateToProps = (state: RootState) => ({
@@ -23,7 +22,9 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
     render() {
         const nodes = this.props.nodes
             .valueSeq()
-            .flatMap<number, Node>((x?: Option<Node>) => x!.toArray)
+            .flatMap<number, ShowableNode>((x?: Option<ShowableNode>) => x!.toArray)
+            .filter(x => x!.shown)
+            .map(x => x!.node)
             .toArray();
         
         const links = this.props.relations

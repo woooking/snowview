@@ -26,6 +26,7 @@ export const fetchDocumentResultWorker = bindThunkAction(
 );
 
 export const selectNode = actionCreator<number>('SELECT_NODE');
+export const removeNode = actionCreator<number>('REMOVE_NODE');
 export const addNodes = actionCreator<Node[]>('ADD_NODES');
 
 export const fetchNode = actionCreator.async<number, Node>('FETCH_NODE');

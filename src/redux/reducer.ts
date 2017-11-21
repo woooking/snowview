@@ -2,6 +2,7 @@ import { reducerWithInitialState } from 'typescript-fsa-reducers';
 import {
     addNodes, addRelations, addShownRelations,
     fetchDocumentResult, fetchGraph, fetchNode, fetchRandomQuestion, fetchRelationList, gotoIndex, gotoResult,
+    removeNode,
     selectNode, showRelations
 } from './action';
 import { combineReducers } from 'redux';
@@ -25,12 +26,17 @@ function withError<V>(message: string, value: V): V {
     return value;
 }
 
+export type ShowableNode = {
+    shown: boolean;
+    node: Node;
+};
+
 export type ShowableRelation = {
     shown: boolean;
     relation: Relation;
 };
 
-export type NodesState = Map<number, Option<Node>>;
+export type NodesState = Map<number, Option<ShowableNode>>;
 
 export type RelationsState = Map<number, ShowableRelation>;
 
@@ -72,23 +78,25 @@ const fetching = reducerWithInitialState<boolean>(false)
 
 const selectedNode = reducerWithInitialState<Option<number>>(none)
     .case(fetchGraph.started, () => none)
-    .case(selectNode, (s, p) => some(p));
+    .case(selectNode, (s, p) => some(p))
+    .case(removeNode, (s, p) => s.exists(num => num === p) ? none : s);
 
 const nodes = reducerWithInitialState<NodesState>(Map())
     .case(fetchGraph.started, (s, p) => Map())
     .case(fetchNode.started, (s, p) => s.set(p, s.get(p, none)))
-    .case(fetchNode.done, (s, p) => s.set(p.params, some(p.result)))
+    .case(fetchNode.done, (s, p) => s.set(p.params, some({shown: true, node: p.result})))
     .case(fetchNode.failed, (s, p) => withError('Failed to get node', s.get(p.params).isEmpty ? s.remove(p.params) : s))
-    .case(addNodes, (state, payload) => payload.reduce((p, n) => p.set(n._id, some(n)), state));
+    .case(addNodes, (state, payload) => payload.reduce((p, n) => p.set(n._id, some({shown: true, node: n})), state))
+    .case(removeNode, (s, p) => s.set(p, s.get(p).map(sn => ({shown: false, node: sn.node}))));
 
 const relations = reducerWithInitialState<RelationsState>(Map())
     .case(fetchGraph.started, (state, payload) => Map())
     .case(addShownRelations, (state, payload) =>
-        payload.reduce((p, r) => p.set( r.id, { shown: true, relation: r }), state))
+        payload.reduce((p, r) => p.set(r.id, {shown: true, relation: r}), state))
     .case(addRelations, (state, payload) =>
-        payload.reduce((p, r) => p.has(r.id) ? p : p.set(r.id, { shown: false, relation: r }), state))
+        payload.reduce((p, r) => p.has(r.id) ? p : p.set(r.id, {shown: false, relation: r}), state))
     .case(showRelations, (state, payload) =>
-        payload.reduce((p, r) => p.set(r, { shown: true, relation: p.get(r).relation }), state));
+        payload.reduce((p, r) => p.set(r, {shown: true, relation: p.get(r).relation}), state));
 
 const relationLists = reducerWithInitialState<RelationListsState>(Map())
     .case(fetchGraph.started, (state, payload) => Map())
