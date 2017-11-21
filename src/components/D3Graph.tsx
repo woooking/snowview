@@ -83,9 +83,13 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
             .enter()
             .append<SVGGElement>('g')
             .attr('class', 'node')
-            .on('click', (d: D3Node) => {
+            .on('click', d => {
                 dispatch(fetchRelationListWorker(d.raw._id));
                 dispatch(selectNode(d.raw._id));
+            })
+            .on('dblclick', d => {
+                d.fx = null;
+                d.fy = null;
             })
             .call(d3.drag<SVGCircleElement, D3Node>()
                 .on('start', () => {
@@ -124,17 +128,11 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
             .attr('x', nodeRadius)
             .attr('y', nodeRadius + 15)
             .html((d: D3Node) => {
-                const label = d.raw._labels[0];
-                if (translation.classes[label] === undefined) {
-                    return d.raw._id;
-                }
-                if (translation.classes[label].displayName === undefined) {
-                    return d.raw._id;
-                }
-                if (!d.raw[translation.classes[label].displayName]) {
-                    return d.raw._id;
-                }
-                return d.raw[translation.classes[label].displayName];
+                let name = d.raw.name;
+                name = name ? name : d.raw.uniformTitle;
+                name = name ? name : '';
+                name = name.length > 20 ? name.substr(0, 20) + '...' : name;
+                return name;
             });
 
         return node;
@@ -202,7 +200,7 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
             .links(this.links)
             .strength(0.03);
 
-        this.simulation.restart();
+        this.simulation.alpha(1).restart();
     }
 
     render() {

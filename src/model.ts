@@ -1,4 +1,3 @@
-
 export interface RandomResult {
     answerId: number;
     query: string;
@@ -28,6 +27,8 @@ export interface Relation {
 export interface Node {
     _id: number;
     _labels: string[];
+    name?: string;
+    uniformTitle?: string;
 }
 
 export interface D3Relation {
