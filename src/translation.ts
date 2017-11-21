@@ -1,248 +1,248 @@
 export const translation = {
-    'classes': {
+    classes: {
         'Class': {
-            'englishName': 'Class',
-            'chnName': '类',
-            'nodeFillColor': '#68bdf6',
-            'displayName': 'name'
+            englishName: 'Class',
+            chnName: '类',
+            nodeFillColor: '#68bdf6',
+            displayName: 'name'
         },
         'Method': {
-            'englishName': 'Method',
-            'chnName': '方法',
-            'nodeFillColor': '#6dce9e',
-            'displayName': 'name'
+            englishName: 'Method',
+            chnName: '方法',
+            nodeFillColor: '#6dce9e',
+            displayName: 'name'
         },
         'Interface': {
-            'englishName': 'Interface',
-            'chnName': '接口',
-            'nodeFillColor': '#faafc2',
-            'displayName': 'name'
+            englishName: 'Interface',
+            chnName: '接口',
+            nodeFillColor: '#faafc2',
+            displayName: 'name'
         },
         'Field': {
-            'englishName': 'Field',
-            'chnName': '域',
-            'nodeFillColor': '#f2baf6',
-            'displayName': 'name'
+            englishName: 'Field',
+            chnName: '域',
+            nodeFillColor: '#f2baf6',
+            displayName: 'name'
         },
         'DocxFile': {
-            'englishName': 'DocxFile',
-            'chnName': 'docx文件',
-            'nodeFillColor': '#ff928c'
+            englishName: 'DocxFile',
+            chnName: 'docx文件',
+            nodeFillColor: '#ff928c'
         },
         'DocxPlainText': {
-            'englishName': 'DocxPlainText',
-            'chnName': 'docx文本',
-            'nodeFillColor': '#fcea7e'
+            englishName: 'DocxPlainText',
+            chnName: 'docx文本',
+            nodeFillColor: '#fcea7e'
         },
         'DocxSection': {
-            'englishName': 'DocxSection',
-            'chnName': 'docx章节',
-            'nodeFillColor': '#ffc766'
+            englishName: 'DocxSection',
+            chnName: 'docx章节',
+            nodeFillColor: '#ffc766'
         },
         'DocxTable': {
-            'englishName': 'DocxTable',
-            'chnName': 'docx表格',
-            'nodeFillColor': '#405f9e'
+            englishName: 'DocxTable',
+            chnName: 'docx表格',
+            nodeFillColor: '#405f9e'
         },
         'APIUsageExample': {},
         'JiraIssue': {},
         'JiraIssueComment': {},
         'JiraIssueUser': {
-            'displayName': 'displayName'
+            displayName: 'displayName'
         },
         'JiraPatch': {},
         'Mail': {},
         'MailUser': {
-            'displayName': 'names'
+            displayName: 'names'
         },
         'StackOverflowAnswer': {},
         'StackOverflowComment': {},
         'StackOverflowQuestion': {},
         'StackOverflowUser': {
-            'displayName': 'displayName'
+            displayName: 'displayName'
         },
         'GitCommit': {},
         'GitCommitAuthor': {
-            'displayName': 'name'
+            displayName: 'name'
         },
         'default': {
-            'nodeFillColor': '#ced2d9'
+            nodeFillColor: '#ced2d9'
         }
     },
-    'in_relationships': {
+    in_relationships: {
         'in_api_explained_by': {
-            'englishName': 'api explained by(incoming)',
-            'chnName': '本文档对应的代码元素'
+            englishName: 'api explained by(incoming)',
+            chnName: '本文档对应的代码元素'
         },
         'in_call_field': {
-            'englishName': 'call field(incoming)',
-            'chnName': 'call_field未定义'
+            englishName: 'call field(incoming)',
+            chnName: 'call_field未定义'
         },
         'in_call_method': {
-            'englishName': 'call method(incoming)',
-            'chnName': '调用本方法的方法'
+            englishName: 'call method(incoming)',
+            chnName: '调用本方法的方法'
         },
         'in_extend': {
-            'englishName': 'extend(incoming)',
-            'chnName': '父类'
+            englishName: 'extend(incoming)',
+            chnName: '父类'
         },
         'in_function_designed_by': {
-            'englishName': 'function designed by(incoming)',
-            'chnName': '设计该方法的人'
+            englishName: 'function designed by(incoming)',
+            chnName: '设计该方法的人'
         },
         'in_have_field': {
-            'englishName': 'have field(incoming)',
-            'chnName': '拥有该域的方法'
+            englishName: 'have field(incoming)',
+            chnName: '拥有该域的方法'
         },
         'in_have_method': {
-            'englishName': 'have method(incoming)',
-            'chnName': '拥有本方法的类'
+            englishName: 'have method(incoming)',
+            chnName: '拥有本方法的类'
         },
         'in_have_sub_element': {
-            'englishName': 'have sub element(incoming)',
-            'chnName': '设计文档'
+            englishName: 'have sub element(incoming)',
+            chnName: '设计文档'
         },
         'in_implement': {
-            'englishName': 'implement(incoming)',
-            'chnName': '实现的接口的类'
+            englishName: 'implement(incoming)',
+            chnName: '实现的接口的类'
         },
         'in_param': {
-            'englishName': 'param(incoming)',
-            'chnName': '以本类型为参数的方法'
+            englishName: 'param(incoming)',
+            chnName: '以本类型为参数的方法'
         },
         'in_rt': {
-            'englishName': 'rt(incoming)',
-            'chnName': '以本类型为返回类型的方法'
+            englishName: 'rt(incoming)',
+            chnName: '以本类型为返回类型的方法'
         },
         'in_throw': {
-            'englishName': 'throw(incoming)',
-            'chnName': '抛出本异常的方法'
+            englishName: 'throw(incoming)',
+            chnName: '抛出本异常的方法'
         },
         'in_type': {
-            'englishName': 'type(incoming)',
-            'chnName': '定义本类型的方法'
+            englishName: 'type(incoming)',
+            chnName: '定义本类型的方法'
         },
         'in_variable': {
-            'englishName': 'variable(incoming)',
-            'chnName': '引用本类型的方法'
+            englishName: 'variable(incoming)',
+            chnName: '引用本类型的方法'
         }
 
     },
-    'ou_relationships': {
+    ou_relationships: {
         'ou_api_explained_by': {
-            'englishName': 'api explained by(outgoing)',
-            'chnName': '设计文档 '
+            englishName: 'api explained by(outgoing)',
+            chnName: '设计文档 '
         },
         'ou_call_field': {
-            'englishName': 'call field(outgoing)',
-            'chnName': 'call_field未定义'
+            englishName: 'call field(outgoing)',
+            chnName: 'call_field未定义'
         },
         'ou_call_method': {
-            'englishName': 'call method(outgoing)',
-            'chnName': '本方法调用的方法'
+            englishName: 'call method(outgoing)',
+            chnName: '本方法调用的方法'
         },
         'ou_extend': {
-            'englishName': 'extend(outgoing)',
-            'chnName': '子类 '
+            englishName: 'extend(outgoing)',
+            chnName: '子类 '
         },
         'ou_function_designed_by': {
-            'englishName': 'function designed by(outgoing)',
-            'chnName': '该用户设计的方法 '
+            englishName: 'function designed by(outgoing)',
+            chnName: '该用户设计的方法 '
         },
         'ou_have_field': {
-            'englishName': 'have field(outgoing)',
-            'chnName': '本方法拥有的域 '
+            englishName: 'have field(outgoing)',
+            chnName: '本方法拥有的域 '
         },
         'ou_have_method': {
-            'englishName': 'have method(outgoing)',
-            'chnName': '本类拥有的方法'
+            englishName: 'have method(outgoing)',
+            chnName: '本类拥有的方法'
         },
         'ou_have_sub_element': {
-            'englishName': 'have sub element(outgoing)',
-            'chnName': '需求文档 '
+            englishName: 'have sub element(outgoing)',
+            chnName: '需求文档 '
         },
         'ou_implement': {
-            'englishName': 'implement(outgoing)',
-            'chnName': '实现的接口 '
+            englishName: 'implement(outgoing)',
+            chnName: '实现的接口 '
         },
         'ou_param': {
-            'englishName': 'param(outgoing)',
-            'chnName': '参数'
+            englishName: 'param(outgoing)',
+            chnName: '参数'
         },
         'ou_rt': {
-            'englishName': 'rt(outgoing)',
-            'chnName': '返回类型'
+            englishName: 'rt(outgoing)',
+            chnName: '返回类型'
         },
         'ou_throw': {
-            'englishName': 'throw(outgoing)',
-            'chnName': '抛出异常 '
+            englishName: 'throw(outgoing)',
+            chnName: '抛出异常 '
         },
         'ou_type': {
-            'englishName': 'type(outgoing)',
-            'chnName': '域的类型'
+            englishName: 'type(outgoing)',
+            chnName: '域的类型'
         },
         'ou_variable': {
-            'englishName': 'variable(outgoing)',
-            'chnName': '引用 '
+            englishName: 'variable(outgoing)',
+            chnName: '引用 '
         }
 
     },
-    'relationships': {
+    relationships: {
         'api_explained_by': {
-            'englishName': 'api explained by',
-            'chnName': '设计文档 / 本文档对应的代码元素'
+            englishName: 'api explained by',
+            chnName: '设计文档 / 本文档对应的代码元素'
         },
         'call_field': {
-            'englishName': 'call field',
-            'chnName': 'call field未定义'
+            englishName: 'call field',
+            chnName: 'call field未定义'
         },
         'call_method': {
-            'englishName': 'call method',
-            'chnName': '本方法调用的方法 / 调用本方法的方法'
+            englishName: 'call method',
+            chnName: '本方法调用的方法 / 调用本方法的方法'
         },
         'extend': {
-            'englishName': 'extend',
-            'chnName': '子类  / 父类'
+            englishName: 'extend',
+            chnName: '子类  / 父类'
         },
         'function_designed_by': {
-            'englishName': 'function designed by',
-            'chnName': '该用户设计的方法  / 设计该方法的人'
+            englishName: 'function designed by',
+            chnName: '该用户设计的方法  / 设计该方法的人'
         },
         'hava_field': {
-            'englishName': 'hava field',
-            'chnName': '本方法拥有的域  / 拥有该域的方法'
+            englishName: 'hava field',
+            chnName: '本方法拥有的域  / 拥有该域的方法'
         },
         'have_method': {
-            'englishName': 'have method',
-            'chnName': '本类拥有的方法  / 拥有本方法的类'
+            englishName: 'have method',
+            chnName: '本类拥有的方法  / 拥有本方法的类'
         },
         'have_sub_element': {
-            'englishName': 'have sub element',
-            'chnName': '需求文档 / 设计文档'
+            englishName: 'have sub element',
+            chnName: '需求文档 / 设计文档'
         },
         'implement': {
-            'englishName': 'implement',
-            'chnName': '实现的接口  / 实现的接口的类'
+            englishName: 'implement',
+            chnName: '实现的接口  / 实现的接口的类'
         },
         'param': {
-            'englishName': 'param',
-            'chnName': '参数  / 以本类型为参数的方法'
+            englishName: 'param',
+            chnName: '参数  / 以本类型为参数的方法'
         },
         'rt': {
-            'englishName': 'rt',
-            'chnName': '返回类型  / 以本类型为返回类型的方法'
+            englishName: 'rt',
+            chnName: '返回类型  / 以本类型为返回类型的方法'
         },
         'throw': {
-            'englishName': 'throw',
-            'chnName': '抛出异常  / 抛出本异常的方法'
+            englishName: 'throw',
+            chnName: '抛出异常  / 抛出本异常的方法'
         },
         'type': {
-            'englishName': 'type',
-            'chnName': '域的类型  / 定义本类型的方法'
+            englishName: 'type',
+            chnName: '域的类型  / 定义本类型的方法'
         },
         'variable': {
-            'englishName': 'variable',
-            'chnName': '引用  / 引用本类型的方法'
+            englishName: 'variable',
+            chnName: '引用  / 引用本类型的方法'
         }
 
     },

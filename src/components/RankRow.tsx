@@ -14,10 +14,10 @@ const styles = (theme: Theme) => ({
         paddingLeft: theme.spacing.unit
     },
     cellRank: {
-        width: '8%'
+        width: '12%'
     },
     cellMain: {
-        width: '84%',
+        width: '76%',
         overflowWrap: 'normal',
         whiteSpace: 'normal'
     },

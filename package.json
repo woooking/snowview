@@ -3,12 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/d3": "^4.11.1",
     "@types/jquery": "^3.2.16",
     "@types/lodash": "^4.14.85",
     "@types/prismjs": "^1.6.5",
     "@types/react-redux": "^5.0.12",
     "d3": "^4.11.0",
+    "immutable": "^3.8.2",
     "jquery": "^3.2.1",
+    "js-snackbar": "^0.3.1",
     "lodash": "^4.17.4",
     "material-ui": "^1.0.0-beta.21",
     "material-ui-icons": "^1.0.0-beta.17",
@@ -20,6 +23,7 @@
     "react-scripts-ts": "2.8.0",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
+    "ts-option": "^1.1.4",
     "typeface-roboto": "0.0.45",
     "typescript-fsa": "^2.5.0",
     "typescript-fsa-reducers": "^0.4.4",
@@ -37,5 +41,6 @@
     "@types/react": "^16.0.22",
     "@types/react-dom": "^16.0.3",
     "redux-devtools-extension": "^2.13.2"
-  }
+  },
+  "homepage": "/SnowGraph"
 }

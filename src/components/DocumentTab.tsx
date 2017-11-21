@@ -4,12 +4,11 @@ import { connect } from 'react-redux';
 import { Theme } from 'material-ui/styles';
 import { DocumentResultState, RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
-import { fetchDocumentResult } from '../redux/action';
-import { Question } from '../model';
 import RankRow from './RankRow';
 
 const styles = (theme: Theme) => ({
     container: {
+        display: 'flex',
         justifyContent: 'center',
     },
     table: {
@@ -22,13 +21,10 @@ const styles = (theme: Theme) => ({
 }) as React.CSSProperties;
 
 const mapStateToProps = (state: RootState) => ({
-    question: state.question,
     documentResult: state.documentResult,
 });
 
 interface DocumentTabProps {
-    visibility: boolean;
-    question: Question;
     documentResult: DocumentResultState;
     dispatch: Dispatch<RootState>;
 }
@@ -38,14 +34,10 @@ type DocumentTabStyle =
 
 class DocumentTab extends React.Component<DocumentTabProps & DocumentTabStyle, {}> {
     
-    componentDidMount() {
-        this.props.dispatch(fetchDocumentResult(this.props.question));
-    }
-    
     render() {
         const {classes, documentResult} = this.props;
         return (
-            <div style={{display: this.props.visibility ? 'flex' : 'none'}} className={classes.container}>
+            <div className={classes.container}>
                 {documentResult.fetching && <LinearProgress className={classes.progress}/>}
                 {documentResult.result != null && <Table className={classes.table}>
                     <TableHead>
@@ -73,4 +65,4 @@ class DocumentTab extends React.Component<DocumentTabProps & DocumentTabStyle, {
     }
 }
 
-export default withStyles(styles)<{ visibility: boolean }>(connect(mapStateToProps)(DocumentTab));
+export default withStyles(styles)<{}>(connect(mapStateToProps)(DocumentTab));
