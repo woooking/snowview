@@ -5,8 +5,8 @@ import { CypherQueryResult, DocumentResult, RandomResult, Relation } from '../mo
 import { Node } from '../model';
 import { RootState } from './reducer';
 
-// const URL = 'http://162.105.88.181:8080/SnowGraph';
-const URL = '/SnowGraph';
+const URL = 'http://162.105.88.181:8080/SnowGraph';
+// const URL = '/SnowGraph';
 
 const actionCreator = actionCreatorFactory();
 
@@ -38,7 +38,7 @@ export const fetchNodeWorker = bindThunkAction(
         if (state.graph.nodes.has(params)) {
             const node = state.graph.nodes.get(params);
             if (node.nonEmpty) {
-                return node.get;
+                return node.get.node;
             }
         }
         return await $.post(`${URL}/GetNode`, {id: params});

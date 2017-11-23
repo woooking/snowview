@@ -78,7 +78,7 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
     
     updateNodes = () => {
         const newNodes = this.props.nodes.filter(n => !this.nodes.some(nd => nd.raw._id === n._id));
-        
+    
         this.nodes = [
             ...this.nodes.filter(nd => this.props.nodes.some(n => nd.raw._id === n._id)),
             ...newNodes.map(n => ({raw: n}))
