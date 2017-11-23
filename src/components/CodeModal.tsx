@@ -38,22 +38,21 @@ class CodeModal extends React.Component<CodeModalProps & CodeModalStyle, { open:
     }
 
     render() {
-        const {classes} = this.props;
+        const {classes, code, content, contrast, label} = this.props;
 
-        const content =
-            this.props.code ? Prism.highlight(this.props.content, Prism.languages.javascript) : this.props.content;
+        const c = code ? Prism.highlight(content, Prism.languages.javascript) : content;
 
         return (
             <span>
                 <Button
                     className={classes.button}
-                    color={this.props.contrast ? 'contrast' : 'default'}
+                    color={contrast ? 'contrast' : 'default'}
                     onClick={this.handleClickOpen}
                 >
-                    {this.props.label}
+                    {label}
                 </Button>
                 <Dialog fullWidth={true} maxWidth="md" onRequestClose={this.handleRequestClose} open={this.state.open}>
-                    <pre className={classes.container} dangerouslySetInnerHTML={{__html: content}}/>
+                    <pre className={classes.container} dangerouslySetInnerHTML={{__html: c}}/>
                 </Dialog>
             </span>
         );

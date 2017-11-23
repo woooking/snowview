@@ -36,12 +36,6 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
         const filteredLinks = links.
             filter(x => nodes.some(n => n._id === x!.startNode) && nodes.some(n => n._id === x!.endNode));
     
-        if (nodes.some(d  => !d._labels)) {
-            console.log('out');
-            console.log(this.props.nodes);
-            console.log(nodes);
-        }
-    
         return (
             <Card>
                 <CardHeader title="Related API Code Graph"/>
