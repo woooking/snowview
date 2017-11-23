@@ -5,7 +5,8 @@ import { CypherQueryResult, DocumentResult, RandomResult, Relation } from '../mo
 import { Node } from '../model';
 import { RootState } from './reducer';
 
-const URL = 'http://162.105.88.181:8080/SnowGraph';
+// const URL = 'http://162.105.88.181:8080/SnowGraph';
+const URL = '/SnowGraph';
 
 const actionCreator = actionCreatorFactory();
 
