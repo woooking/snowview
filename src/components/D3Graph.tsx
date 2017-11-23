@@ -34,15 +34,23 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
     simulation: d3.Simulation<D3Node, D3Relation>;
     
     updateLinks = () => {
-        const newLinks = this.props.links.filter(l => !this.links.some(link => link.raw.id === l.id));
+        const newLinks = this.props.links.filter(l => !this.links.some(lk => lk.raw.id === l.id));
         
-        this.links = [...this.links, ...newLinks.map(
-            l => ({raw: l, source: l.startNode.toString(), target: l.endNode.toString()})
-        )];
+        this.links = [
+            ...this.links.filter(lk => this.props.links.some(l => lk.raw.id === l.id)),
+            ...newLinks.map(l => ({raw: l, source: l.startNode.toString(), target: l.endNode.toString()}))
+        ];
         
-        const link = this.linkG
+        
+        const update = this.linkG
             .selectAll('.link')
-            .data(this.links)
+            .data(this.links, (d: any) => d.raw.id);
+    
+        update
+            .exit()
+            .remove();
+        
+        const link = update
             .enter()
             .append<SVGPathElement>('path')
             .attr('id', (d) => `p${d.raw.id}`)
@@ -50,7 +58,7 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
             .attr('stroke', 'black')
             .attr('stroke-width', '3')
             .attr('marker-end', 'url(#arrow)');
-    
+        
         this.linkG
             .selectAll('.link-label')
             .data(this.links)
@@ -69,23 +77,32 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
     }
     
     updateNodes = () => {
-        const newNodes = this.props.nodes.filter(n => !this.nodes.some(node => node.raw._id === n._id));
-        
-        this.nodes = [...this.nodes, ...newNodes.map(n => ({index: n._id.toString(), raw: n}))];
+        const newNodes = this.props.nodes.filter(n => !this.nodes.some(nd => nd.raw._id === n._id));
+    
+        this.nodes = [
+            ...this.nodes.filter(nd => this.props.nodes.some(n => nd.raw._id === n._id)),
+            ...newNodes.map(n => ({raw: n}))
+        ];
         
         const nodeRadius = 40;
         
         const {dispatch} = this.props;
         
-        const node = this.nodeG
+        const update = this.nodeG
             .selectAll('.node')
-            .data(this.nodes)
+            .data(this.nodes, (d: any) => d.raw._id)
+        
+        const node = update
             .enter()
             .append<SVGGElement>('g')
             .attr('class', 'node')
-            .on('click', (d: D3Node) => {
-                dispatch(fetchRelationListWorker(d.raw._id))
+            .on('click', d => {
+                dispatch(fetchRelationListWorker(d.raw._id));
                 dispatch(selectNode(d.raw._id));
+            })
+            .on('dblclick', d => {
+                d.fx = null;
+                d.fy = null;
             })
             .call(d3.drag<SVGCircleElement, D3Node>()
                 .on('start', () => {
@@ -109,7 +126,7 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
             .attr('cx', nodeRadius)
             .attr('cy', nodeRadius)
             .style('fill', (d: D3Node) => {
-                const l = translation.classes[d.raw._labels[0]]
+                const l = translation.classes[d.raw._labels[0]];
                 return l && l.nodeFillColor ? l.nodeFillColor : '#DDDDDD';
             });
         
@@ -124,18 +141,16 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
             .attr('x', nodeRadius)
             .attr('y', nodeRadius + 15)
             .html((d: D3Node) => {
-                const label = d.raw._labels[0];
-                if (translation.classes[label] === undefined) {
-                    return d.raw._id;
-                }
-                if (translation.classes[label]["displayName"] === undefined) {
-                    return d.raw._id;
-                }
-                if (!d.raw[translation.classes[label]["displayName"]]) {
-                    return d.raw._id;
-                }
-                return d.raw[translation.classes[label]["displayName"]];
+                let name = d.raw.name;
+                name = name ? name : d.raw.uniformTitle;
+                name = name ? name : '';
+                name = name.length > 20 ? name.substr(0, 20) + '...' : name;
+                return name;
             });
+        
+        update
+            .exit()
+            .remove();
         
         return node;
     }
@@ -170,40 +185,43 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
             .force('charge', d3.forceManyBody())
             .force('collide', d3.forceCollide(nodeRadius * 1.5));
         
-        
         this.simulation.nodes(this.nodes).on('tick', () => {
             this.linkSelection
-                .attr('d', (d: any) => {
-                    const x1 = d.source.x + nodeRadius;
-                    const y1 = d.source.y + nodeRadius;
-                    const x2 = d.target.x + nodeRadius;
-                    const y2 = d.target.y + nodeRadius;
+                .attr('d', (d: D3Relation) => {
+                    const x1 = (d.source as D3Node).x! + nodeRadius;
+                    const y1 = (d.source as D3Node).y! + nodeRadius;
+                    const x2 = (d.target as D3Node).x! + nodeRadius;
+                    const y2 = (d.target as D3Node).y! + nodeRadius;
                     return `M${x1},${y1} L${x2},${y2}`;
                 });
             
-            this.nodeSelection.attr('transform', (d: any) => `translate(${d.x}, ${d.y})`);
+            this.nodeSelection.attr('transform', d => `translate(${d.x}, ${d.y})`);
         });
         
-        this.simulation.force<ForceLink<any, any>>('link')!
+        this.simulation.force<ForceLink<D3Node, D3Relation>>('link')!
             .links(this.links)
             .strength(0.03);
         
     }
     
     componentDidUpdate() {
-        const newNodes = this.updateNodes();
-        this.nodeSelection = newNodes.merge(this.nodeSelection);
+        this.updateNodes();
+        this.nodeSelection = this.nodeG
+            .selectAll<SVGGElement, D3Node>('.node')
+            .data(this.nodes);
         
-        const newLinks = this.updateLinks();
-        this.linkSelection = newLinks.merge(this.linkSelection);
+        this.updateLinks();
+        this.linkSelection = this.linkG
+            .selectAll<SVGPathElement, D3Relation>('.link')
+            .data(this.links, (d: any) => d.raw.id);
         
         this.simulation.nodes(this.nodes);
         
-        this.simulation.force<ForceLink<any, any>>('link')!
+        this.simulation.force<ForceLink<D3Node, D3Relation>>('link')!
             .links(this.links)
             .strength(0.03);
         
-        this.simulation.restart();
+        this.simulation.alpha(1).restart();
     }
     
     render() {
@@ -215,8 +233,15 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
                             <feFlood floodColor="#FFFFFF"/>
                             <feComposite in="SourceGraphic"/>
                         </filter>
-                        <marker id="arrow" markerWidth="52" markerHeight="52" refX="52" refY="26" orient="auto"
-                                markerUnits="userSpaceOnUse">
+                        <marker
+                            id="arrow"
+                            markerWidth="52"
+                            markerHeight="52"
+                            refX="52"
+                            refY="26"
+                            orient="auto"
+                            markerUnits="userSpaceOnUse"
+                        >
                             <path d="M0,20 L0,32 L12,32 L12,20 z" fill="#FFFFFF"/>
                             <path d="M0,20 L0,32 L12,26 z" fill="#000000"/>
                         </marker>

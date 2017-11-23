@@ -15,7 +15,7 @@ import Typography from 'material-ui/Typography';
 import { FormEvent } from 'react';
 import { Option } from 'ts-option';
 import * as _ from 'lodash';
-import { fetchNodeWorker, showRelations } from '../redux/action';
+import { fetchNodeWorker, removeNode, showRelations } from '../redux/action';
 
 const styles = (theme: Theme) => ({
     formControl: {
@@ -47,11 +47,8 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
         event.preventDefault();
         
         const catalog = this.input.value;
-        const {dispatch} = this.props;
-        const selectedNode = this.props.selectedNode;
-        const relationLists = this.props.relationLists;
-        const relations = this.props.relations;
-        
+        const {dispatch, selectedNode, relationLists, relations} = this.props;
+
         const relationList = relationLists.get(selectedNode.get);
         
         const readyToShow =
@@ -69,16 +66,13 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
         });
         
         dispatch(showRelations(readyToShow.map(x => x.id)));
-        
     }
-    
+
     render() {
         let body = null;
-        
-        const selectedNode = this.props.selectedNode;
-        const relationLists = this.props.relationLists;
-        const relations = this.props.relations;
-        
+
+        const {dispatch, selectedNode, relationLists, relations} = this.props;
+
         if (selectedNode.isEmpty) {
             body = <Typography component="p"> Please select a node first </Typography>;
         } else {
@@ -101,6 +95,7 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
                             </Select>
                         </FormControl>
                         <Button type="submit">Submit</Button>
+                        <Button onClick={() => dispatch(removeNode(selected))}>Remove</Button>
                     </form>
                 );
             }

@@ -32,12 +32,11 @@ interface GraphTabProps {
     dispatch: Dispatch<RootState>;
 }
 
-type GraphTabStyles =
-    WithStyles<'leftPanel' | 'rightPanel' | 'informationPanel'>;
+type GraphTabStyles = WithStyles<'leftPanel' | 'rightPanel' | 'informationPanel'>;
 
 class GraphTab extends React.Component<GraphTabProps & GraphTabStyles, {}> {
     render() {
-        const {classes} = this.props;
+        const {classes, fetchingGraph} = this.props;
         const show = (
             <Grid container={true} spacing={0}>
                 <Grid item={true} xs={8} className={classes.leftPanel}>
@@ -56,7 +55,7 @@ class GraphTab extends React.Component<GraphTabProps & GraphTabStyles, {}> {
                 <LinearProgress/>
             </Grid>
         );
-        return this.props.fetchingGraph ? notShow : show;
+        return fetchingGraph ? notShow : show;
     }
 }
 
