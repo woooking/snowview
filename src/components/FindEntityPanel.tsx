@@ -5,7 +5,7 @@ import {
     WithStyles
 } from 'material-ui';
 import { Theme } from 'material-ui/styles';
-import { NodesState, RelationListsState, RelationsState, RootState } from '../redux/reducer';
+import { RelationListsState, RelationsState, RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
 import Select from 'material-ui/Select';
 import Input from 'material-ui/Input';
@@ -15,7 +15,7 @@ import Typography from 'material-ui/Typography';
 import { FormEvent } from 'react';
 import { Option } from 'ts-option';
 import * as _ from 'lodash';
-import { fetchNodeWorker, showRelations } from '../redux/action';
+import { fetchNodeWorker, removeNode, showRelations } from '../redux/action';
 
 const styles = (theme: Theme) => ({
     formControl: {
@@ -26,21 +26,18 @@ const styles = (theme: Theme) => ({
 
 const mapStateToProps = (state: RootState) => ({
     selectedNode: state.graph.selectedNode,
-    nodes: state.graph.nodes,
     relations: state.graph.relations,
     relationLists: state.graph.relationLists,
 });
 
 interface FindEntityPanelProps {
     selectedNode: Option<number>;
-    nodes: NodesState;
     relations: RelationsState;
     relationLists: RelationListsState;
     dispatch: Dispatch<RootState>;
 }
 
 class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<'formControl'>, {}> {
-    
     input: HTMLInputElement;
     
     handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -66,13 +63,12 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
         });
         
         dispatch(showRelations(readyToShow.map(x => x.id)));
-
     }
-    
+
     render() {
         let body = null;
 
-        const {selectedNode, relationLists, relations} = this.props;
+        const {dispatch, selectedNode, relationLists, relations} = this.props;
 
         if (selectedNode.isEmpty) {
             body = <Typography component="p"> Please select a node first </Typography>;
@@ -96,6 +92,7 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
                             </Select>
                         </FormControl>
                         <Button type="submit">Submit</Button>
+                        <Button onClick={() => dispatch(removeNode(selected))}>Remove</Button>
                     </form>
                 );
             }

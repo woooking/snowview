@@ -10,6 +10,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import createMuiTheme from 'material-ui/styles/createMuiTheme';
 import 'typeface-roboto';
+import { BrowserRouter } from 'react-router-dom';
 
 const store = createStore(appReducer, composeWithDevTools(applyMiddleware(thunk)));
 
@@ -35,9 +36,11 @@ const theme = createMuiTheme({
 
 ReactDOM.render(
     <Provider store={store}>
-        <MuiThemeProvider theme={theme}>
-            <App/>
-        </MuiThemeProvider>
+        <BrowserRouter>
+            <MuiThemeProvider theme={theme}>
+                <App/>
+            </MuiThemeProvider>
+        </BrowserRouter>
     </Provider>,
     document.getElementById('root')
 );

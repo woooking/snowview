@@ -26,6 +26,7 @@ export const fetchDocumentResultWorker = bindThunkAction(
 );
 
 export const selectNode = actionCreator<number>('SELECT_NODE');
+export const removeNode = actionCreator<number>('REMOVE_NODE');
 export const addNodes = actionCreator<Node[]>('ADD_NODES');
 
 export const fetchNode = actionCreator.async<number, Node>('FETCH_NODE');
@@ -36,7 +37,7 @@ export const fetchNodeWorker = bindThunkAction(
         if (state.graph.nodes.has(params)) {
             const node = state.graph.nodes.get(params);
             if (node.nonEmpty) {
-                return node.get;
+                return node.get.node;
             }
         }
         return await $.post(`${URL}/GetNode`, {id: params});
@@ -78,5 +79,3 @@ export const fetchGraphWorker = bindThunkAction(
         return {};
     });
 
-export const gotoIndex = actionCreator<{}>('GOTO_INDEX');
-export const gotoResult = actionCreator<{}>('GOTO_RESULT');
