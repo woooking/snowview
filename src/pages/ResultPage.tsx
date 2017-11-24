@@ -1,14 +1,13 @@
 import * as React from 'react';
-import SearchForm from '../components/SearchForm';
-import { AppBar, Tabs, Tab, Toolbar, Typography, withStyles, WithStyles } from 'material-ui';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { AppBar, Tabs, Tab, Toolbar, Typography, withStyles, WithStyles } from 'material-ui';
+import { Theme } from 'material-ui/styles';
+import { TypographyProps } from 'material-ui/Typography';
+import SearchForm from '../components/SearchForm';
 import GraphTab from '../components/GraphTab';
 import DocumentTab from '../components/DocumentTab';
-import { Theme } from 'material-ui/styles';
-import { RootState } from '../redux/reducer';
-import { Dispatch } from 'redux';
-import { Link } from 'react-router-dom';
-import { TypographyProps } from 'material-ui/Typography';
+import { DocumentResultState, RootState } from '../redux/reducer';
 
 const styles = (theme: Theme) => ({
     brand: {
@@ -16,8 +15,12 @@ const styles = (theme: Theme) => ({
     }
 });
 
+const mapStateToProps = (state: RootState) => ({
+    documentResult: state.documentResult,
+});
+
 interface ResultPageProps {
-    dispatch: Dispatch<RootState>;
+    documentResult: DocumentResultState;
 }
 
 type TabType = 'document' | 'api-graph';
@@ -28,7 +31,7 @@ class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, 
     };
 
     render() {
-        const {classes} = this.props;
+        const {classes, documentResult} = this.props;
         return (
             <div>
                 <AppBar color="primary" position="static">
@@ -51,11 +54,11 @@ class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, 
                     <Tab value="api-graph" label="API Graph"/>
                 </Tabs>
 
-                {this.state.tab === 'document' && <DocumentTab/>}
+                {this.state.tab === 'document' && <DocumentTab documentResult={documentResult}/>}
                 {this.state.tab === 'api-graph' && <GraphTab/>}
             </div>
         );
     }
 }
 
-export default withStyles(styles)<{}>(connect()(ResultPage));
+export default withStyles(styles)<{}>(connect(mapStateToProps)(ResultPage));

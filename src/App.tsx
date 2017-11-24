@@ -9,7 +9,7 @@ class App extends React.Component<{}, {}> {
             <div>
                 <Route exact={true} path="/" component={IndexPage}/>
                 <Route exact={true} path="/index" component={IndexPage}/>
-                <Route exact={true} path="/result" component={ResultPage}/>
+                <Route path="/result" component={ResultPage}/>
             </div>
         );
     }

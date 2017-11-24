@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { LinearProgress, Table, TableBody, TableCell, TableHead, TableRow, withStyles, WithStyles } from 'material-ui';
-import { connect } from 'react-redux';
 import { Theme } from 'material-ui/styles';
-import { DocumentResultState, RootState } from '../redux/reducer';
-import { Dispatch } from 'redux';
+import { DocumentResultState } from '../redux/reducer';
 import RankRow from './RankRow';
 
 const styles = (theme: Theme) => ({
@@ -20,13 +18,8 @@ const styles = (theme: Theme) => ({
     }
 }) as React.CSSProperties;
 
-const mapStateToProps = (state: RootState) => ({
-    documentResult: state.documentResult,
-});
-
 interface DocumentTabProps {
     documentResult: DocumentResultState;
-    dispatch: Dispatch<RootState>;
 }
 
 type DocumentTabStyle = WithStyles<'container' | 'table' | 'progress'>;
@@ -64,4 +57,4 @@ class DocumentTab extends React.Component<DocumentTabProps & DocumentTabStyle, {
     }
 }
 
-export default withStyles(styles)<{}>(connect(mapStateToProps)(DocumentTab));
+export default withStyles(styles)<DocumentTabProps>(DocumentTab);

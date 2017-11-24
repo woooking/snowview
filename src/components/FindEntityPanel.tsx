@@ -5,7 +5,7 @@ import {
     WithStyles
 } from 'material-ui';
 import { Theme } from 'material-ui/styles';
-import { NodesState, RelationListsState, RelationsState, RootState } from '../redux/reducer';
+import { RelationListsState, RelationsState, RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
 import Select from 'material-ui/Select';
 import Input from 'material-ui/Input';
@@ -26,21 +26,18 @@ const styles = (theme: Theme) => ({
 
 const mapStateToProps = (state: RootState) => ({
     selectedNode: state.graph.selectedNode,
-    nodes: state.graph.nodes,
     relations: state.graph.relations,
     relationLists: state.graph.relationLists,
 });
 
 interface FindEntityPanelProps {
     selectedNode: Option<number>;
-    nodes: NodesState;
     relations: RelationsState;
     relationLists: RelationListsState;
     dispatch: Dispatch<RootState>;
 }
 
 class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<'formControl'>, {}> {
-    
     input: HTMLInputElement;
     
     handleSubmit = (event: FormEvent<HTMLFormElement>) => {
