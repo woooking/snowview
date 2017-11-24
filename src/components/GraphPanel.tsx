@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { Card, CardContent, CardHeader } from 'material-ui';
 import { connect } from 'react-redux';
-import { NodesState, RelationsState, RootState, ShowableNode } from '../redux/reducer';
 import { Dispatch } from 'redux';
+import { Card, CardContent, CardHeader } from 'material-ui';
+import { RootState } from '../redux/reducer';
 import D3Graph from './D3Graph';
 import { Option } from 'ts-option';
+import { SnowNode } from '../model';
+import { NodesState, RelationsState } from '../redux/graphReducer';
 
 const mapStateToProps = (state: RootState) => ({
     nodes: state.graph.nodes,
@@ -22,19 +24,17 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
     render() {
         const nodes = this.props.nodes
             .valueSeq()
-            .flatMap<number, ShowableNode>((x?: Option<ShowableNode>) => x!.toArray)
+            .flatMap<number, SnowNode>((x?: Option<SnowNode>) => x!.toArray)
             .filter(x => x!.shown)
-            .map(x => x!.node)
             .toArray();
         
         const links = this.props.relations
             .valueSeq()
             .filter(x => x!.shown)
-            .map(x => x!.relation)
             .toArray();
         
         const filteredLinks = links.
-            filter(x => nodes.some(n => n._id === x!.startNode) && nodes.some(n => n._id === x!.endNode));
+            filter(x => nodes.some(n => n.node._id === x!.source) && nodes.some(n => n.node._id === x!.target));
     
         return (
             <Card>

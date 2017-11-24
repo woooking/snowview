@@ -9,36 +9,49 @@ export interface CypherQueryResult {
         results: Array<{
             data: Array<{
                 graph: {
-                    nodes: Node[],
-                    relationships: Relation[]
+                    nodes: Neo4jNode[],
+                    relationships: Neo4jRelation[]
                 }
             }>
         }>
     };
 }
 
-export interface Relation {
+export interface Neo4jRelation {
     startNode: number;
     endNode: number;
     id: number;
     type: string;
 }
 
-export interface Node {
+export interface Neo4jNode {
     _id: number;
     _labels: string[];
     name?: string;
     uniformTitle?: string;
 }
 
+export interface SnowRelation {
+    shown: boolean;
+    id: string;
+    source: number;
+    target: number;
+    types: string[];
+}
+
+export interface SnowNode {
+    shown: boolean;
+    node: Neo4jNode;
+}
+
 export interface D3Relation {
-    raw: Relation;
+    raw: SnowRelation;
     source: string | D3Node;
     target: string | D3Node;
 }
 
 export interface D3Node {
-    raw: Node;
+    raw: SnowNode;
     x?: number;
     y?: number;
     vx?: number;
