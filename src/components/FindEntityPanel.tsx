@@ -5,17 +5,18 @@ import {
     WithStyles
 } from 'material-ui';
 import { Theme } from 'material-ui/styles';
-import { RelationListsState, RelationsState, RootState } from '../redux/reducer';
+import { RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
 import Select from 'material-ui/Select';
 import Input from 'material-ui/Input';
-import { getNodeIDFromRelation, rename } from '../utils';
+import { rename } from '../utils';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import { FormEvent } from 'react';
 import { Option } from 'ts-option';
 import * as _ from 'lodash';
 import { fetchNodeWorker, removeNode, showRelations } from '../redux/action';
+import { RelationListsState, RelationsState } from '../redux/graphReducer';
 
 const styles = (theme: Theme) => ({
     formControl: {
@@ -39,29 +40,28 @@ interface FindEntityPanelProps {
 
 class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<'formControl'>, {}> {
     input: HTMLInputElement;
-    
+
     handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        
+
         const catalog = this.input.value;
         const {dispatch, selectedNode, relationLists, relations} = this.props;
 
         const relationList = relationLists.get(selectedNode.get);
-        
+
         const readyToShow =
             relationList.get
                 .map(x => relations.get(x))
                 .filter(x => !x.shown)
-                .filter(x => x.relation.type === catalog)
-                .map(x => x.relation)
+                .filter(x => x.types.some(t => t === catalog))
                 .slice(0, 5);
-    
+
         readyToShow.forEach(r => {
-            const [startID, endID] = getNodeIDFromRelation(r);
-            const otherID = startID === selectedNode.get ? endID : startID;
+            const source = r.source, target = r.target;
+            const otherID = source === selectedNode.get ? target : source;
             dispatch(fetchNodeWorker(otherID));
         });
-        
+
         dispatch(showRelations(readyToShow.map(x => x.id)));
     }
 
@@ -75,11 +75,14 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
         } else {
             const selected = selectedNode.get;
             const selectedRelationList = relationLists.get(selected);
-            
+
             if (selectedRelationList.isEmpty) {
                 body = <LinearProgress/>;
             } else {
-                const relationTypes = _.uniq(selectedRelationList.get.map(x => relations.get(x).relation.type));
+                const relationTypes = _.chain(selectedRelationList.get)
+                    .flatMap(x => relations.get(x).types)
+                    .uniq()
+                    .value();
                 body = (
                     <form onSubmit={this.handleSubmit}>
                         <FormControl className={this.props.classes.formControl}>
@@ -97,7 +100,7 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
                 );
             }
         }
-        
+
         return (
             <Card>
                 <CardHeader title="Expand Related Entity"/>
@@ -105,7 +108,7 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
                     {body}
                 </CardContent>
             </Card>
-        
+
         );
     }
 }

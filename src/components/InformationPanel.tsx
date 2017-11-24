@@ -5,11 +5,12 @@ import {
     Table, TableBody, TableCell, TableRow, Typography, WithStyles
 } from 'material-ui';
 import CodeModal from './CodeModal';
-import { NodesState, RootState } from '../redux/reducer';
+import { RootState } from '../redux/reducer';
 import { Theme } from 'material-ui/styles';
 import withStyles from 'material-ui/styles/withStyles';
 import { Option } from 'ts-option';
 import * as _ from 'lodash';
+import { NodesState } from '../redux/graphReducer';
 
 const mapStateToProps = (state: RootState) => {
     return {
