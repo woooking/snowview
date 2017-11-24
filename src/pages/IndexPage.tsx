@@ -5,8 +5,10 @@ import { connect } from 'react-redux';
 import { Button, CircularProgress, Input, Typography, withStyles, WithStyles } from 'material-ui';
 import { Theme } from 'material-ui/styles';
 import SearchIcon from 'material-ui-icons/Search';
-import { fetchDocumentResultWorker, fetchGraphWorker, fetchRandomQuestionWorker, gotoResult } from '../redux/action';
+import { fetchDocumentResultWorker, fetchGraphWorker, fetchRandomQuestionWorker } from '../redux/action';
 import { RootState } from '../redux/reducer';
+import { withRouter } from 'react-router';
+import { History } from 'history';
 
 const styles = (theme: Theme) => ({
     page: {
@@ -64,6 +66,7 @@ const mapStateToProps = (state: RootState) => ({
 interface IndexPageProps {
     fetchingRandomQuestion: boolean;
     dispatch: Dispatch<RootState>;
+    history: History;
 }
 
 type IndexPageStyles =
@@ -73,7 +76,7 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
     state = {
         input: ''
     };
-    
+
     handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const {dispatch} = this.props;
@@ -82,14 +85,14 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
         } else {
             dispatch(fetchDocumentResultWorker({query: this.state.input}));
             dispatch(fetchGraphWorker({query: this.state.input}));
-            dispatch(gotoResult({}));
+            this.props.history.push('/result');
         }
     }
-    
+
     handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         this.setState({input: event.target.value});
     }
-    
+
     render() {
         const {classes, fetchingRandomQuestion} = this.props;
         return (
@@ -148,4 +151,4 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
     }
 }
 
-export default withStyles(styles)<{}>(connect(mapStateToProps)(IndexPage));
+export default withStyles(styles)<{}>(connect(mapStateToProps)(withRouter(IndexPage)));

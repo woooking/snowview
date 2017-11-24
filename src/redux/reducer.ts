@@ -1,7 +1,7 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 import {
     addNodes, addRelations, addShownRelations,
-    fetchDocumentResult, fetchGraph, fetchNode, fetchRandomQuestion, fetchRelationList, gotoIndex, gotoResult,
+    fetchDocumentResult, fetchGraph, fetchNode, fetchRandomQuestion, fetchRelationList,
     removeNode,
     selectNode, showRelations
 } from './action';
@@ -59,7 +59,6 @@ export interface GraphState {
 export interface RootState {
     fetchingRandomQuestion: boolean;
     graph: GraphState;
-    page: string;
     documentResult: DocumentResultState;
 }
 
@@ -114,10 +113,6 @@ const graph = combineReducers({
     fetching, selectedNode, nodes, relations, relationLists
 });
 
-const page = reducerWithInitialState<string>('index')
-    .case(gotoIndex, (state, payload) => 'index')
-    .case(gotoResult, (state, payload) => 'result');
-
 const documentResult =
     reducerWithInitialState<DocumentResultState>({fetching: false, query: ''})
         .case(fetchDocumentResult.started, (state, payload) => ({fetching: true, query: payload.query}))
@@ -128,5 +123,5 @@ const documentResult =
             withError('Failed to rank', {fetching: false, query: payload.params.query}));
 
 export const appReducer = combineReducers({
-    fetchingRandomQuestion, graph, page, documentResult
+    fetchingRandomQuestion, graph, documentResult
 });

@@ -7,7 +7,8 @@ import DocumentTab from '../components/DocumentTab';
 import { Theme } from 'material-ui/styles';
 import { RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
-import { gotoIndex } from '../redux/action';
+import { Link } from 'react-router-dom';
+import { TypographyProps } from 'material-ui/Typography';
 
 const styles = (theme: Theme) => ({
     brand: {
@@ -27,7 +28,7 @@ class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, 
     };
 
     render() {
-        const {classes, dispatch} = this.props;
+        const {classes} = this.props;
         return (
             <div>
                 <AppBar color="primary" position="static">
@@ -36,9 +37,8 @@ class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, 
                             className={classes.brand}
                             type="title"
                             color="inherit"
-                            component="a"
-                            onClick={() => dispatch(gotoIndex({}))}
-                            {...{href: '#'}}
+                            component={Link as React.ComponentType<TypographyProps>}
+                            {...{to: '/'}}
                         >
                             SEI SNOW Project
                         </Typography>

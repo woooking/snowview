@@ -6,7 +6,6 @@ import { Node } from '../model';
 import { RootState } from './reducer';
 
 const URL = 'http://162.105.88.181:8080/SnowGraph';
-// const URL = '/SnowGraph';
 
 const actionCreator = actionCreatorFactory();
 
@@ -80,5 +79,3 @@ export const fetchGraphWorker = bindThunkAction(
         return {};
     });
 
-export const gotoIndex = actionCreator<{}>('GOTO_INDEX');
-export const gotoResult = actionCreator<{}>('GOTO_RESULT');
