@@ -40,8 +40,7 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
             ...this.links.filter(lk => this.props.links.some(l => lk.raw.id === l.id)),
             ...newLinks.map(l => ({raw: l, source: l.startNode.toString(), target: l.endNode.toString()}))
         ];
-        
-        
+
         const update = this.linkG
             .selectAll('.link')
             .data(this.links, (d: any) => d.raw.id);
@@ -90,7 +89,7 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
         
         const update = this.nodeG
             .selectAll('.node')
-            .data(this.nodes, (d: any) => d.raw._id)
+            .data(this.nodes, (d: any) => d.raw._id);
         
         const node = update
             .enter()
@@ -187,12 +186,22 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
         
         this.simulation.nodes(this.nodes).on('tick', () => {
             this.linkSelection
-                .attr('d', (d: D3Relation) => {
+                .attr('d', d => {
                     const x1 = (d.source as D3Node).x! + nodeRadius;
                     const y1 = (d.source as D3Node).y! + nodeRadius;
                     const x2 = (d.target as D3Node).x! + nodeRadius;
                     const y2 = (d.target as D3Node).y! + nodeRadius;
-                    return `M${x1},${y1} L${x2},${y2}`;
+                    return x1 > x2 ? `M${x2},${y2} L${x1},${y1}` : `M${x1},${y1} L${x2},${y2}`;
+                })
+                .attr('marker-end', d => {
+                    const x1 = (d.source as D3Node).x! + nodeRadius;
+                    const x2 = (d.target as D3Node).x! + nodeRadius;
+                    return x2 > x1 ? 'url(#end-arrow)' : '';
+                })
+                .attr('marker-start', d => {
+                    const x1 = (d.source as D3Node).x! + nodeRadius;
+                    const x2 = (d.target as D3Node).x! + nodeRadius;
+                    return x1 > x2 ? 'url(#start-arrow)' : '';
                 });
             
             this.nodeSelection.attr('transform', d => `translate(${d.x}, ${d.y})`);
@@ -234,7 +243,19 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
                             <feComposite in="SourceGraphic"/>
                         </filter>
                         <marker
-                            id="arrow"
+                            id="start-arrow"
+                            markerWidth="52"
+                            markerHeight="52"
+                            refX="0"
+                            refY="26"
+                            orient="auto"
+                            markerUnits="userSpaceOnUse"
+                        >
+                            <path d="M52,20 L52,32 L40,32 L40,20 z" fill="#FFFFFF"/>
+                            <path d="M52,20 L52,32 L40,26 z" fill="#000000"/>
+                        </marker>
+                        <marker
+                            id="end-arrow"
                             markerWidth="52"
                             markerHeight="52"
                             refX="52"
