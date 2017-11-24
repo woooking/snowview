@@ -46,8 +46,14 @@ export interface SnowNode {
 
 export interface D3Relation {
     raw: SnowRelation;
+    type: 'single' | 'repeated';
     source: string | D3Node;
     target: string | D3Node;
+}
+
+export const D3RelationType = {
+    SINGLE: 'single' as 'single',
+    REPEATED: 'repeated' as 'repeated'
 }
 
 export interface D3Node {
