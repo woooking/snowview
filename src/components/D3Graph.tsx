@@ -1,21 +1,48 @@
 import * as React from 'react';
-import { RootState } from '../redux/reducer';
-import { Dispatch } from 'redux';
-import { connect } from 'react-redux';
 import * as d3 from 'd3';
-import { translation } from '../translation';
-import { D3Node, D3Relation, D3RelationType, SnowNode, SnowRelation } from '../model';
-import { fetchRelationListWorker, selectNode } from '../redux/action';
 import { ForceLink } from 'd3-force';
 
-interface D3GraphProps {
+const nodeRadius = 40;
+const arrowSize = 12;
+
+interface D3GraphProps<N, R> {
     id: string;
-    nodes: SnowNode[];
-    links: SnowRelation[];
-    dispatch: Dispatch<RootState>;
+    nodes: N[];
+    links: R[];
+    getNodeID: (node: N) => string;
+    getNodeColor: (node: N) => string;
+    getNodeLabel: (node: N) => string;
+    getNodeText: (node: N) => string;
+    getLinkID: (link: R) => string;
+    getLinkText: (link: R) => string;
+    getSourceNodeID: (link: R) => string;
+    getTargetNodeID: (link: R) => string;
+    onNodeClick?: (d: D3Node<N>) => void;
 }
 
-class D3Graph extends React.Component<D3GraphProps, {}> {
+export interface D3Node<N> {
+    raw: N;
+    x?: number;
+    y?: number;
+    vx?: number;
+    vy?: number;
+    fx?: number | null;
+    fy?: number | null;
+}
+
+interface D3Relation<N, R> {
+    raw: R;
+    type: 'single' | 'repeated';
+    source: string | D3Node<N>;
+    target: string | D3Node<N>;
+}
+
+const D3RelationType = {
+    SINGLE: 'single' as 'single',
+    REPEATED: 'repeated' as 'repeated'
+}
+
+class D3Graph<N, R> extends React.Component<D3GraphProps<N, R>, {}> {
 
     svg: d3.Selection<SVGGElement, {}, HTMLElement, {}>;
 
@@ -23,32 +50,34 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
 
     linkG: d3.Selection<SVGGElement, {}, HTMLElement, {}>;
 
-    nodeSelection: d3.Selection<SVGGElement, D3Node, SVGGElement, {}>;
+    nodeSelection: d3.Selection<SVGGElement, D3Node<N>, SVGGElement, {}>;
 
-    linkSelection: d3.Selection<SVGPathElement, D3Relation, SVGGElement, {}>;
+    linkSelection: d3.Selection<SVGPathElement, D3Relation<N, R>, SVGGElement, {}>;
 
-    nodes: D3Node[] = [];
+    nodes: D3Node<N>[] = [];
 
-    links: D3Relation[] = [];
+    links: D3Relation<N, R>[] = [];
 
-    simulation: d3.Simulation<D3Node, D3Relation>;
+    simulation: d3.Simulation<D3Node<N>, D3Relation<N, R>>;
 
     updateLinks = () => {
-        const newLinks = this.props.links.filter(l => !this.links.some(lk => lk.raw.id === l.id));
+        const {links, getLinkID, getLinkText, getSourceNodeID, getTargetNodeID} = this.props;
+
+        const newLinks = links.filter(l => !this.links.some(lk => getLinkID(lk.raw) === getLinkID(l)));
 
         this.links = [
-            ...this.links.filter(lk => this.props.links.some(l => lk.raw.id === l.id)),
+            ...this.links.filter(lk => links.some(l => getLinkID(lk.raw) === getLinkID(l))),
             ...newLinks.map(l => ({
                     raw: l,
-                    source: l.source.toString(),
-                    target: l.target.toString(),
+                    source: getSourceNodeID(l),
+                    target: getTargetNodeID(l),
                     type: D3RelationType.SINGLE
                 })
             )
         ];
 
         this.links
-            .filter(l => this.links.some(o => l.source == o.target && l.target == o.source))
+            .filter(l => this.links.some(o => l.source === o.target && l.target === o.source))
             .forEach(l => l.type = D3RelationType.REPEATED);
 
         const update = this.linkG
@@ -62,7 +91,7 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
         const link = update
             .enter()
             .append<SVGPathElement>('path')
-            .attr('id', (d) => `p${d.raw.id}`)
+            .attr('id', (d) => `p${getLinkID(d.raw)}`)
             .attr('class', 'link')
             .attr('fill', 'none')
             .attr('stroke', 'black')
@@ -79,24 +108,22 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
             // .attr('filter', 'url(#text-background)')
             .style('background', '#FFFFFF')
             .append('textPath')
-            .attr('href', d => `#p${d.raw.id}`)
+            .attr('href', d => `#p${getLinkID(d.raw)}`)
             .attr('startOffset', '50%')
-            .html(d => d.raw.types.toString());
+            .html(d => getLinkText(d.raw));
 
         return link;
     }
 
     updateNodes = () => {
-        const newNodes = this.props.nodes.filter(n => !this.nodes.some(nd => nd.raw.node._id === n.node._id));
+        const {getNodeID, getNodeColor, getNodeLabel, getNodeText, onNodeClick, nodes} = this.props;
+
+        const newNodes = nodes.filter(n => !this.nodes.some(nd => getNodeID(nd.raw) === getNodeID(n)));
 
         this.nodes = [
-            ...this.nodes.filter(nd => this.props.nodes.some(n => nd.raw.node._id === n.node._id)),
+            ...this.nodes.filter(nd => this.props.nodes.some(n => getNodeID(nd.raw) === getNodeID(n))),
             ...newNodes.map(n => ({raw: n}))
         ];
-
-        const nodeRadius = 40;
-
-        const {dispatch} = this.props;
 
         const update = this.nodeG
             .selectAll('.node')
@@ -106,21 +133,17 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
             .enter()
             .append<SVGGElement>('g')
             .attr('class', 'node')
-            .on('click', d => {
-                dispatch(fetchRelationListWorker(d.raw.node._id));
-                dispatch(selectNode(d.raw.node._id));
-            })
             .on('dblclick', d => {
                 d.fx = null;
                 d.fy = null;
             })
-            .call(d3.drag<SVGCircleElement, D3Node>()
+            .call(d3.drag<SVGCircleElement, D3Node<N>>()
                 .on('start', () => {
                     if (!d3.event.active) {
                         this.simulation.alphaTarget(0.3).restart();
                     }
                 })
-                .on('drag', (d: D3Node) => {
+                .on('drag', (d: D3Node<N>) => {
                     d.fx = d3.event.x;
                     d.fy = d3.event.y;
                 })
@@ -131,32 +154,27 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
                 })
             );
 
+        if (onNodeClick) {
+            node.on('click', onNodeClick);
+        }
+
         node.append('circle')
             .attr('r', nodeRadius)
             .attr('cx', nodeRadius)
             .attr('cy', nodeRadius)
-            .style('fill', (d: D3Node) => {
-                const l = translation.classes[d.raw.node._labels[0]];
-                return l && l.nodeFillColor ? l.nodeFillColor : '#DDDDDD';
-            });
+            .style('fill', d => getNodeColor(d.raw));
 
         node.append('text')
             .attr('text-anchor', 'middle')
             .attr('x', nodeRadius)
             .attr('y', nodeRadius - 5)
-            .html((d: D3Node) => d.raw.node._labels[0]);
+            .html(d => getNodeLabel(d.raw));
 
         node.append('text')
             .attr('text-anchor', 'middle')
             .attr('x', nodeRadius)
             .attr('y', nodeRadius + 15)
-            .html((d: D3Node) => {
-                let name = d.raw.node.name;
-                name = name ? name : d.raw.node.uniformTitle;
-                name = name ? name : '';
-                name = name.length > 20 ? name.substr(0, 20) + '...' : name;
-                return name;
-            });
+            .html(d => getNodeText(d.raw));
 
         update
             .exit()
@@ -166,7 +184,7 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
     }
 
     componentDidMount() {
-        const nodeRadius = 40;
+        const {getNodeID} = this.props;
 
         this.svg = d3.select<SVGSVGElement, {}>(`#${this.props.id}`)
             .style('width', '100%')
@@ -190,47 +208,57 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
 
         this.linkSelection = this.updateLinks();
 
-        this.simulation = d3.forceSimulation<D3Node>()
-            .force('link', d3.forceLink().id((d: D3Node) => d.raw.node._id.toString()))
+        this.simulation = d3.forceSimulation<D3Node<N>>()
+            .force('link', d3.forceLink().id((d: D3Node<N>) => getNodeID(d.raw)))
             .force('charge', d3.forceManyBody())
             .force('collide', d3.forceCollide(nodeRadius * 1.5));
 
         this.simulation.nodes(this.nodes).on('tick', () => {
             this.linkSelection
                 .attr('d', d => {
-                    const x1 = (d.source as D3Node).x! + nodeRadius;
-                    const y1 = (d.source as D3Node).y! + nodeRadius;
-                    const x2 = (d.target as D3Node).x! + nodeRadius;
-                    const y2 = (d.target as D3Node).y! + nodeRadius;
+                    const x1 = (d.source as D3Node<N>).x! + nodeRadius;
+                    const y1 = (d.source as D3Node<N>).y! + nodeRadius;
+                    const x2 = (d.target as D3Node<N>).x! + nodeRadius;
+                    const y2 = (d.target as D3Node<N>).y! + nodeRadius;
                     if (d.type === 'single') {
                         return x1 > x2 ? `M${x2},${y2} L${x1},${y1}` : `M${x1},${y1} L${x2},${y2}`;
+                    } else if (d.source === d.target) {
+                        return `M${x1 - nodeRadius},${y1} 
+                        A${nodeRadius},${nodeRadius} 0 1,0
+                        ${x1},${y1 + nodeRadius}`;
                     } else {
                         const dx = x2 - x1;
                         const dy = y2 - y1;
+                        const dxx = dx * dx;
+                        const dyy = dy * dy;
+                        const dxy = dx * dy;
                         const sx = x1 + x2;
                         const sy = y1 + y2;
-                        const dis = Math.sqrt(dx * dx + dy * dy);
-                        const fx = (-dx * dy * y1 + dy * dy * x1 + 0.5 * dx * dx * sx + 0.5 * dx * dy * sy - dis / 5 * dis * dy) / (dx * dx + dy * dy);
-                        const fy = (dx * dx * y1 - dx * dy * x1 + 0.5 * dx * dy * sx + 0.5 * dy * dy * sy + dis / 5 * dis * dx) / (dx * dx + dy * dy);
+                        const dis = Math.sqrt(dxx + dyy);
+
+                        const fx =
+                            (-dxy * y1 + dyy * x1 + 0.5 * dxx * sx + 0.5 * dxy * sy - dis / 5 * dis * dy) / (dxx + dyy);
+                        const fy =
+                            (dxx * y1 - dxy * x1 + 0.5 * dxy * sx + 0.5 * dyy * sy + dis / 5 * dis * dx) / (dxx + dyy);
                         return x1 > x2 ?
                             `M${x2},${y2} Q${fx},${fy} ${x1},${y1}` : `M${x1},${y1} Q${fx},${fy} ${x2},${y2}`;
                     }
                 })
                 .attr('marker-end', d => {
-                    const x1 = (d.source as D3Node).x! + nodeRadius;
-                    const x2 = (d.target as D3Node).x! + nodeRadius;
+                    const x1 = (d.source as D3Node<N>).x! + nodeRadius;
+                    const x2 = (d.target as D3Node<N>).x! + nodeRadius;
                     return x2 > x1 ? 'url(#end-arrow)' : '';
                 })
                 .attr('marker-start', d => {
-                    const x1 = (d.source as D3Node).x! + nodeRadius;
-                    const x2 = (d.target as D3Node).x! + nodeRadius;
+                    const x1 = (d.source as D3Node<N>).x! + nodeRadius;
+                    const x2 = (d.target as D3Node<N>).x! + nodeRadius;
                     return x1 > x2 ? 'url(#start-arrow)' : '';
                 });
 
             this.nodeSelection.attr('transform', d => `translate(${d.x}, ${d.y})`);
         });
 
-        this.simulation.force<ForceLink<D3Node, D3Relation>>('link')!
+        this.simulation.force<ForceLink<D3Node<N>, D3Relation<N, R>>>('link')!
             .links(this.links)
             .strength(0.03);
 
@@ -239,17 +267,17 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
     componentDidUpdate() {
         this.updateNodes();
         this.nodeSelection = this.nodeG
-            .selectAll<SVGGElement, D3Node>('.node')
+            .selectAll<SVGGElement, D3Node<N>>('.node')
             .data(this.nodes);
 
         this.updateLinks();
         this.linkSelection = this.linkG
-            .selectAll<SVGPathElement, D3Relation>('.link')
-            .data(this.links, (d: any) => d.raw.id);
+            .selectAll<SVGPathElement, D3Relation<N, R>>('.link')
+            .data(this.links, d => this.props.getLinkID(d.raw));
 
         this.simulation.nodes(this.nodes);
 
-        this.simulation.force<ForceLink<D3Node, D3Relation>>('link')!
+        this.simulation.force<ForceLink<D3Node<N>, D3Relation<N, R>>>('link')!
             .links(this.links)
             .strength(0.03);
 
@@ -257,8 +285,13 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
     }
 
     render() {
+        const sum = nodeRadius + arrowSize;
+        const half = sum / 2;
+        const up = half - arrowSize / 2;
+        const down = half + arrowSize / 2;
+
         return (
-            <div>
+            <div style={{width: '100%', background: 'white'}}>
                 <svg id={this.props.id}>
                     <defs>
                         <filter x="0" y="0" width="1" height="1" id="text-background">
@@ -267,27 +300,39 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
                         </filter>
                         <marker
                             id="start-arrow"
-                            markerWidth="52"
-                            markerHeight="52"
-                            refX="0"
-                            refY="26"
+                            markerWidth={sum}
+                            markerHeight={sum}
+                            refX={0}
+                            refY={half}
                             orient="auto"
                             markerUnits="userSpaceOnUse"
                         >
-                            <path d="M52,20 L52,32 L40,32 L40,20 z" fill="#FFFFFF"/>
-                            <path d="M52,20 L52,32 L40,26 z" fill="#000000"/>
+                            <path
+                                d={`M${sum},${up} L${sum},${down} L${nodeRadius},${down} L${nodeRadius},${up} z`}
+                                fill="#FFFFFF"
+                            />
+                            <path
+                                d={`M${sum},${up} L${sum},${down} L${nodeRadius},${half} z`}
+                                fill="#000000"
+                            />
                         </marker>
                         <marker
                             id="end-arrow"
-                            markerWidth="52"
-                            markerHeight="52"
-                            refX="52"
-                            refY="26"
+                            markerWidth={sum}
+                            markerHeight={sum}
+                            refX={sum}
+                            refY={half}
                             orient="auto"
                             markerUnits="userSpaceOnUse"
                         >
-                            <path d="M0,20 L0,32 L12,32 L12,20 z" fill="#FFFFFF"/>
-                            <path d="M0,20 L0,32 L12,26 z" fill="#000000"/>
+                            <path
+                                d={`M0,${up} L0,${down} L${arrowSize},${down} L${arrowSize},${up} z`}
+                                fill="#FFFFFF"
+                            />
+                            <path
+                                d={`M0,${up} L0,${down} L${arrowSize},${half} z`}
+                                fill="#000000"
+                            />
                         </marker>
                     </defs>
                 </svg>
@@ -296,4 +341,4 @@ class D3Graph extends React.Component<D3GraphProps, {}> {
     }
 }
 
-export default connect()(D3Graph);
+export default D3Graph;

@@ -17,6 +17,11 @@ export interface CypherQueryResult {
     };
 }
 
+export interface NavResult {
+    nodes: Neo4jNode[],
+    relationships: Neo4jRelation[]
+}
+
 export interface Neo4jRelation {
     startNode: number;
     endNode: number;
@@ -42,28 +47,6 @@ export interface SnowRelation {
 export interface SnowNode {
     shown: boolean;
     node: Neo4jNode;
-}
-
-export interface D3Relation {
-    raw: SnowRelation;
-    type: 'single' | 'repeated';
-    source: string | D3Node;
-    target: string | D3Node;
-}
-
-export const D3RelationType = {
-    SINGLE: 'single' as 'single',
-    REPEATED: 'repeated' as 'repeated'
-}
-
-export interface D3Node {
-    raw: SnowNode;
-    x?: number;
-    y?: number;
-    vx?: number;
-    vy?: number;
-    fx?: number | null;
-    fy?: number | null;
 }
 
 export interface RankedResult {
