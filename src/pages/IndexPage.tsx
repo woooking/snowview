@@ -16,21 +16,14 @@ import { NavGraphState } from '../redux/navGraphReducer';
 import { Neo4jNode, SnowRelation } from '../model';
 import D3Graph from '../components/D3Graph';
 import { translation } from '../translation';
+import './IndexPage.css';
 
 const styles = (theme: Theme) => ({
     page1: {
         background: theme.palette.primary[500],
-        display: 'flex',
-        height: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center'
     },
     page2: {
         background: theme.palette.primary[900],
-        display: 'flex',
-        height: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center'
     },
     container: {
         display: 'flex',
@@ -71,7 +64,7 @@ const styles = (theme: Theme) => ({
         },
     },
     progress: {
-        flexGrow: 1,
+        width: '100%',
         margin: theme.spacing.unit * 4
     }
 }) as React.CSSProperties;
@@ -133,7 +126,7 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
 
         return (
             <div>
-                <div className={classes.page1}>
+                <div className={`${classes.page1} page`}>
                     <div className={classes.container}>
                         <Typography component="h1" type="display4" className={classes.title}>SEI SnowGraph</Typography>
                         <Typography component="h2" type="headline" className={classes.introduction}>
@@ -182,7 +175,7 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
                         </form>
                     </div>
                 </div>
-                <div className={classes.page2}>
+                <div className={`${classes.page2} page`}>
                     <div className={classes.container}>
                         <Typography component="h1" type="display3" className={classes.title}>
                             Overview of the Graph
