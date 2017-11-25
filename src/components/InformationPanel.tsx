@@ -1,15 +1,14 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import {
-    Card, CardContent, CardHeader, LinearProgress,
-    Table, TableBody, TableCell, TableRow, Typography, WithStyles
+    Card, CardContent, CardHeader, LinearProgress, Table, TableBody, TableCell, TableRow, Typography, WithStyles
 } from 'material-ui';
-import CodeModal from './CodeModal';
-import { RootState } from '../redux/reducer';
 import { Theme } from 'material-ui/styles';
 import withStyles from 'material-ui/styles/withStyles';
 import { Option } from 'ts-option';
 import * as _ from 'lodash';
+import CodeModal from './CodeModal';
+import { RootState } from '../redux/reducer';
 import { NodesState } from '../redux/graphReducer';
 
 const mapStateToProps = (state: RootState) => {
@@ -47,12 +46,14 @@ class InformationPanel extends React.Component<InformationPanelProps & WithStyle
                 let properties = Object.keys(node)
                     .map(k => {
                         let content = node[k];
-                        if (k === 'content' || k === 'comment') {
-                            content = <CodeModal code={true} label="SHOW" content={content} contrast={false}/>;
+                        if (content.length > 80) {
+                            content = <CodeModal
+                                code={k === 'content' || k === 'comment'}
+                                label="SHOW"
+                                content={content}
+                                contrast={false}
+                            />;
                         } else {
-                            if (content.length > 80) {
-                                content = content.substr(0, 80) + '...';
-                            }
                             content = <div className={classes.normalCell}>{content.toString()}</div>;
                         }
                         return {key: k, label: k, content};

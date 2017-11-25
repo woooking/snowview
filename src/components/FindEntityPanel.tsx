@@ -9,7 +9,7 @@ import { RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
 import Select from 'material-ui/Select';
 import Input from 'material-ui/Input';
-import { rename } from '../utils';
+import { rename } from '../utils/utils';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import { FormEvent } from 'react';
