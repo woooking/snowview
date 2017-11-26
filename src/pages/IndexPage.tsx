@@ -2,20 +2,32 @@ import * as React from 'react';
 import { ChangeEvent, FormEvent, Component } from 'react';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { Button, CircularProgress, Input, Typography, withStyles, WithStyles } from 'material-ui';
+import { withRouter } from 'react-router';
+import { Button, CircularProgress, Input, LinearProgress, Typography, withStyles, WithStyles } from 'material-ui';
 import { Theme } from 'material-ui/styles';
 import SearchIcon from 'material-ui-icons/Search';
-import { fetchDocumentResultWorker, fetchGraphWorker, fetchRandomQuestionWorker } from '../redux/action';
-import { RootState } from '../redux/reducer';
-import { withRouter } from 'react-router';
 import { History } from 'history';
+import {
+    fetchDocumentResultWorker, fetchGraphWorker, fetchNavGraphWorker, fetchRandomQuestionWorker
+} from '../redux/action';
+import { RootState } from '../redux/reducer';
+import { NavGraphState } from '../redux/navGraphReducer';
+import { Neo4jNode, SnowRelation } from '../model';
+import D3Graph from '../components/D3Graph';
+import { translation } from '../translation';
 
 const styles = (theme: Theme) => ({
-    page: {
+    page1: {
         background: theme.palette.primary[500],
         display: 'flex',
         height: '100vh',
-        width: '100vw',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    page2: {
+        background: theme.palette.primary[900],
+        display: 'flex',
+        height: '100vh',
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -56,21 +68,31 @@ const styles = (theme: Theme) => ({
         '&:after': {
             backgroundColor: theme.palette.primary[50],
         },
+    },
+    progress: {
+        width: '100%',
+        margin: theme.spacing.unit * 4
     }
 }) as React.CSSProperties;
 
 const mapStateToProps = (state: RootState) => ({
-    fetchingRandomQuestion: state.fetchingRandomQuestion
+    fetchingRandomQuestion: state.fetchingRandomQuestion,
+    navGraph: state.navGraph
 });
 
 interface IndexPageProps {
     fetchingRandomQuestion: boolean;
+    navGraph: NavGraphState;
     dispatch: Dispatch<RootState>;
     history: History;
 }
 
 type IndexPageStyles =
-    WithStyles<'page' | 'container' | 'title' | 'introduction' | 'featureList' | 'search' | 'searchInput'>;
+    WithStyles<'page1' | 'page2' | 'container' | 'title' | 'introduction' | 'featureList' | 'search' | 'searchInput'
+        | 'progress'>;
+
+class Graph extends D3Graph<Neo4jNode, SnowRelation> {
+}
 
 class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: string }> {
     state = {
@@ -93,11 +115,24 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
         this.setState({input: event.target.value});
     }
 
+    componentDidMount() {
+        this.props.dispatch(fetchNavGraphWorker({}));
+    }
+
     render() {
-        const {classes, fetchingRandomQuestion} = this.props;
+        const {classes, fetchingRandomQuestion, navGraph} = this.props;
+
+        const nodes = navGraph.nodes
+            .valueSeq()
+            .toArray();
+
+        const links = navGraph.relations
+            .valueSeq()
+            .toArray();
+
         return (
             <div>
-                <div className={classes.page}>
+                <div className={classes.page1}>
                     <div className={classes.container}>
                         <Typography component="h1" type="display4" className={classes.title}>SEI SnowGraph</Typography>
                         <Typography component="h2" type="headline" className={classes.introduction}>
@@ -144,6 +179,32 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
                                 <CircularProgress color="accent" size={55}/> :
                                 <Button fab={true} type="submit" color="accent"><SearchIcon/></Button>}
                         </form>
+                    </div>
+                </div>
+                <div className={classes.page2}>
+                    <div className={classes.container}>
+                        <Typography component="h1" type="display3" className={classes.title}>
+                            Overview of the Graph
+                        </Typography>
+                        {navGraph.fetching ?
+                            <LinearProgress className={classes.progress}/> :
+                            <Graph
+                                id="nav-d3"
+                                nodes={nodes}
+                                links={links}
+                                getNodeID={n => n._id.toString()}
+                                getNodeColor={n => {
+                                    const l = translation.classes[n._labels[0]];
+                                    return l && l.nodeFillColor ? l.nodeFillColor : '#DDDDDD';
+                                }}
+                                getNodeLabel={n => n._labels[0]}
+                                getNodeText={n => ''}
+                                getLinkID={d => d.id}
+                                getLinkText={d => d.types.toString()}
+                                getSourceNodeID={d => d.source.toString()}
+                                getTargetNodeID={d => d.target.toString()}
+                            />
+                        }
                     </div>
                 </div>
             </div>

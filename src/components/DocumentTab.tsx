@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { LinearProgress, Table, TableBody, TableCell, TableHead, TableRow, withStyles, WithStyles } from 'material-ui';
-import { Theme } from 'material-ui/styles';
-import { DocumentResultState } from '../redux/reducer';
+import {LinearProgress, Table, TableBody, TableCell, TableHead, TableRow, withStyles, WithStyles} from 'material-ui';
+import {Theme} from 'material-ui/styles';
+import {DocumentResultState} from '../redux/reducer';
 import RankRow from './RankRow';
 
 const styles = (theme: Theme) => ({
@@ -25,7 +25,7 @@ interface DocumentTabProps {
 type DocumentTabStyle = WithStyles<'container' | 'table' | 'progress'>;
 
 class DocumentTab extends React.Component<DocumentTabProps & DocumentTabStyle, {}> {
-    
+
     render() {
         const {classes, documentResult} = this.props;
         return (
@@ -34,21 +34,24 @@ class DocumentTab extends React.Component<DocumentTabProps & DocumentTabStyle, {
                 {documentResult.result != null && <Table className={classes.table}>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Rank</TableCell>
-                            <TableCell>Title</TableCell>
-                            <TableCell>Solr Rank</TableCell>
+                            <TableCell>Ranking</TableCell>
+                            <TableCell>Candidate Answer</TableCell>
+                            <TableCell>Up/Down(w.r.t. IR)</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {documentResult.result.rankedResults.map(r => {
-                            return <RankRow
-                                key={r.answerId}
-                                rank={r.finalRank}
-                                title={r.title}
-                                solrRank={r.solrRank}
-                                detail={r.body}
-                                highlight={false}
-                            />;
+                            if (r.finalRank <= 20)
+                                return <RankRow
+                                    key={r.finalRank}
+                                    rank={r.finalRank}
+                                    title={r.title}
+                                    solrRank={r.solrRank}
+                                    detail={r.body}
+                                    highlight={r.highlight}
+                                />;
+                            else
+                                return;
                         })}
                     </TableBody>
                 </Table>}

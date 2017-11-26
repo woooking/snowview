@@ -6,6 +6,8 @@ import { combineReducers } from 'redux';
 import { DocumentResult } from '../model';
 import { show } from 'js-snackbar';
 import { graph, GraphState } from './graphReducer';
+import { navGraph, NavGraphState } from './navGraphReducer';
+import { color, ColorState } from './colorReducer';
 
 function showError(message: string) {
     show({
@@ -29,7 +31,9 @@ export interface DocumentResultState {
 export interface RootState {
     fetchingRandomQuestion: boolean;
     graph: GraphState;
+    navGraph: NavGraphState;
     documentResult: DocumentResultState;
+    color: ColorState;
 }
 
 const fetchingRandomQuestion = reducerWithInitialState<boolean>(false)
@@ -50,5 +54,5 @@ const documentResult =
             withError('Failed to rank', {fetching: false, query: payload.params.query}));
 
 export const appReducer = combineReducers({
-    fetchingRandomQuestion, graph, documentResult
+    fetchingRandomQuestion, graph, navGraph, documentResult, color
 });

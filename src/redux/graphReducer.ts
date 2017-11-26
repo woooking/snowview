@@ -9,7 +9,7 @@ import { combineReducers } from 'redux';
 import { Neo4jRelation, SnowNode, SnowRelation } from '../model';
 import { Map } from 'immutable';
 import { none, Option, some } from 'ts-option';
-import { withError } from '../utils';
+import { withError } from '../utils/utils';
 import * as _ from 'lodash';
 
 export type NodesState = Map<number, Option<SnowNode>>;

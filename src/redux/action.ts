@@ -1,12 +1,13 @@
 import * as $ from 'jquery';
 import actionCreatorFactory from 'typescript-fsa';
 import bindThunkAction from 'typescript-fsa-redux-thunk';
-import { CypherQueryResult, DocumentResult, RandomResult, Neo4jRelation } from '../model';
+import { CypherQueryResult, DocumentResult, RandomResult, Neo4jRelation, NavResult } from '../model';
 import { Neo4jNode } from '../model';
 import { RootState } from './reducer';
 import * as _ from 'lodash';
 
 // const URL = 'http://162.105.88.181:8080/SnowGraph';
+// const URL = 'http://127.0.0.1:8080/SnowGraph';
 const URL = 'http://162.105.88.28:8080/SnowGraph';
 
 const actionCreator = actionCreatorFactory();
@@ -79,4 +80,11 @@ export const fetchGraphWorker = bindThunkAction(
         dispatch(addNodes(nodes));
         dispatch(addShownRelations(relations));
         return {};
+    });
+
+export const fetchNavGraph = actionCreator.async<{}, NavResult>('FETCH_NAV_GRAPH');
+export const fetchNavGraphWorker = bindThunkAction(
+    fetchNavGraph,
+    async () => {
+        return await $.post(`${URL}/Nav`, {});
     });
