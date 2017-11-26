@@ -43,6 +43,7 @@ class DocumentTab extends React.Component<DocumentTabProps & DocumentTabStyle, {
                         {documentResult.result.rankedResults.map(r => {
                             if (r.finalRank <= 20)
                                 return <RankRow
+                                    key={r.finalRank}
                                     rank={r.finalRank}
                                     title={r.title}
                                     solrRank={r.solrRank}

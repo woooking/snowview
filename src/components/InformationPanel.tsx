@@ -90,7 +90,7 @@ class InformationPanel extends React.Component<InformationPanelProps & WithStyle
 
         return (
             <Card>
-                <CardHeader title="Entity Properties"/>
+                <CardHeader title="Entity Information"/>
                 <CardContent>
                     {body}
                 </CardContent>

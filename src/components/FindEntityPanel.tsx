@@ -9,7 +9,6 @@ import { RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
 import Select from 'material-ui/Select';
 import Input from 'material-ui/Input';
-import { rename } from '../utils/utils';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import { FormEvent } from 'react';
@@ -91,11 +90,11 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
                                 native={true}
                                 input={<Input id="relation-type" inputRef={(input) => this.input = input}/>}
                             >
-                                {relationTypes.map(t => <option key={t} value={t}>{rename(t)}</option>)}
+                                {relationTypes.map(t => <option key={t} value={t}>{t}</option>)}
                             </Select>
                         </FormControl>
-                        <Button type="submit">Submit</Button>
-                        <Button onClick={() => dispatch(removeNode(selected))}>Remove</Button>
+                        <Button type="submit">EXPAND</Button>
+                        <Button onClick={() => dispatch(removeNode(selected))}>HIDE</Button>
                     </form>
                 );
             }
@@ -103,7 +102,7 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
 
         return (
             <Card>
-                <CardHeader title="Expand Related Entity"/>
+                <CardHeader title="Operations"/>
                 <CardContent>
                     {body}
                 </CardContent>

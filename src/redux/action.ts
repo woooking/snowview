@@ -7,8 +7,8 @@ import { RootState } from './reducer';
 import * as _ from 'lodash';
 
 // const URL = 'http://162.105.88.181:8080/SnowGraph';
-const URL = 'http://127.0.0.1:8080/SnowGraph';
-// const URL = 'http://162.105.88.28:8080/SnowGraph';
+// const URL = 'http://127.0.0.1:8080/SnowGraph';
+const URL = 'http://162.105.88.28:8080/SnowGraph';
 
 const actionCreator = actionCreatorFactory();
 

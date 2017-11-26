@@ -45,7 +45,7 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
 
         return (
             <Card>
-                <CardHeader title="Related API Code Graph"/>
+                <CardHeader title="Knowledge Graph Visualization"/>
                 <CardContent>
                     <Graph
                         id="neo4jd3"

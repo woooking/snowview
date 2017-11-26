@@ -56,7 +56,7 @@ class RankRow extends React.Component<RankRowProps & RankRowStyle, {expand: bool
             delta = '↓ '+(rank-solrRank).toString();
         delta = highlight ? delta:'';
         return (
-            <TableRow style={highlight ? {background: '#7FFFAA'} : {}}>
+            <TableRow style={highlight ? {background: '#6495ED'} : {}}>
                 <TableCell className={classes.cellRank}>{rank}</TableCell>
                 <TableCell className={classes.cellMain}>
                     {title}

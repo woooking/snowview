@@ -23,11 +23,11 @@ interface ResultPageProps {
     documentResult: DocumentResultState;
 }
 
-type TabType = 'document' | 'api-graph';
+type TabType = 'api-graph' | 'document';
 
 class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, {tab: TabType}> {
     state: {tab: TabType} = {
-        tab: 'document'
+        tab: 'api-graph'
     };
 
     render() {
@@ -43,15 +43,15 @@ class ResultPage extends React.Component<ResultPageProps & WithStyles<'brand'>, 
                             component={Link as React.ComponentType<TypographyProps>}
                             {...{to: '/'}}
                         >
-                            SEI SNOW Project
+                            SnowGraph
                         </Typography>
                         <SearchForm/>
                     </Toolbar>
                 </AppBar>
 
                 <Tabs value={this.state.tab} onChange={(e, v) => this.setState({tab: v})}>
-                    <Tab value="document" label="Document"/>
-                    <Tab value="api-graph" label="API Graph"/>
+                    <Tab value="api-graph" label="Graph Browser"/>
+                    <Tab value="document" label="QA Bot"/>
                 </Tabs>
 
                 {this.state.tab === 'document' && <DocumentTab documentResult={documentResult}/>}
