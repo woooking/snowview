@@ -55,9 +55,10 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
                         getNodeColor={n => colorMap.get(n.node._labels[0], '#DDDDDD')}
                         getNodeLabel={n => n.node._labels[0]}
                         getNodeText={n => {
-                            let name = n.node.name;
-                            name = name ? name : n.node.uniformTitle;
-                            name = name ? name : '';
+                            let name = '';
+                            name = n.node.uniformText && n.node.uniformText.length>0 ?  n.node.uniformText : name;
+                            name = n.node.uniformTitle && n.node.uniformTitle.length>0 ?  n.node.uniformTitle : name;
+                            name = name.replace(/<(?:.|\s)*?>/g," ").trim();
                             name = name.length > 20 ? name.substr(0, 20) + '...' : name;
                             return name;
                         }}

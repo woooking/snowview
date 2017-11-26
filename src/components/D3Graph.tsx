@@ -162,12 +162,15 @@ class D3Graph<N, R> extends React.Component<D3GraphProps<N, R>, {}> {
             .attr('r', nodeRadius)
             .attr('cx', nodeRadius)
             .attr('cy', nodeRadius)
+            .attr('stroke', "#000")
+            .attr('stroke-width', "1.5px")
             .style('fill', d => getNodeColor(d.raw));
 
         node.append('text')
             .attr('text-anchor', 'middle')
             .attr('x', nodeRadius)
             .attr('y', nodeRadius - 5)
+            .attr('font-weight', 'bold')
             .html(d => getNodeLabel(d.raw));
 
         node.append('text')

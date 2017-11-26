@@ -30,8 +30,8 @@ export interface Neo4jRelation {
 export interface Neo4jNode {
     _id: number;
     _labels: string[];
-    name?: string;
     uniformTitle?: string;
+    uniformText?: string;
 }
 
 export interface SnowRelation {

@@ -14,7 +14,6 @@ import { RootState } from '../redux/reducer';
 import { NavGraphState } from '../redux/navGraphReducer';
 import { Neo4jNode, SnowRelation } from '../model';
 import D3Graph from '../components/D3Graph';
-import { translation } from '../translation';
 
 const styles = (theme: Theme) => ({
     page1: {
@@ -194,8 +193,7 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
                                 links={links}
                                 getNodeID={n => n._id.toString()}
                                 getNodeColor={n => {
-                                    const l = translation.classes[n._labels[0]];
-                                    return l && l.nodeFillColor ? l.nodeFillColor : '#DDDDDD';
+                                    return '#DDDDDD';
                                 }}
                                 getNodeLabel={n => n._labels[0]}
                                 getNodeText={n => ''}

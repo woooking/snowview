@@ -16,6 +16,7 @@ import { Option } from 'ts-option';
 import * as _ from 'lodash';
 import { fetchNodeWorker, removeNode, showRelations } from '../redux/action';
 import { RelationListsState, RelationsState } from '../redux/graphReducer';
+import {SnowRelation} from "../model";
 
 const styles = (theme: Theme) => ({
     formControl: {
@@ -53,6 +54,7 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
                 .map(x => relations.get(x))
                 .filter(x => !x.shown)
                 .filter(x => x.types.some(t => t === catalog))
+                .sort((a:SnowRelation,b:SnowRelation)=>(parseInt(a.id)%7-parseInt(b.id)%7))
                 .slice(0, 5);
 
         readyToShow.forEach(r => {
