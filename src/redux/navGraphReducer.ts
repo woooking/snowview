@@ -3,7 +3,7 @@ import { fetchNavGraph } from './action';
 import { combineReducers } from 'redux';
 import { Neo4jNode, Neo4jRelation, SnowRelation } from '../model';
 import { Map } from 'immutable';
-import { withError } from '../utils';
+import { withError } from '../utils/utils';
 import * as _ from 'lodash';
 
 export interface NavGraphState {

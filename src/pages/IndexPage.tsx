@@ -2,28 +2,34 @@ import * as React from 'react';
 import { ChangeEvent, FormEvent, Component } from 'react';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import { Button, CircularProgress, Input, LinearProgress, Typography, withStyles, WithStyles } from 'material-ui';
 import { Theme } from 'material-ui/styles';
 import SearchIcon from 'material-ui-icons/Search';
+import { History } from 'history';
 import {
-    fetchDocumentResultWorker, fetchGraphWorker, fetchNavGraphWorker,
-    fetchRandomQuestionWorker
+    fetchDocumentResultWorker, fetchGraphWorker, fetchNavGraphWorker, fetchRandomQuestionWorker
 } from '../redux/action';
 import { RootState } from '../redux/reducer';
-import { withRouter } from 'react-router';
-import { History } from 'history';
 import { NavGraphState } from '../redux/navGraphReducer';
 import { Neo4jNode, SnowRelation } from '../model';
 import D3Graph from '../components/D3Graph';
 import { translation } from '../translation';
-import './IndexPage.css';
 
 const styles = (theme: Theme) => ({
     page1: {
         background: theme.palette.primary[500],
+        display: 'flex',
+        height: '100vh',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     page2: {
         background: theme.palette.primary[900],
+        display: 'flex',
+        height: '100vh',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     container: {
         display: 'flex',
@@ -126,7 +132,7 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
 
         return (
             <div>
-                <div className={`${classes.page1} page`}>
+                <div className={classes.page1}>
                     <div className={classes.container}>
                         <Typography component="h1" type="display4" className={classes.title}>SEI SnowGraph</Typography>
                         <Typography component="h2" type="headline" className={classes.introduction}>
@@ -175,7 +181,7 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
                         </form>
                     </div>
                 </div>
-                <div className={`${classes.page2} page`}>
+                <div className={classes.page2}>
                     <div className={classes.container}>
                         <Typography component="h1" type="display3" className={classes.title}>
                             Overview of the Graph

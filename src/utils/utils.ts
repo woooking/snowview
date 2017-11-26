@@ -1,4 +1,4 @@
-import { translation } from './translation';
+import { translation } from '../translation';
 import { show } from 'js-snackbar';
 
 export function showError(message: string) {
