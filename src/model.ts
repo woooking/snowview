@@ -1,7 +1,5 @@
 export interface RandomResult {
-    answerId: number;
     query: string;
-    query2: string;
 }
 
 export interface CypherQueryResult {
@@ -50,12 +48,11 @@ export interface SnowNode {
 }
 
 export interface RankedResult {
-    answerId: number;
     finalRank: number;
     solrRank: number;
-    relevance: number;
     body: string;
     title: string;
+    highlight: boolean;
 }
 
 export interface DocumentResult {
