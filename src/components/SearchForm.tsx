@@ -86,8 +86,8 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
                     value={this.state.input}
                     onChange={this.handleChange}
                 />
-                <Button type="submit" color="contrast">
-                    <SearchIcon/>
+                <Button type="submit" color="contrast" style={{fontSize: 24}}>
+                    {this.state.input === '' ? '?' : <SearchIcon/>}
                 </Button>
             </form>
         );

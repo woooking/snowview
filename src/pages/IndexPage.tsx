@@ -176,7 +176,9 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
                             />
                             {fetchingRandomQuestion ?
                                 <CircularProgress color="accent" size={55}/> :
-                                <Button fab={true} type="submit" color="accent"><SearchIcon/></Button>}
+                                <Button fab={true} type="submit" color="accent" style={{fontSize: 24}}>
+                                    {this.state.input === '' ? '?' : <SearchIcon/>}
+                                </Button>}
                         </form>
                     </div>
                 </div>
