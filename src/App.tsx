@@ -1,23 +1,18 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
+import { Route } from 'react-router';
 import ResultPage from './pages/ResultPage';
 import IndexPage from './pages/IndexPage';
-import { RootState } from './redux/reducer';
 
-const mapStateToProps = (state: RootState) => {
-    return {
-        page: state.page
-    };
-};
-
-interface AppProps {
-    page: string;
-}
-
-class App extends React.Component<AppProps, {}> {
+class App extends React.Component<{}, {}> {
     render() {
-        return this.props.page === 'index' ? <IndexPage/> : <ResultPage/>;
+        return (
+            <div>
+                <Route exact={true} path="/" component={IndexPage}/>
+                <Route exact={true} path="/index" component={IndexPage}/>
+                <Route path="/result" component={ResultPage}/>
+            </div>
+        );
     }
 }
 
-export default connect(mapStateToProps)(App);
+export default App;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { fetchDocumentResultWorker, fetchGraphWorker } from '../redux/action';
+import { fetchDocumentResultWorker, fetchGraphWorker, fetchRandomQuestionWorker } from '../redux/action';
 import { connect } from 'react-redux';
 import { Input, withStyles, WithStyles } from 'material-ui';
 import { RootState } from '../redux/reducer';
@@ -43,39 +43,40 @@ interface SearchFormProps {
     dispatch: Dispatch<RootState>;
 }
 
-type SearchFormStyles =
-    WithStyles<'container' | 'form' | 'search'>;
+type SearchFormStyles = WithStyles<'container' | 'form' | 'search'>;
 
 class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { input: string }> {
-    constructor(props: SearchFormProps & SearchFormStyles) {
-        super(props);
-        
-        this.state = {
-            input: ''
-        };
-    }
-    
+    state = {
+        input: ''
+    };
+
     componentDidMount() {
         this.setState({input: this.props.query});
     }
-    
+
     componentWillReceiveProps(nextProps: SearchFormProps & SearchFormStyles) {
         this.setState({input: nextProps.query});
     }
-    
+
     handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        this.props.dispatch(fetchDocumentResultWorker({query: this.state.input}));
-        this.props.dispatch(fetchGraphWorker({query: this.state.input}));
+        const {dispatch} = this.props;
+        
+        if (this.state.input === '') {
+            dispatch(fetchRandomQuestionWorker((result: string) => this.setState({input: result})));
+        } else {
+            dispatch(fetchDocumentResultWorker({query: this.state.input}));
+            dispatch(fetchGraphWorker({query: this.state.input}));
+        }
     }
-    
+
     handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         this.setState({input: event.target.value});
     }
-    
+
     render() {
         const {classes} = this.props;
-        
+
         return (
             <form className={classes.form} onSubmit={this.handleSubmit}>
                 <Input
