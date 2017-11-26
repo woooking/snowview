@@ -47,12 +47,14 @@ class InformationPanel extends React.Component<InformationPanelProps & WithStyle
                     .map(k => {
                         let content = node[k];
                         if (content.length > 80) {
-                            content = <CodeModal
-                                code={k === 'content' || k === 'comment'}
-                                label="SHOW"
-                                content={content}
-                                contrast={false}
-                            />;
+                            content = (
+                                <CodeModal
+                                    code={k === 'content' || k === 'comment'}
+                                    label="SHOW"
+                                    content={content}
+                                    contrast={false}
+                                />
+                            );
                         } else {
                             content = <div className={classes.normalCell}>{content.toString()}</div>;
                         }

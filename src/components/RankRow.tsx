@@ -34,27 +34,28 @@ interface RankRowProps {
 
 type RankRowStyle = WithStyles<'detail' | 'cellRank' | 'cellMain' | 'highlight'>;
 
-class RankRow extends React.Component<RankRowProps & RankRowStyle, {expand: boolean}> {
+class RankRow extends React.Component<RankRowProps & RankRowStyle, { expand: boolean }> {
     state = {
         expand: false
     };
-    
+
     handleExpandMore = () => {
         this.setState({expand: true});
     }
-    
+
     handleExpandLess = () => {
         this.setState({expand: false});
     }
-    
+
     render() {
         const {classes, rank, title, solrRank, detail, highlight} = this.props;
         let delta = '-';
-        if (solrRank > rank)
-            delta = '↑ '+(solrRank-rank).toString();
-        if (solrRank < rank)
-            delta = '↓ '+(rank-solrRank).toString();
-        delta = highlight ? delta:'';
+        if (solrRank > rank) {
+            delta = '↑ ' + (solrRank - rank).toString();
+        } else if (solrRank < rank) {
+            delta = '↓ ' + (rank - solrRank).toString();
+        }
+        delta = highlight ? delta : '';
         return (
             <TableRow style={highlight ? {background: '#6495ED'} : {}}>
                 <TableCell className={classes.cellRank}>{rank}</TableCell>

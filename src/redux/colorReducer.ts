@@ -51,5 +51,3 @@ function process(state: ColorState, node: Neo4jNode) {
 export const color = reducerWithInitialState<ColorState>({unusedColors: mainColors, colorMap: Map()})
     .case(fetchNode.done, (s, p) => process(s, p.result))
     .case(addNodes, (s, p) => p.reduce((prev, n) => process(prev, n), s));
-
-
