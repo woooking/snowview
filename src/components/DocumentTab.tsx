@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {LinearProgress, Table, TableBody, TableCell, TableHead, TableRow, withStyles, WithStyles} from 'material-ui';
-import {Theme} from 'material-ui/styles';
-import {DocumentResultState} from '../redux/reducer';
+import { LinearProgress, Table, TableBody, TableCell, TableHead, TableRow, withStyles, WithStyles } from 'material-ui';
+import { Theme } from 'material-ui/styles';
+import { DocumentResultState } from '../redux/reducer';
 import RankRow from './RankRow';
 
 const styles = (theme: Theme) => ({
@@ -40,19 +40,16 @@ class DocumentTab extends React.Component<DocumentTabProps & DocumentTabStyle, {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {documentResult.result.rankedResults.map(r => {
-                            if (r.finalRank <= 20)
-                                return <RankRow
-                                    key={r.finalRank}
-                                    rank={r.finalRank}
-                                    title={r.title}
-                                    solrRank={r.solrRank}
-                                    detail={r.body}
-                                    highlight={r.highlight}
-                                />;
-                            else
-                                return;
-                        })}
+                        {documentResult.result.rankedResults
+                            .filter(r => r.finalRank <= 20)
+                            .map(r => <RankRow
+                                key={r.finalRank}
+                                rank={r.finalRank}
+                                title={r.title}
+                                solrRank={r.solrRank}
+                                detail={r.body}
+                                highlight={r.highlight}
+                            />)}
                     </TableBody>
                 </Table>}
             </div>

@@ -16,7 +16,9 @@ import { Option } from 'ts-option';
 import * as _ from 'lodash';
 import { fetchNodeWorker, removeNode, showRelations } from '../redux/action';
 import { RelationListsState, RelationsState } from '../redux/graphReducer';
-import {SnowRelation} from "../model";
+import { Chance } from 'chance';
+
+const chance = new Chance();
 
 const styles = (theme: Theme) => ({
     formControl: {
@@ -50,12 +52,13 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
         const relationList = relationLists.get(selectedNode.get);
 
         const readyToShow =
-            relationList.get
-                .map(x => relations.get(x))
-                .filter(x => !x.shown)
-                .filter(x => x.types.some(t => t === catalog))
-                .sort((a:SnowRelation,b:SnowRelation)=>(parseInt(a.id)%7-parseInt(b.id)%7))
-                .slice(0, 5);
+            chance.pickset(
+                relationList.get
+                    .map(x => relations.get(x))
+                    .filter(x => !x.shown)
+                    .filter(x => x.types.some(t => t === catalog)),
+                5
+            );
 
         readyToShow.forEach(r => {
             const source = r.source, target = r.target;

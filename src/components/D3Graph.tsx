@@ -40,7 +40,7 @@ interface D3Relation<N, R> {
 const D3RelationType = {
     SINGLE: 'single' as 'single',
     REPEATED: 'repeated' as 'repeated'
-}
+};
 
 class D3Graph<N, R> extends React.Component<D3GraphProps<N, R>, {}> {
 
@@ -105,7 +105,6 @@ class D3Graph<N, R> extends React.Component<D3GraphProps<N, R>, {}> {
             .attr('transform', 'translate(0,-2)')
             .attr('class', 'link-label')
             .attr('text-anchor', 'middle')
-            // .attr('filter', 'url(#text-background)')
             .style('background', '#FFFFFF')
             .append('textPath')
             .attr('href', d => `#p${getLinkID(d.raw)}`)
@@ -162,8 +161,6 @@ class D3Graph<N, R> extends React.Component<D3GraphProps<N, R>, {}> {
             .attr('r', nodeRadius)
             .attr('cx', nodeRadius)
             .attr('cy', nodeRadius)
-            .attr('stroke', "#000")
-            .attr('stroke-width', "1.5px")
             .style('fill', d => getNodeColor(d.raw));
 
         node.append('text')

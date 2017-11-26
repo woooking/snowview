@@ -192,9 +192,7 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
                                 nodes={nodes}
                                 links={links}
                                 getNodeID={n => n._id.toString()}
-                                getNodeColor={n => {
-                                    return '#DDDDDD';
-                                }}
+                                getNodeColor={n => '#DDDDDD'}
                                 getNodeLabel={n => n._labels[0]}
                                 getNodeText={n => ''}
                                 getLinkID={d => d.id}
