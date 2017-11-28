@@ -12,9 +12,3 @@ export function withError<V>(message: string, value: V): V {
     showError(message);
     return value;
 }
-
-export function rename(str: string) {
-    if (str.substring(0, 3) === 'in_') { return str.substring(3) + '(incoming)'; }
-    if (str.substring(0, 3) === 'ou_') { return str.substring(3) + '(outgoing)'; }
-    return '';
-}
