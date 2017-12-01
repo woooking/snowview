@@ -13,13 +13,15 @@ import { fetchRelationListWorker, selectNode } from '../redux/action';
 const mapStateToProps = (state: RootState) => ({
     nodes: state.graph.nodes,
     relations: state.graph.relations,
-    colorMap: state.color.colorMap
+    colorMap: state.color.colorMap,
+    selectedNode: state.graph.selectedNode
 });
 
 interface GraphPanelProps {
     nodes: NodesState;
     relations: RelationsState;
     colorMap: Map<string, string>;
+    selectedNode: Option<number>;
     dispatch: Dispatch<RootState>;
 }
 
@@ -29,7 +31,7 @@ class Graph extends D3Graph<SnowNode, SnowRelation> {
 class GraphPanel extends React.Component<GraphPanelProps, {}> {
 
     render() {
-        const {dispatch, colorMap} = this.props;
+        const {dispatch, colorMap, selectedNode} = this.props;
 
         const nodes = this.props.nodes
             .valueSeq()
@@ -49,6 +51,7 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
                 <CardContent>
                     <Graph
                         id="neo4jd3"
+                        highlight={selectedNode}
                         nodes={nodes}
                         links={links}
                         getNodeID={n => n.node._id.toString()}

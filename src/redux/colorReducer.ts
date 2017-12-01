@@ -11,7 +11,7 @@ export interface ColorState {
 
 const chance = new Chance();
 
-const mainColors = [
+export const mainColors = [
     '#8B2323',
     '#f44336',
     '#e57373',

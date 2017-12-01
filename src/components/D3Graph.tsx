@@ -1,12 +1,14 @@
 import * as React from 'react';
 import * as d3 from 'd3';
 import { ForceLink } from 'd3-force';
+import { Option } from 'ts-option';
 
 const nodeRadius = 40;
 const arrowSize = 12;
 
 interface D3GraphProps<N, R> {
     id: string;
+    highlight: Option<number>;
     nodes: N[];
     links: R[];
     getNodeID: (node: N) => string;
@@ -61,7 +63,7 @@ class D3Graph<N, R> extends React.Component<D3GraphProps<N, R>, {}> {
     simulation: d3.Simulation<D3Node<N>, D3Relation<N, R>>;
 
     updateLinks = () => {
-        const {links, getLinkID, getLinkText, getSourceNodeID, getTargetNodeID} = this.props;
+        const {links, getLinkID, getLinkText, getSourceNodeID, getTargetNodeID } = this.props;
 
         const newLinks = links.filter(l => !this.links.some(lk => getLinkID(lk.raw) === getLinkID(l)));
 
@@ -82,7 +84,7 @@ class D3Graph<N, R> extends React.Component<D3GraphProps<N, R>, {}> {
 
         const update = this.linkG
             .selectAll('.link')
-            .data(this.links, (d: any) => d.raw.id);
+            .data(this.links, (d: D3Relation<N, R>) => getLinkID(d.raw));
 
         update
             .exit()
@@ -126,16 +128,12 @@ class D3Graph<N, R> extends React.Component<D3GraphProps<N, R>, {}> {
 
         const update = this.nodeG
             .selectAll('.node')
-            .data(this.nodes, (d: any) => d.raw._id);
+            .data(this.nodes, (d: D3Node<N>) => getNodeID(d.raw));
 
         const node = update
             .enter()
             .append<SVGGElement>('g')
             .attr('class', 'node')
-            .on('dblclick', d => {
-                d.fx = null;
-                d.fy = null;
-            })
             .call(d3.drag<SVGCircleElement, D3Node<N>>()
                 .on('start', () => {
                     if (!d3.event.active) {

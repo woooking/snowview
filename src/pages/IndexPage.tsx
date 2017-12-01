@@ -12,8 +12,8 @@ import {
 } from '../redux/action';
 import { RootState } from '../redux/reducer';
 import { NavGraphState } from '../redux/navGraphReducer';
-import { Neo4jNode, SnowRelation } from '../model';
-import D3Graph from '../components/D3Graph';
+import { NavNode, SnowRelation } from '../model';
+import D3Chord from '../components/D3Chord';
 
 const styles = (theme: Theme) => ({
     page1: {
@@ -38,7 +38,7 @@ const styles = (theme: Theme) => ({
         height: '100%',
         width: '70%',
     },
-    title: {
+    white: {
         color: theme.palette.common.white
     },
     introduction: {
@@ -87,10 +87,10 @@ interface IndexPageProps {
 }
 
 type IndexPageStyles =
-    WithStyles<'page1' | 'page2' | 'container' | 'title' | 'introduction' | 'featureList' | 'search' | 'searchInput'
+    WithStyles<'page1' | 'page2' | 'container' | 'white' | 'introduction' | 'featureList' | 'search' | 'searchInput'
         | 'progress'>;
 
-class Graph extends D3Graph<Neo4jNode, SnowRelation> {
+class Graph extends D3Chord<NavNode, SnowRelation> {
 }
 
 class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: string }> {
@@ -121,19 +121,31 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
     render() {
         const {classes, fetchingRandomQuestion, navGraph} = this.props;
 
-        const nodes = navGraph.nodes
-            .valueSeq()
-            .toArray();
+        let navbody = <LinearProgress className={classes.progress}/>;
 
-        const links = navGraph.relations
-            .valueSeq()
-            .toArray();
+        if (!navGraph.fetching) {
+            navbody = navGraph.data.isEmpty ?
+                <Typography className={classes.white}>Failed to load nav graph</Typography> : (
+                    <Graph
+                        id="nav-d3"
+                        data={navGraph.data.get}
+                        getNodeID={n => n.id.toString()}
+                        getNodeColor={n => '#DDDDDD'}
+                        getNodeLabel={n => n.label}
+                        getNodeText={n => ''}
+                        getLinkID={d => d.id}
+                        getLinkText={d => d.types.toString()}
+                        getSourceNodeID={d => d.source.toString()}
+                        getTargetNodeID={d => d.target.toString()}
+                    />
+                );
+        }
 
         return (
             <div>
                 <div className={classes.page1}>
                     <div className={classes.container}>
-                        <Typography component="h1" type="display4" className={classes.title}>SEI SnowGraph</Typography>
+                        <Typography component="h1" type="display4" className={classes.white}>SEI SnowGraph</Typography>
                         <Typography component="h2" type="headline" className={classes.introduction}>
                             SnowGraph (Software Knowledge Graph) is a project for creating software-specific
                             question-answering
@@ -184,25 +196,10 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
                 </div>
                 <div className={classes.page2}>
                     <div className={classes.container}>
-                        <Typography component="h1" type="display3" className={classes.title}>
+                        <Typography component="h1" type="display3" className={classes.white}>
                             Overview of the Graph
                         </Typography>
-                        {navGraph.fetching ?
-                            <LinearProgress className={classes.progress}/> :
-                            <Graph
-                                id="nav-d3"
-                                nodes={nodes}
-                                links={links}
-                                getNodeID={n => n._id.toString()}
-                                getNodeColor={n => '#DDDDDD'}
-                                getNodeLabel={n => n._labels[0]}
-                                getNodeText={n => ''}
-                                getLinkID={d => d.id}
-                                getLinkText={d => d.types.toString()}
-                                getSourceNodeID={d => d.source.toString()}
-                                getTargetNodeID={d => d.target.toString()}
-                            />
-                        }
+                        {navbody}
                     </div>
                 </div>
             </div>

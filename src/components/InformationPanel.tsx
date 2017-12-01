@@ -52,7 +52,6 @@ class InformationPanel extends React.Component<InformationPanelProps & WithStyle
                                     code={k === 'content' || k === 'comment'}
                                     label="SHOW"
                                     content={content}
-                                    contrast={false}
                                 />
                             );
                         } else {

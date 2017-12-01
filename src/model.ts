@@ -16,8 +16,22 @@ export interface CypherQueryResult {
 }
 
 export interface NavResult {
-    nodes: Neo4jNode[],
-    relationships: Neo4jRelation[]
+    nodes: NavNode[],
+    relationships: NavRelation[]
+}
+
+export interface NavRelation {
+    startNode: number;
+    endNode: number;
+    id: number;
+    count: number;
+    type: string;
+}
+
+export interface NavNode {
+    id: number;
+    label: string;
+    count: number;
 }
 
 export interface Neo4jRelation {
