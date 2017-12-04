@@ -6,7 +6,7 @@ import D3ForceNode from './D3ForceNode';
 import D3ForceLink from './D3ForceLink';
 import { INode } from '../../model';
 
-const nodeRadius = 40;
+const nodeRadius = 50;
 const arrowSize = 12;
 
 interface D3ForceProps<N extends INode, R> {
@@ -183,7 +183,7 @@ class D3Force<N extends INode, R> extends React.Component<D3ForceProps<N, R>, D3
     }
 
     render() {
-        const {getNodeColor, getNodeLabel, getNodeText, getLinkID, getLinkText, onNodeClick} = this.props;
+        const {getNodeColor, getNodeLabel, getNodeText, getLinkID, getLinkText, onNodeClick, highlight} = this.props;
 
         const sum = nodeRadius + arrowSize;
         const half = sum / 2;
@@ -237,7 +237,7 @@ class D3Force<N extends INode, R> extends React.Component<D3ForceProps<N, R>, D3
                                 return (
                                     <D3ForceLink
                                         key={getLinkID(l.raw)}
-                                        nodeRadius={40}
+                                        nodeRadius={nodeRadius}
                                         id={getLinkID(l.raw)}
                                         text={getLinkText(l.raw)}
                                         x1={l.x1}
@@ -256,7 +256,7 @@ class D3Force<N extends INode, R> extends React.Component<D3ForceProps<N, R>, D3
                                     x={n.x}
                                     y={n.y}
                                     key={n.raw.getID()}
-                                    nodeRadius={40}
+                                    nodeRadius={nodeRadius}
                                     id={n.raw.getID()}
                                     color={getNodeColor(n.raw)}
                                     label={getNodeLabel(n.raw)}
@@ -264,6 +264,7 @@ class D3Force<N extends INode, R> extends React.Component<D3ForceProps<N, R>, D3
                                     simulation={this.simulation}
                                     dragCallback={this.dragCallback}
                                     onNodeClick={onNodeClick}
+                                    highlight={highlight.exists(x => x.toString() === n.raw.getID())}
                                 />
                             ))}
                         </g>

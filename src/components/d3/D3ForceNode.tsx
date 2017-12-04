@@ -11,6 +11,7 @@ interface D3ForceNodeProps {
     y: number;
     simulation: d3.Simulation<{}, undefined>;
     dragCallback: (node: D3ForceNode, x: number, y: number) => void;
+    highlight?: boolean;
     onNodeClick?: (id: string) => void;
 }
 
@@ -44,11 +45,18 @@ class D3ForceNode extends React.Component<D3ForceNodeProps, {}> {
     }
 
     render() {
-        const {nodeRadius, color, label, text, x, y} = this.props;
+        const {nodeRadius, color, label, text, x, y, highlight} = this.props;
 
         return (
             <g ref={i => this.g = i} className="node" transform={`translate(${x}, ${y})`}>
-                <circle r={nodeRadius} cx={nodeRadius} cy={nodeRadius} style={{fill: color}}/>
+                <circle
+                    r={nodeRadius}
+                    cx={nodeRadius}
+                    cy={nodeRadius}
+                    style={{fill: color}}
+                    strokeWidth={highlight ? 3 : 0}
+                    stroke="black"
+                />
                 <text textAnchor="middle" x={nodeRadius} y={nodeRadius - 5} fontWeight="bold">{label}</text>
                 <text textAnchor="middle" x={nodeRadius} y={nodeRadius + 15}>{text}</text>
             </g>
