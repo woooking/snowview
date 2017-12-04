@@ -4,7 +4,7 @@ import { Dispatch } from 'redux';
 import { Card, CardContent, CardHeader } from 'material-ui';
 import { Map } from 'immutable';
 import { RootState } from '../redux/reducer';
-import D3Graph from './D3Graph';
+import D3Force from './d3/D3Force';
 import { Option } from 'ts-option';
 import { SnowNode, SnowRelation } from '../model';
 import { NodesState, RelationsState } from '../redux/graphReducer';
@@ -25,7 +25,7 @@ interface GraphPanelProps {
     dispatch: Dispatch<RootState>;
 }
 
-class Graph extends D3Graph<SnowNode, SnowRelation> {
+class Graph extends D3Force<SnowNode, SnowRelation> {
 }
 
 class GraphPanel extends React.Component<GraphPanelProps, {}> {
@@ -54,7 +54,6 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
                         highlight={selectedNode}
                         nodes={nodes}
                         links={links}
-                        getNodeID={n => n.node._id.toString()}
                         getNodeColor={n => colorMap.get(n.node._labels[0], '#DDDDDD')}
                         getNodeLabel={n => n.node._labels[0]}
                         getNodeText={n => {
@@ -69,9 +68,9 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
                         getLinkText={d => d.types.toString()}
                         getSourceNodeID={d => d.source.toString()}
                         getTargetNodeID={d => d.target.toString()}
-                        onNodeClick={d => {
-                            dispatch(fetchRelationListWorker(d.raw.node._id));
-                            dispatch(selectNode(d.raw.node._id));
+                        onNodeClick={id => {
+                            dispatch(fetchRelationListWorker(parseInt(id, 10)));
+                            dispatch(selectNode(parseInt(id, 10)));
                         }}
                     />
                 </CardContent>

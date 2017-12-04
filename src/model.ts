@@ -16,8 +16,8 @@ export interface CypherQueryResult {
 }
 
 export interface NavResult {
-    nodes: NavNode[],
-    relationships: NavRelation[]
+    nodes: NavNode[];
+    relationships: NavRelation[];
 }
 
 export interface NavRelation {
@@ -56,9 +56,22 @@ export interface SnowRelation {
     types: string[];
 }
 
-export interface SnowNode {
+export class SnowNode implements INode {
     shown: boolean;
     node: Neo4jNode;
+
+    constructor(shown: boolean, node: Neo4jNode) {
+        this.shown = shown;
+        this.node = node;
+    }
+
+    getID(): string {
+        return this.node._id.toString();
+    }
+}
+
+export interface INode {
+    getID(): string;
 }
 
 export interface RankedResult {
@@ -73,4 +86,3 @@ export interface DocumentResult {
     query: string;
     rankedResults: Array<RankedResult>;
 }
-

@@ -43,10 +43,10 @@ const selectedNode = reducerWithInitialState<Option<number>>(none)
 const nodes = reducerWithInitialState<NodesState>(Map())
     .case(fetchGraph.started, (s, p) => Map())
     .case(fetchNode.started, (s, p) => s.update(p, (val = none) => val))
-    .case(fetchNode.done, (s, p) => s.set(p.params, some({shown: true, node: p.result})))
+    .case(fetchNode.done, (s, p) => s.set(p.params, some(new SnowNode(true, p.result))))
     .case(fetchNode.failed, (s, p) => withError('Failed to get node', s.get(p.params).isEmpty ? s.remove(p.params) : s))
-    .case(addNodes, (s, p) => p.reduce((prev, n) => prev.set(n._id, some({shown: true, node: n})), s))
-    .case(removeNode, (s, p) => s.set(p, s.get(p).map(sn => ({shown: false, node: sn.node}))));
+    .case(addNodes, (s, p) => p.reduce((prev, n) => prev.set(n._id, some(new SnowNode(true, n))), s))
+    .case(removeNode, (s, p) => s.set(p, s.get(p).map(sn => new SnowNode(false, sn.node))));
 
 const relations = reducerWithInitialState<RelationsState>(Map())
     .case(fetchGraph.started, () => Map())
