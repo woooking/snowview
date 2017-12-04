@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import {
     Card, CardContent, CardHeader, InputLabel, FormControl, LinearProgress, withStyles,
-    WithStyles
+    WithStyles, FormGroup
 } from 'material-ui';
 import { Theme } from 'material-ui/styles';
 import { RootState } from '../redux/reducer';
@@ -51,14 +51,12 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
 
         const relationList = relationLists.get(selectedNode.get);
 
-        const readyToShow =
-            chance.pickset(
-                relationList.get
-                    .map(x => relations.get(x))
-                    .filter(x => !x.shown)
-                    .filter(x => x.types.some(t => t === catalog)),
-                5
-            );
+        const rels = relationList.get
+            .map(x => relations.get(x))
+            .filter(x => !x.shown)
+            .filter(x => x.types.some(t => t === catalog));
+
+        const readyToShow = rels.length > 0 ? chance.pickset(rels, 5) : [];
 
         readyToShow.forEach(r => {
             const source = r.source, target = r.target;
@@ -89,15 +87,17 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
                     .value();
                 body = (
                     <form onSubmit={this.handleSubmit}>
-                        <FormControl className={this.props.classes.formControl}>
-                            <InputLabel htmlFor="relation-type">Relation Type</InputLabel>
-                            <Select
-                                native={true}
-                                input={<Input id="relation-type" inputRef={(input) => this.input = input}/>}
-                            >
-                                {relationTypes.map(t => <option key={t} value={t}>{t}</option>)}
-                            </Select>
-                        </FormControl>
+                        <FormGroup>
+                            <FormControl className={this.props.classes.formControl}>
+                                <InputLabel htmlFor="relation-type">Relation Type</InputLabel>
+                                <Select
+                                    native={true}
+                                    input={<Input id="relation-type" inputRef={(input) => this.input = input}/>}
+                                >
+                                    {relationTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                                </Select>
+                            </FormControl>
+                        </FormGroup>
                         <Button type="submit">EXPAND</Button>
                         <Button onClick={() => dispatch(removeNode(selected))}>HIDE</Button>
                     </form>

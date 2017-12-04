@@ -4,16 +4,16 @@ import { ForceLink } from 'd3-force';
 import { Option } from 'ts-option';
 import D3ForceNode from './D3ForceNode';
 import D3ForceLink from './D3ForceLink';
+import { INode } from '../../model';
 
 const nodeRadius = 40;
 const arrowSize = 12;
 
-interface D3ForceProps<N, R> {
+interface D3ForceProps<N extends INode, R> {
     id: string;
     highlight: Option<number>;
     nodes: N[];
     links: R[];
-    getNodeID: (node: N) => string;
     getNodeColor: (node: N) => string;
     getNodeLabel: (node: N) => string;
     getNodeText: (node: N) => string;
@@ -55,7 +55,7 @@ export const D3RelationType = {
     REPEATED: 'repeated' as 'repeated'
 };
 
-class D3Force<N, R> extends React.Component<D3ForceProps<N, R>, D3ForceState<N, R>> {
+class D3Force<N extends INode, R> extends React.Component<D3ForceProps<N, R>, D3ForceState<N, R>> {
     state = {
         nodes: [] as D3Node<N>[],
         links: [] as D3Relation<N, R>[]
@@ -83,7 +83,7 @@ class D3Force<N, R> extends React.Component<D3ForceProps<N, R>, D3ForceState<N, 
     }
 
     updateLinks = (nextProps: D3ForceProps<N, R>) => {
-        const {links, getLinkID, getSourceNodeID, getTargetNodeID, getNodeID} = nextProps;
+        const {links, getLinkID, getSourceNodeID, getTargetNodeID } = nextProps;
 
         const newLinks = links.filter(l => !this.links.some(lk => getLinkID(lk.raw) === getLinkID(l)));
 
@@ -91,8 +91,8 @@ class D3Force<N, R> extends React.Component<D3ForceProps<N, R>, D3ForceState<N, 
             ...this.links.filter(lk => links.some(l => getLinkID(lk.raw) === getLinkID(l))),
             ...newLinks.map(l => ({
                     raw: l,
-                    source: this.nodes.find(n => getNodeID(n.raw) === getSourceNodeID(l))!,
-                    target: this.nodes.find(n => getNodeID(n.raw) === getTargetNodeID(l))!,
+                    source: this.nodes.find(n => n.raw.getID() === getSourceNodeID(l))!,
+                    target: this.nodes.find(n => n.raw.getID() === getTargetNodeID(l))!,
                     x1: 0,
                     y1: 0,
                     x2: 0,
@@ -109,20 +109,19 @@ class D3Force<N, R> extends React.Component<D3ForceProps<N, R>, D3ForceState<N, 
     }
 
     updateNodes = (nextProps: D3ForceProps<N, R>) => {
-        const {getNodeID, nodes} = nextProps;
+        const {nodes} = nextProps;
 
-        const newNodes = nodes.filter(n => !this.nodes.some(nd => getNodeID(nd.raw) === getNodeID(n)));
+        const newNodes = nodes.filter(n => !this.nodes.some(nd => nd.raw.getID() === n.getID()));
 
         this.nodes = [
-            ...this.nodes.filter((nd: D3Node<N>) => nodes.some(n => getNodeID(nd.raw) === getNodeID(n))),
+            ...this.nodes.filter((nd: D3Node<N>) => nodes.some(n => nd.raw.getID() === n.getID())),
             ...newNodes.map(n => ({raw: n, x: 0, y: 0}))
         ];
     }
 
     dragCallback = (node: D3ForceNode, x: number, y: number) => {
-        const {getNodeID} = this.props;
         const newNode = [...this.state.nodes];
-        const nd = newNode.find(n => getNodeID(n.raw) === node.props.id);
+        const nd = newNode.find(n => n.raw.getID() === node.props.id);
         nd!.fx = x;
         nd!.fy = y;
         this.setState({
@@ -131,9 +130,7 @@ class D3Force<N, R> extends React.Component<D3ForceProps<N, R>, D3ForceState<N, 
     }
 
     componentDidMount() {
-        const {getNodeID} = this.props;
-
-        this.simulation.force('link', d3.forceLink().id((d: D3Node<N>) => getNodeID(d.raw)));
+        this.simulation.force('link', d3.forceLink().id((d: D3Node<N>) => d.raw.getID()));
 
         this.updateNodes(this.props);
 
@@ -186,7 +183,7 @@ class D3Force<N, R> extends React.Component<D3ForceProps<N, R>, D3ForceState<N, 
     }
 
     render() {
-        const {getNodeID, getNodeColor, getNodeLabel, getNodeText, getLinkID, getLinkText, onNodeClick} = this.props;
+        const {getNodeColor, getNodeLabel, getNodeText, getLinkID, getLinkText, onNodeClick} = this.props;
 
         const sum = nodeRadius + arrowSize;
         const half = sum / 2;
@@ -258,9 +255,9 @@ class D3Force<N, R> extends React.Component<D3ForceProps<N, R>, D3ForceState<N, 
                                 <D3ForceNode
                                     x={n.x}
                                     y={n.y}
-                                    key={getNodeID(n.raw)}
+                                    key={n.raw.getID()}
                                     nodeRadius={40}
-                                    id={getNodeID(n.raw)}
+                                    id={n.raw.getID()}
                                     color={getNodeColor(n.raw)}
                                     label={getNodeLabel(n.raw)}
                                     text={getNodeText(n.raw)}

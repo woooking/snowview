@@ -54,7 +54,6 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
                         highlight={selectedNode}
                         nodes={nodes}
                         links={links}
-                        getNodeID={n => n.node._id.toString()}
                         getNodeColor={n => colorMap.get(n.node._labels[0], '#DDDDDD')}
                         getNodeLabel={n => n.node._labels[0]}
                         getNodeText={n => {
