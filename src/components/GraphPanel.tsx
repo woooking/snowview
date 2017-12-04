@@ -2,25 +2,23 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { Card, CardContent, CardHeader } from 'material-ui';
-import { Map } from 'immutable';
 import { RootState } from '../redux/reducer';
 import D3Force from './d3/D3Force';
 import { Option } from 'ts-option';
 import { SnowNode, SnowRelation } from '../model';
 import { NodesState, RelationsState } from '../redux/graphReducer';
 import { fetchRelationListWorker, selectNode } from '../redux/action';
+import { name2color } from '../utils/utils';
 
 const mapStateToProps = (state: RootState) => ({
     nodes: state.graph.nodes,
     relations: state.graph.relations,
-    colorMap: state.color.colorMap,
     selectedNode: state.graph.selectedNode
 });
 
 interface GraphPanelProps {
     nodes: NodesState;
     relations: RelationsState;
-    colorMap: Map<string, string>;
     selectedNode: Option<number>;
     dispatch: Dispatch<RootState>;
 }
@@ -31,7 +29,7 @@ class Graph extends D3Force<SnowNode, SnowRelation> {
 class GraphPanel extends React.Component<GraphPanelProps, {}> {
 
     render() {
-        const {dispatch, colorMap, selectedNode} = this.props;
+        const {dispatch, selectedNode} = this.props;
 
         const nodes = this.props.nodes
             .valueSeq()
@@ -54,14 +52,14 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
                         highlight={selectedNode}
                         nodes={nodes}
                         links={links}
-                        getNodeColor={n => colorMap.get(n.node._labels[0], '#DDDDDD')}
+                        getNodeColor={n => name2color(n.node._labels[0])}
                         getNodeLabel={n => n.node._labels[0]}
                         getNodeText={n => {
                             let name = '';
                             name = n.node.uniformText && n.node.uniformText.length > 0 ? n.node.uniformText : name;
                             name = n.node.uniformTitle && n.node.uniformTitle.length > 0 ? n.node.uniformTitle : name;
                             name = name.replace(/<(?:.|\s)*?>/g, ' ').trim();
-                            name = name.length > 20 ? name.substr(0, 20) + '...' : name;
+                            name = name.length > 10 ? name.substr(0, 8) + '...' : name;
                             return name;
                         }}
                         getLinkID={d => d.id}

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as d3 from 'd3';
 import { ChordGroup, ChordSubgroup, Chord } from 'd3';
-import { mainColors } from '../redux/colorReducer';
+import { name2color } from '../utils/utils';
 
 interface D3GraphProps<N, R> {
     id: string;
@@ -48,8 +48,7 @@ class D3Chord<N, R> extends React.Component<D3GraphProps<N, R>, {}> {
             .enter().append('g');
 
         group.append('path')
-            .style('fill', d => mainColors[d.index])
-            .style('stroke', d => d3.rgb(mainColors[d.index]).darker().toString())
+            .style('fill', d => name2color(d.index.toString()))
             .attr('d', arc);
 
         // const groupTick = group.selectAll('.group-tick')
@@ -76,8 +75,8 @@ class D3Chord<N, R> extends React.Component<D3GraphProps<N, R>, {}> {
             .data(chords => chords)
             .enter().append('path')
             .attr('d', ribbon)
-            .style('fill', d => mainColors[d.target.index])
-            .style('stroke', d => d3.rgb(mainColors[d.target.index]).darker().toString());
+            .style('fill', d => '#FF0000')
+            .style('stroke', d => d3.rgb('#FF0000').darker().toString());
 
         // function groupTicks(d: ChordGroup, step: number) {
         //     const k = (d.endAngle - d.startAngle) / d.value;
