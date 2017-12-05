@@ -51,7 +51,7 @@ class D3ForceLink extends React.Component<D3ForceLinkProps, {}> {
         return (
             <g ref={x => this.g = x} className="link">
                 <path
-                    id={id}
+                    id={`p${id}`}
                     className="link"
                     fill="none"
                     stroke="black"

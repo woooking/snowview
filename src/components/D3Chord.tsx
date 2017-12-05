@@ -1,27 +1,36 @@
 import * as React from 'react';
 import * as d3 from 'd3';
-import { ChordGroup, ChordSubgroup, Chord } from 'd3';
-import { name2color } from '../utils/utils';
+import { ChordGroup, ChordSubgroup, Chord, color, rgb } from 'd3';
+import { Chords } from 'd3-chord';
 
-interface D3GraphProps<N, R> {
+interface D3GraphProps {
     id: string;
     data: number[][];
-    getNodeID: (node: N) => string;
-    getNodeColor: (node: N) => string;
-    getNodeLabel: (node: N) => string;
-    getNodeText: (node: N) => string;
-    getLinkID: (link: R) => string;
-    getLinkText: (link: R) => string;
-    getSourceNodeID: (link: R) => string;
-    getTargetNodeID: (link: R) => string;
+    colors: string[];
+    labels: string[];
 }
 
-class D3Chord<N, R> extends React.Component<D3GraphProps<N, R>, {}> {
+function mix(color1: string, color2: string) {
+    const c1 = color(color1);
+    const c2 = color(color2);
+    const newColor = rgb(
+        (c1.rgb().r + c2.rgb().r) / 2,
+        (c1.rgb().g + c2.rgb().g) / 2,
+        (c1.rgb().b + c2.rgb().b) / 2
+    );
+    return newColor.toString();
+}
 
-    svg: d3.Selection<SVGGElement, d3.Chords, HTMLElement, d3.Chords>;
+class D3Chord extends React.Component<D3GraphProps, {}> {
+
+    canvas: d3.Selection<SVGGElement, Chords, HTMLElement, {}>;
+
+    ribbons: d3.Selection<SVGGElement, Chord, SVGGElement, {}>;
 
     update = () => {
-        const outerRadius = 200, innerRadius = outerRadius - 30;
+        const outerRadius = 250, innerRadius = outerRadius - 20;
+
+        const {data, colors, labels} = this.props;
 
         const chord = d3.chord()
             .padAngle(0.05)
@@ -34,54 +43,59 @@ class D3Chord<N, R> extends React.Component<D3GraphProps<N, R>, {}> {
         const ribbon = d3.ribbon<Chord, ChordSubgroup>()
             .radius(innerRadius);
 
-        this.svg = d3.select<SVGSVGElement, d3.Chords>(`#${this.props.id}`)
-            .append<SVGGElement>('g')
-            .attr('width', '100%')
-            .attr('height', '100%')
-            .attr('transform', 'translate(300, 300)')
-            .datum(chord(this.props.data));
+        const svg = d3.select<SVGSVGElement, {}>(`#${this.props.id}`);
 
-        const group = this.svg.append('g')
+        const width = parseFloat(svg.style('width').slice(0, -2));
+        const height = parseFloat(svg.style('height').slice(0, -2));
+
+        this.canvas = svg
+            .append<SVGGElement>('g')
+            .attr('transform', `translate(${width / 2}, ${height / 2})`)
+            .datum(chord(data))
+            .on('mouseleave', this.mouseleave);
+
+        const group = this.canvas.append<SVGGElement>('g')
             .attr('class', 'groups')
             .selectAll('g')
             .data<ChordGroup>(chords => chords.groups)
-            .enter().append('g');
+            .enter().append<SVGGElement>('g')
+            .on('mouseover', this.mouseover);
 
         group.append('path')
-            .style('fill', d => name2color(d.index.toString()))
+            .attr('id', d => `p${d.index}`)
+            .style('fill', d => colors[d.index])
             .attr('d', arc);
 
-        // const groupTick = group.selectAll('.group-tick')
-        //     .data(d => groupTicks(d, 1e5))
-        //     .enter().append('g')
-        //     .attr('class', 'group-tick')
-        //     .attr('transform', d => `rotate(${d.angle * 180 / Math.PI - 90}) translate(${outerRadius},0)`);
-        //
-        // groupTick.append('line')
-        //     .attr('x2', 6);
-        //
-        // groupTick
-        //     .filter(d => d.value % 5e3 === 0)
-        //     .append('text')
-        //     .attr('x', 8)
-        //     .attr('dy', '.35em')
-        //     .attr('transform', d => d.angle > Math.PI ? 'rotate(180) translate(-16)' : null)
-        //     .style('text-anchor', d => d.angle > Math.PI ? 'end' : null)
-        //     .text(d => d.value);
+        group.append('title')
+            .html(d => labels[d.index]);
 
-        this.svg.append('g')
+        this.ribbons = this.canvas.append<SVGGElement>('g')
             .attr('class', 'ribbons')
             .selectAll('path')
             .data(chords => chords)
-            .enter().append('path')
-            .attr('d', ribbon)
-            .style('fill', d => '#FF0000')
-            .style('stroke', d => d3.rgb('#FF0000').darker().toString());
+            .enter()
+            .append<SVGGElement>('g');
 
-        // function groupTicks(d: ChordGroup, step: number) {
-        //     const k = (d.endAngle - d.startAngle) / d.value;
-        //     return d3.range(0, d.value, step).map(value => ({value: value, angle: value * k + d.startAngle}));
-        // }
+        this.ribbons
+            .append('path')
+            .attr('d', ribbon)
+            .style('fill', d => mix(colors[d.source.index], colors[d.target.index]))
+            .style('stroke-width', '0.1')
+            .style('stroke', 'black');
+
+        this.ribbons
+            .append('title')
+            .html(d => data[d.source.index][d.target.index].toString());
+    }
+
+    mouseover = (d: {}, i: {}) => {
+        this.ribbons.classed('fade', p => {
+            return p.source.index !== i && p.target.index !== i;
+        });
+    }
+
+    mouseleave = () => {
+        this.ribbons.classed('fade', false);
     }
 
     componentDidMount() {
@@ -95,7 +109,7 @@ class D3Chord<N, R> extends React.Component<D3GraphProps<N, R>, {}> {
     render() {
         return (
             <div style={{width: '100%', background: 'white'}}>
-                <svg width={600} height={600} id={this.props.id}/>
+                <svg width="100%" height={600} id={this.props.id}/>
             </div>
         );
     }

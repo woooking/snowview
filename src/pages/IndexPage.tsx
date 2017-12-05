@@ -12,21 +12,21 @@ import {
 } from '../redux/action';
 import { RootState } from '../redux/reducer';
 import { NavGraphState } from '../redux/navGraphReducer';
-import { NavNode, SnowRelation } from '../model';
 import D3Chord from '../components/D3Chord';
+import { name2color } from '../utils/utils';
 
 const styles = (theme: Theme) => ({
     page1: {
         background: theme.palette.primary[500],
         display: 'flex',
-        height: '100vh',
+        minHeight: '100vh',
         alignItems: 'center',
         justifyContent: 'center'
     },
     page2: {
         background: theme.palette.primary[900],
         display: 'flex',
-        height: '100vh',
+        minHeight: '100vh',
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -90,9 +90,6 @@ type IndexPageStyles =
     WithStyles<'page1' | 'page2' | 'container' | 'white' | 'introduction' | 'featureList' | 'search' | 'searchInput'
         | 'progress'>;
 
-class Graph extends D3Chord<NavNode, SnowRelation> {
-}
-
 class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: string }> {
     state = {
         input: ''
@@ -121,22 +118,16 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
     render() {
         const {classes, fetchingRandomQuestion, navGraph} = this.props;
 
-        let navbody = <LinearProgress className={classes.progress}/>;
+        let navBody = <LinearProgress className={classes.progress}/>;
 
         if (!navGraph.fetching) {
-            navbody = navGraph.data.isEmpty ?
+            navBody = navGraph.matrix.isEmpty ?
                 <Typography className={classes.white}>Failed to load nav graph</Typography> : (
-                    <Graph
+                    <D3Chord
                         id="nav-d3"
-                        data={navGraph.data.get}
-                        getNodeID={n => n.id.toString()}
-                        getNodeColor={n => '#DDDDDD'}
-                        getNodeLabel={n => n.label}
-                        getNodeText={n => ''}
-                        getLinkID={d => d.id}
-                        getLinkText={d => d.types.toString()}
-                        getSourceNodeID={d => d.source.toString()}
-                        getTargetNodeID={d => d.target.toString()}
+                        data={navGraph.matrix.get}
+                        colors={navGraph.nodes.map(n => name2color(n.label))}
+                        labels={navGraph.nodes.map(n => `${n.label}(${n.count})`)}
                     />
                 );
         }
@@ -199,7 +190,7 @@ class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: str
                         <Typography component="h1" type="display3" className={classes.white}>
                             Overview of the Graph
                         </Typography>
-                        {navbody}
+                        {navBody}
                     </div>
                 </div>
             </div>
