@@ -41,12 +41,12 @@ class DocumentTab extends React.Component<DocumentTabProps & DocumentTabStyle, {
                     </TableHead>
                     <TableBody>
                         {documentResult.result.rankedResults
-                            .filter(r => r.finalRank <= 20)
+                            .filter(r => r.newRank <= 20)
                             .map(r => <RankRow
-                                key={r.finalRank}
-                                rank={r.finalRank}
+                                key={r.newRank}
+                                rank={r.newRank}
                                 title={r.title}
-                                solrRank={r.solrRank}
+                                irRank={r.irRank}
                                 detail={r.body}
                                 highlight={r.highlight}
                             />)}

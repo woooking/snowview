@@ -60,7 +60,7 @@ class InformationPanel extends React.Component<InformationPanelProps & WithStyle
                         return {key: k, label: k, content};
                     });
                 properties = _.sortBy(properties, (entry) => {
-                    if (entry.key === '_labels') {
+                    if (entry.key === 'label') {
                         return 1;
                     }
                     if (entry.key.indexOf('name') !== -1) {

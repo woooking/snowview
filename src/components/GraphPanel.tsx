@@ -40,7 +40,7 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
         const links = this.props.relations
             .valueSeq()
             .filter(x => x!.shown)
-            .filter(x => nodes.some(n => n.node._id === x!.source) && nodes.some(n => n.node._id === x!.target))
+            .filter(x => nodes.some(n => n.node.id === x!.source) && nodes.some(n => n.node.id === x!.target))
             .toArray();
 
         return (
@@ -52,8 +52,8 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
                         highlight={selectedNode}
                         nodes={nodes}
                         links={links}
-                        getNodeColor={n => name2color(n.node._labels[0])}
-                        getNodeLabel={n => n.node._labels[0]}
+                        getNodeColor={n => name2color(n.node.label)}
+                        getNodeLabel={n => n.node.label}
                         getNodeText={n => {
                             let name = '';
                             name = n.node.uniformText && n.node.uniformText.length > 0 ? n.node.uniformText : name;

@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 
 // const URL = 'http://162.105.88.181:8080/SnowGraph';
 // const URL = 'http://127.0.0.1:8080/SnowGraph';
-const URL = 'http://162.105.88.28:8080/SnowGraph';
+const URL = 'http://162.105.88.28:8080';
 
 const actionCreator = actionCreatorFactory();
 
@@ -16,7 +16,7 @@ export const fetchRandomQuestion = actionCreator.async<Function, RandomResult>('
 export const fetchRandomQuestionWorker = bindThunkAction(
     fetchRandomQuestion,
     async () => {
-        return await $.post(`${URL}/Random`, {});
+        return await $.post(`${URL}/sampleQuestion`, {});
     }
 );
 
@@ -24,7 +24,7 @@ export const fetchDocumentResult = actionCreator.async<{ query: string }, Docume
 export const fetchDocumentResultWorker = bindThunkAction(
     fetchDocumentResult,
     async (params) => {
-        return await $.post(`${URL}/Rank`, params);
+        return await $.post(`${URL}/docSearch`, params);
     }
 );
 
@@ -43,7 +43,7 @@ export const fetchNodeWorker = bindThunkAction(
                 return node.get.node;
             }
         }
-        return await $.post(`${URL}/GetNode`, {id: params});
+        return await $.post(`${URL}/node`, {id: params});
     }
 );
 
@@ -61,7 +61,7 @@ export const fetchRelationListWorker = bindThunkAction(
                 return list.get;
             }
         }
-        const result: Neo4jRelation[] = await $.post(`${URL}/OutGoingRelation`, {id: params});
+        const result: Neo4jRelation[] = await $.post(`${URL}/relationList`, {id: params});
         dispatch(addRelations(result));
         return _.uniq(result.map(r => `${r.startNode},${r.endNode}`));
     }
@@ -73,9 +73,9 @@ export const fetchGraph = actionCreator.async<{ query: string }, {}>('FETCH_GRAP
 export const fetchGraphWorker = bindThunkAction(
     fetchGraph,
     async (params, dispatch) => {
-        const result: CypherQueryResult = await $.post(`${URL}/CypherQuery`, {query: params.query});
-        const nodes = result.searchResult.results[0].data[0].graph.nodes;
-        const relations = result.searchResult.results[0].data[0].graph.relationships;
+        const result: CypherQueryResult = await $.post(`${URL}/apiLocation`, {query: params.query});
+        const nodes = result.nodes;
+        const relations = result.relationships;
 
         dispatch(addNodes(nodes));
         dispatch(addShownRelations(relations));
@@ -86,5 +86,5 @@ export const fetchNavGraph = actionCreator.async<{}, NavResult>('FETCH_NAV_GRAPH
 export const fetchNavGraphWorker = bindThunkAction(
     fetchNavGraph,
     async () => {
-        return await $.post(`${URL}/Nav`, {});
+        return await $.post(`${URL}/nav`, {});
     });

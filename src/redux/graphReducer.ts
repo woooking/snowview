@@ -45,7 +45,7 @@ const nodes = reducerWithInitialState<NodesState>(Map())
     .case(fetchNode.started, (s, p) => s.update(p, (val = none) => val))
     .case(fetchNode.done, (s, p) => s.set(p.params, some(new SnowNode(true, p.result))))
     .case(fetchNode.failed, (s, p) => withError('Failed to get node', s.get(p.params).isEmpty ? s.remove(p.params) : s))
-    .case(addNodes, (s, p) => p.reduce((prev, n) => prev.set(n._id, some(new SnowNode(true, n))), s))
+    .case(addNodes, (s, p) => p.reduce((prev, n) => prev.set(n.id, some(new SnowNode(true, n))), s))
     .case(removeNode, (s, p) => s.set(p, s.get(p).map(sn => new SnowNode(false, sn.node))));
 
 const relations = reducerWithInitialState<RelationsState>(Map())

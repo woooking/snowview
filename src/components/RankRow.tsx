@@ -27,7 +27,7 @@ const styles = (theme: Theme) => ({
 interface RankRowProps {
     rank: number;
     title: string;
-    solrRank: number;
+    irRank: number;
     detail: string;
     highlight: boolean;
 }
@@ -48,12 +48,12 @@ class RankRow extends React.Component<RankRowProps & RankRowStyle, { expand: boo
     }
 
     render() {
-        const {classes, rank, title, solrRank, detail, highlight} = this.props;
+        const {classes, rank, title, irRank, detail, highlight} = this.props;
         let delta = '-';
-        if (solrRank > rank) {
-            delta = '↑ ' + (solrRank - rank).toString();
-        } else if (solrRank < rank) {
-            delta = '↓ ' + (rank - solrRank).toString();
+        if (irRank > rank) {
+            delta = '↑ ' + (irRank - rank).toString();
+        } else if (irRank < rank) {
+            delta = '↓ ' + (rank - irRank).toString();
         }
         delta = highlight ? delta : '';
         return (

@@ -3,16 +3,8 @@ export interface RandomResult {
 }
 
 export interface CypherQueryResult {
-    searchResult: {
-        results: Array<{
-            data: Array<{
-                graph: {
-                    nodes: Neo4jNode[],
-                    relationships: Neo4jRelation[]
-                }
-            }>
-        }>
-    };
+    nodes: Neo4jNode[];
+    relationships: Neo4jRelation[];
 }
 
 export interface NavResult {
@@ -42,8 +34,8 @@ export interface Neo4jRelation {
 }
 
 export interface Neo4jNode {
-    _id: number;
-    _labels: string[];
+    id: number;
+    label: string;
     uniformTitle?: string;
     uniformText?: string;
 }
@@ -66,7 +58,7 @@ export class SnowNode implements INode {
     }
 
     getID(): string {
-        return this.node._id.toString();
+        return this.node.id.toString();
     }
 }
 
@@ -75,8 +67,8 @@ export interface INode {
 }
 
 export interface RankedResult {
-    finalRank: number;
-    solrRank: number;
+    newRank: number;
+    irRank: number;
     body: string;
     title: string;
     highlight: boolean;
