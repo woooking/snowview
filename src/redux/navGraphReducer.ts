@@ -23,7 +23,7 @@ const matrix = reducerWithInitialState<Option<number[][]>>(none)
     .case(fetchNavGraph.done, (s, p) => {
         const ns = p.result.nodes;
         const d = ns.map(n1 => ns.map(n2 => 0));
-        p.result.relationships.forEach(r => d[r.startNode][r.endNode] = r.count);
+        p.result.relationships.forEach(r => d[r.startNode][r.endNode] += r.count);
         return some(d);
     });
 
