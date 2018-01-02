@@ -56,8 +56,8 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
                         getNodeLabel={n => n.node.label}
                         getNodeText={n => {
                             let name = '';
-                            name = n.node.uniformText && n.node.uniformText.length > 0 ? n.node.uniformText : name;
-                            name = n.node.uniformTitle && n.node.uniformTitle.length > 0 ? n.node.uniformTitle : name;
+                            name = n.node.properties['uniformText'] && n.node.properties['uniformText'].length > 0 ? n.node.properties['uniformText'] : name;
+                            name = n.node.properties['uniformTitle'] && n.node.properties['uniformTitle'].length > 0 ? n.node.properties['uniformTitle'] : name;
                             name = name.replace(/<(?:.|\s)*?>/g, ' ').trim();
                             name = name.length > 10 ? name.substr(0, 8) + '...' : name;
                             return name;

@@ -43,9 +43,9 @@ class InformationPanel extends React.Component<InformationPanelProps & WithStyle
             const selected = nodes.get(selectedNode.get);
             if (selected.nonEmpty) {
                 const node = selected.get.node;
-                let properties = Object.keys(node)
+                let properties = Object.keys(node.properties)
                     .map(k => {
-                        let content = node[k];
+                        let content = node.properties[k];
                         if (content.length > 80) {
                             content = (
                                 <CodeModal
