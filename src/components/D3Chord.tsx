@@ -48,11 +48,25 @@ class D3Chord extends React.Component<D3GraphProps, {}> {
         const width = parseFloat(svg.style('width').slice(0, -2));
         const height = parseFloat(svg.style('height').slice(0, -2));
 
+        const binary_data:number[][]=[]
+        for (var i=0;i<data.length;i++){
+            binary_data.push([])
+            for (var j=0;j<data[i].length;j++)
+                binary_data[i].push(Math.log(data[i][j]+1))
+        }
+
         this.canvas = svg
             .append<SVGGElement>('g')
             .attr('transform', `translate(${width / 2}, ${height / 2})`)
-            .datum(chord(data))
+            .datum(chord(binary_data))
             .on('mouseleave', this.mouseleave);
+
+        this.ribbons = this.canvas.append<SVGGElement>('g')
+            .attr('class', 'ribbons')
+            .selectAll('path')
+            .data(chords => chords)
+            .enter()
+            .append<SVGGElement>('g');
 
         const group = this.canvas.append<SVGGElement>('g')
             .attr('class', 'groups')
@@ -66,15 +80,7 @@ class D3Chord extends React.Component<D3GraphProps, {}> {
             .style('fill', d => colors[d.index])
             .attr('d', arc);
 
-        group.append('title')
-            .html(d => labels[d.index]);
-
-        this.ribbons = this.canvas.append<SVGGElement>('g')
-            .attr('class', 'ribbons')
-            .selectAll('path')
-            .data(chords => chords)
-            .enter()
-            .append<SVGGElement>('g');
+        group.append("title").html(d=>labels[d.index]);
 
         this.ribbons
             .append('path')
@@ -86,6 +92,22 @@ class D3Chord extends React.Component<D3GraphProps, {}> {
         this.ribbons
             .append('title')
             .html(d => data[d.source.index][d.target.index].toString());
+
+        group.append("svg:text")
+            .style('font-size','10px')
+            .style('text-anchor','middle')
+            .attr("dx", function (d) {
+                let anchor=(d.startAngle+d.endAngle)/2
+                let radius=outerRadius+10
+                return radius*Math.sin(anchor)
+            })
+            .attr("dy", function (d) {
+                let anchor=(d.startAngle+d.endAngle)/2
+                let radius=outerRadius+10
+                return -radius*Math.cos(anchor)
+            })
+            .text(function(d) { return labels[d.index].substr(0,labels[d.index].indexOf('(')) });
+
     }
 
     mouseover = (d: {}, i: {}) => {

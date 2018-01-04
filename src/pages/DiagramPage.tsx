@@ -18,18 +18,16 @@ const styles = (theme: Theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '100%',
-        width: '70%',
+        height: '50%',
+        width: '50%',
     }
 }) as React.CSSProperties;
 
 const mapStateToProps = (state: RootState) => ({
-    fetchingRandomQuestion: state.fetchingRandomQuestion,
     navGraph: state.navGraph
 });
 
 interface DiagramPageProps {
-    fetchingRandomQuestion: boolean;
     navGraph: NavGraphState;
     dispatch: Dispatch<RootState>;
     history: History;
