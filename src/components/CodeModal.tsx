@@ -46,7 +46,7 @@ class CodeModal extends React.Component<CodeModalProps & CodeModalStyle, { open:
                 <Typography component="a" {...{href: '#', onClick: this.handleClickOpen}}>
                     {label}
                 </Typography>
-                <Dialog fullWidth={true} maxWidth="md" onRequestClose={this.handleRequestClose} open={this.state.open}>
+                <Dialog fullWidth={true} maxWidth="md"  onClose={this.handleRequestClose} open={this.state.open}>
                     <pre className={classes.container} dangerouslySetInnerHTML={{__html: c}}/>
                 </Dialog>
             </span>

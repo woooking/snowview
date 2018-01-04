@@ -73,7 +73,7 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
         const {dispatch, selectedNode, relationLists, relations} = this.props;
 
         if (selectedNode.isEmpty) {
-            body = <Typography component="p"> Please select a node first </Typography>;
+            body = <Typography component="p"> No entity selected. </Typography>;
         } else {
             const selected = selectedNode.get;
             const selectedRelationList = relationLists.get(selected);
@@ -107,7 +107,7 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
 
         return (
             <Card>
-                <CardHeader title="Operations"/>
+                <CardHeader title="Surf in the knowledge graph"/>
                 <CardContent>
                     {body}
                 </CardContent>

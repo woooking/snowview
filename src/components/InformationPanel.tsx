@@ -38,7 +38,7 @@ class InformationPanel extends React.Component<InformationPanelProps & WithStyle
         const {classes, selectedNode, nodes} = this.props;
 
         if (selectedNode.isEmpty) {
-            body = <Typography component="p"> Please select a node first </Typography>;
+            body = <Typography component="p"> No entity selected. </Typography>;
         } else {
             const selected = nodes.get(selectedNode.get);
             if (selected.nonEmpty) {
@@ -91,7 +91,7 @@ class InformationPanel extends React.Component<InformationPanelProps & WithStyle
 
         return (
             <Card>
-                <CardHeader title="Entity Information"/>
+                <CardHeader title="Read detailed properties"/>
                 <CardContent>
                     {body}
                 </CardContent>

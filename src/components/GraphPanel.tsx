@@ -45,8 +45,10 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
 
         return (
             <Card>
-                <CardHeader title="Knowledge Graph Visualization"/>
+                <CardHeader title="Knowledge Graph Inference Result"/>
                 <CardContent>
+                    {this.props.nodes.isEmpty()?
+                    '//TODO: list some question examples.':
                     <Graph
                         id="neo4jd3"
                         highlight={selectedNode}
@@ -70,7 +72,7 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
                             dispatch(fetchRelationListWorker(parseInt(id, 10)));
                             dispatch(selectNode(parseInt(id, 10)));
                         }}
-                    />
+                    />}
                 </CardContent>
             </Card>
         );

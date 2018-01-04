@@ -1,6 +1,6 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 import {
-    fetchDocumentResult, fetchRandomQuestion,
+    fetchDocumentResult
 } from './action';
 import { combineReducers } from 'redux';
 import { DocumentResult } from '../model';
@@ -34,14 +34,6 @@ export interface RootState {
     documentResult: DocumentResultState;
 }
 
-const fetchingRandomQuestion = reducerWithInitialState<boolean>(false)
-    .case(fetchRandomQuestion.started, () => true)
-    .case(fetchRandomQuestion.done, (s, p) => {
-        p.params(p.result.query);
-        return false;
-    })
-    .case(fetchRandomQuestion.failed, () => withError('Failed to get a random question', false));
-
 const documentResult =
     reducerWithInitialState<DocumentResultState>({fetching: false, query: ''})
         .case(fetchDocumentResult.started, (state, payload) => ({fetching: true, query: payload.query}))
@@ -52,5 +44,5 @@ const documentResult =
             withError('Failed to rank', {fetching: false, query: payload.params.query}));
 
 export const appReducer = combineReducers({
-    fetchingRandomQuestion, graph, navGraph, documentResult
+    graph, navGraph, documentResult
 });

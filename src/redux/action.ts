@@ -1,7 +1,7 @@
 import * as $ from 'jquery';
 import actionCreatorFactory from 'typescript-fsa';
 import bindThunkAction from 'typescript-fsa-redux-thunk';
-import { CypherQueryResult, DocumentResult, RandomResult, Neo4jRelation, NavResult } from '../model';
+import { CypherQueryResult, DocumentResult, Neo4jRelation, NavResult } from '../model';
 import { Neo4jNode } from '../model';
 import { RootState } from './reducer';
 import * as _ from 'lodash';
@@ -11,14 +11,6 @@ import * as _ from 'lodash';
 const URL = 'http://162.105.88.28:8080';
 
 const actionCreator = actionCreatorFactory();
-
-export const fetchRandomQuestion = actionCreator.async<Function, RandomResult>('FETCH_RANDOM_QUESTION');
-export const fetchRandomQuestionWorker = bindThunkAction(
-    fetchRandomQuestion,
-    async () => {
-        return await $.post(`${URL}/sampleQuestion`, {});
-    }
-);
 
 export const fetchDocumentResult = actionCreator.async<{ query: string }, DocumentResult>('FETCH_DOCUMENT_RESULT');
 export const fetchDocumentResultWorker = bindThunkAction(

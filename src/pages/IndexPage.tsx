@@ -1,201 +1,38 @@
 import * as React from 'react';
-import { ChangeEvent, FormEvent, Component } from 'react';
-import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
-import { Button, CircularProgress, Input, LinearProgress, Typography, withStyles, WithStyles } from 'material-ui';
+import {withStyles, WithStyles } from 'material-ui';
 import { Theme } from 'material-ui/styles';
-import SearchIcon from 'material-ui-icons/Search';
-import { History } from 'history';
-import {
-    fetchDocumentResultWorker, fetchGraphWorker, fetchNavGraphWorker, fetchRandomQuestionWorker
-} from '../redux/action';
-import { RootState } from '../redux/reducer';
-import { NavGraphState } from '../redux/navGraphReducer';
-import D3Chord from '../components/D3Chord';
-import { name2color } from '../utils/utils';
+import QueryPage from "./QueryPage";
+import Tabs, { Tab } from 'material-ui/Tabs';
+import DiagramPage from "./DiagramPage";
 
 const styles = (theme: Theme) => ({
-    page1: {
-        background: theme.palette.primary[500],
-        display: 'flex',
-        minHeight: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    page2: {
-        background: theme.palette.primary[900],
-        display: 'flex',
-        minHeight: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%',
-        width: '70%',
-    },
-    white: {
-        color: theme.palette.common.white
-    },
-    introduction: {
-        color: theme.palette.primary[50]
-    },
-    featureList: {
-        color: theme.palette.primary[50]
-    },
-    search: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-    },
-    searchInput: {
-        flex: 1,
-        marginLeft: theme.spacing.unit * 2,
-        marginRight: theme.spacing.unit * 2,
-        color: theme.palette.common.white,
-        '&:before': {
-            backgroundColor: theme.palette.primary[400],
-        },
-        '&:hover:not(.disabled):before': {
-            backgroundColor: theme.palette.primary[200],
-        },
-        '&:after': {
-            backgroundColor: theme.palette.primary[50],
-        },
-    },
-    progress: {
-        width: '100%',
-        margin: theme.spacing.unit * 4
+    tab: {
     }
-}) as React.CSSProperties;
-
-const mapStateToProps = (state: RootState) => ({
-    fetchingRandomQuestion: state.fetchingRandomQuestion,
-    navGraph: state.navGraph
 });
 
 interface IndexPageProps {
-    fetchingRandomQuestion: boolean;
-    navGraph: NavGraphState;
-    dispatch: Dispatch<RootState>;
-    history: History;
 }
 
-type IndexPageStyles =
-    WithStyles<'page1' | 'page2' | 'container' | 'white' | 'introduction' | 'featureList' | 'search' | 'searchInput'
-        | 'progress'>;
+type TabType = 'diagrams' | 'query';
 
-class IndexPage extends Component<IndexPageProps & IndexPageStyles, { input: string }> {
-    state = {
-        input: ''
+class IndexPage extends React.Component<IndexPageProps & WithStyles<'tab'>, {tab: TabType}> {
+    state: {tab: TabType} = {
+        tab: 'diagrams'
     };
-
-    handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const {dispatch} = this.props;
-        if (this.state.input === '') {
-            dispatch(fetchRandomQuestionWorker((result: string) => this.setState({input: result})));
-        } else {
-            dispatch(fetchDocumentResultWorker({query: this.state.input}));
-            dispatch(fetchGraphWorker({query: this.state.input}));
-            this.props.history.push('/result');
-        }
-    }
-
-    handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        this.setState({input: event.target.value});
-    }
-
-    componentDidMount() {
-        this.props.dispatch(fetchNavGraphWorker({}));
-    }
-
     render() {
-        const {classes, fetchingRandomQuestion, navGraph} = this.props;
-
-        let navBody = <LinearProgress className={classes.progress}/>;
-
-        if (!navGraph.fetching) {
-            navBody = navGraph.matrix.isEmpty ?
-                <Typography className={classes.white}>Failed to load nav graph</Typography> : (
-                    <D3Chord
-                        id="nav-d3"
-                        data={navGraph.matrix.get}
-                        colors={navGraph.nodes.map(n => name2color(n.label))}
-                        labels={navGraph.nodes.map(n => `${n.label}(${n.count})`)}
-                    />
-                );
-        }
-
+        const {classes} = this.props;
         return (
             <div>
-                <div className={classes.page1}>
-                    <div className={classes.container}>
-                        <Typography component="h1" type="display4" className={classes.white}>SEI SnowGraph</Typography>
-                        <Typography component="h2" type="headline" className={classes.introduction}>
-                            SnowGraph (Software Knowledge Graph) is a project for creating software-specific
-                            question-answering
-                            bot. Given a software project and various software engineering data of it, you can use
-                            SnowGraph
-                            to:
-                        </Typography>
-                        <ul className={classes.featureList}>
-                            <li>
-                                <Typography component="h3" type="body1" className={classes.introduction}>
-                                    Creating a software-specific knowledge graph automatically. SnowGraph will extract
-                                    entities
-                                    from software engineering data, analyze relationships between them, and fuse them
-                                    into a
-                                    uniform graph database. Software developers can access the software-specific
-                                    knowledge
-                                    graph
-                                    through graphic user interface or graph query language.
-                                </Typography>
-                            </li>
-                            <li>
-                                <Typography component="h3" type="body1" className={classes.introduction}>
-                                    Creating a software-specific question answering bot automatically. Given a natural
-                                    language
-                                    user question about the software project, the QA bot can return passages from
-                                    software
-                                    engineering data to answer the question.
-                                </Typography>
-                            </li>
-                        </ul>
-                        <Typography component="h2" type="headline" className={classes.introduction}>
-                            Get Started:
-                        </Typography>
-                        <form className={classes.search} onSubmit={this.handleSubmit}>
-                            <Input
-                                className={classes.searchInput}
-                                placeholder="Please enter your question..."
-                                onChange={this.handleChange}
-                                value={this.state.input}
-                            />
-                            {fetchingRandomQuestion ?
-                                <CircularProgress color="accent" size={55}/> :
-                                <Button fab={true} type="submit" color="accent" style={{fontSize: 24}}>
-                                    {this.state.input === '' ? '?' : <SearchIcon/>}
-                                </Button>}
-                        </form>
-                    </div>
-                </div>
-                <div className={classes.page2}>
-                    <div className={classes.container}>
-                        <Typography component="h1" type="display3" className={classes.white}>
-                            Overview of the Graph
-                        </Typography>
-                        {navBody}
-                    </div>
-                </div>
+                <Tabs value={this.state.tab} onChange={(e, v) => this.setState({tab: v})} indicatorColor="primary" textColor="primary" scrollable scrollButtons="auto">
+                    <Tab className={classes.tab} value="diagrams" label="Dashboard"/>
+                    <Tab className={classes.tab} value="query" label="Intelli-QA"/>
+                </Tabs>
+                {this.state.tab === 'diagrams' && <DiagramPage/>}
+                {this.state.tab === 'query' && <QueryPage/>}
             </div>
         );
     }
 }
 
-export default withStyles(styles)<{}>(connect(mapStateToProps)(withRouter(IndexPage)));
+export default withStyles(styles)<{}>(connect()(IndexPage));

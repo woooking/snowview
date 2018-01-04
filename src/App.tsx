@@ -1,15 +1,14 @@
 import * as React from 'react';
 import { Route } from 'react-router';
-import ResultPage from './pages/ResultPage';
-import IndexPage from './pages/IndexPage';
+import AppsDrawer from './pages/IndexPage';
+import QueryPage from './pages/QueryPage';
 
 class App extends React.Component<{}, {}> {
     render() {
         return (
             <div>
-                <Route exact={true} path="/" component={IndexPage}/>
-                <Route exact={true} path="/index" component={IndexPage}/>
-                <Route path="/result" component={ResultPage}/>
+                <Route exact={true} path="/" component={AppsDrawer}/>
+                <Route exact={true} path="/query" component={QueryPage}/>
             </div>
         );
     }

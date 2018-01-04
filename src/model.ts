@@ -1,7 +1,3 @@
-export interface RandomResult {
-    query: string;
-}
-
 export interface CypherQueryResult {
     nodes: Neo4jNode[];
     relationships: Neo4jRelation[];
