@@ -21,16 +21,6 @@ const styles = (theme: Theme) => ({
         marginRight: theme.spacing.unit * 2,
         width: '80%',
         flex: 1,
-        color: theme.palette.common.white,
-        '&:before': {
-            backgroundColor: theme.palette.primary[400],
-        },
-        '&:hover:not(.disabled):before': {
-            backgroundColor: theme.palette.primary[200],
-        },
-        '&:after': {
-            backgroundColor: theme.palette.primary[50],
-        },
     },
 });
 
@@ -83,7 +73,7 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
                     value={this.state.input}
                     onChange={this.handleChange}
                 />
-                <Button type="submit" color="contrast" style={{fontSize: 24}}>
+                <Button type="submit" style={{fontSize: 24}}>
                     <SearchIcon/>
                 </Button>
             </form>
