@@ -6,7 +6,6 @@ import { combineReducers } from 'redux';
 import { DocumentResult } from '../model';
 import { show } from 'js-snackbar';
 import { graph, GraphState } from './graphReducer';
-import { navGraph, NavGraphState } from './navGraphReducer';
 
 function showError(message: string) {
     show({
@@ -24,13 +23,12 @@ function withError<V>(message: string, value: V): V {
 export interface DocumentResultState {
     fetching: boolean;
     query: string;
-    result?: DocumentResult;
+    result?: DocumentResult[];
 }
 
 export interface RootState {
     fetchingRandomQuestion: boolean;
     graph: GraphState;
-    navGraph: NavGraphState;
     documentResult: DocumentResultState;
 }
 
@@ -44,5 +42,5 @@ const documentResult =
             withError('Failed to rank', {fetching: false, query: payload.params.query}));
 
 export const appReducer = combineReducers({
-    graph, navGraph, documentResult
+    graph, documentResult
 });

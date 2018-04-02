@@ -4,6 +4,7 @@ import { withStyles, WithStyles } from 'material-ui';
 import { Theme } from 'material-ui/styles';
 import SearchForm from '../components/SearchForm';
 import GraphTab from '../components/GraphTab';
+import { fetchGraphWorker } from '../redux/action';
 
 const styles = (theme: Theme) => ({
     brand: {
@@ -19,7 +20,7 @@ class QueryPage extends React.Component<QueryPageProps & WithStyles<'brand'>> {
     render() {
         return (
             <div>
-                <SearchForm/>
+                <SearchForm callback={(param: { query: string }) => fetchGraphWorker(param)}/>
                 <GraphTab/>
             </div>
         );

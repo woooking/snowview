@@ -40,39 +40,39 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
         const links = this.props.relations
             .valueSeq()
             .filter(x => x!.shown)
-            .filter(x => nodes.some(n => n.node.id === x!.source) && nodes.some(n => n.node.id === x!.target))
+            .filter(x => nodes.some(n => n.node.id === x!.source) &&
+                nodes.some(n => n.node.id === x!.target))
             .toArray();
 
         return (
             <Card>
                 <CardHeader title="Knowledge Graph Inference Result"/>
                 <CardContent>
-                    {this.props.nodes.isEmpty()?
-                    '//TODO: list some question examples.':
-                    <Graph
-                        id="neo4jd3"
-                        highlight={selectedNode}
-                        nodes={nodes}
-                        links={links}
-                        getNodeColor={n => name2color(n.node.label)}
-                        getNodeLabel={n => n.node.label}
-                        getNodeText={n => {
-                            let name = '';
-                            name = n.node.properties['uniformText'] && n.node.properties['uniformText'].length > 0 ? n.node.properties['uniformText'] : name;
-                            name = n.node.properties['uniformTitle'] && n.node.properties['uniformTitle'].length > 0 ? n.node.properties['uniformTitle'] : name;
-                            name = name.replace(/<(?:.|\s)*?>/g, ' ').trim();
-                            name = name.length > 10 ? name.substr(0, 8) + '...' : name;
-                            return name;
-                        }}
-                        getLinkID={d => d.id}
-                        getLinkText={d => d.types.toString()}
-                        getSourceNodeID={d => d.source.toString()}
-                        getTargetNodeID={d => d.target.toString()}
-                        onNodeClick={id => {
-                            dispatch(fetchRelationListWorker(parseInt(id, 10)));
-                            dispatch(selectNode(parseInt(id, 10)));
-                        }}
-                    />}
+                    {this.props.nodes.isEmpty() ?
+                        '//TODO: list some question examples.' :
+                        <Graph
+                            id="neo4jd3"
+                            highlight={selectedNode}
+                            nodes={nodes}
+                            links={links}
+                            getNodeColor={n => name2color(n.node.label)}
+                            getNodeLabel={n => n.node.label}
+                            getNodeText={n => {
+                                let name = '';
+                                name = n.node.properties['name'] ? n.node.properties['name'] : name;
+                                name = name.replace(/<(?:.|\s)*?>/g, ' ').trim();
+                                name = name.length > 10 ? name.substr(0, 8) + '...' : name;
+                                return name;
+                            }}
+                            getLinkID={d => d.id}
+                            getLinkText={d => d.types.toString()}
+                            getSourceNodeID={d => d.source.toString()}
+                            getTargetNodeID={d => d.target.toString()}
+                            onNodeClick={id => {
+                                dispatch(fetchRelationListWorker(parseInt(id, 10)));
+                                dispatch(selectNode(parseInt(id, 10)));
+                            }}
+                        />}
                 </CardContent>
             </Card>
         );

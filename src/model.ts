@@ -61,15 +61,16 @@ export interface INode {
     getID(): string;
 }
 
-export interface RankedResult {
-    newRank: number;
-    irRank: number;
-    body: string;
+export interface DocumentProperty {
+    content: string;
+    html: string;
+    id: number;
+    label: string;
     title: string;
-    highlight: boolean;
 }
 
 export interface DocumentResult {
-    query: string;
-    rankedResults: Array<RankedResult>;
+    id: number;
+    label: string;
+    properties: DocumentProperty;
 }

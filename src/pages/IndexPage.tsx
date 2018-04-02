@@ -1,38 +1,34 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import {withStyles, WithStyles } from 'material-ui';
-import { Theme } from 'material-ui/styles';
-import QueryPage from "./QueryPage";
+import QueryPage from './QueryPage';
 import Tabs, { Tab } from 'material-ui/Tabs';
-import DiagramPage from "./DiagramPage";
+import DocumentPage from './DocumentPage';
 
-const styles = (theme: Theme) => ({
-    tab: {
-    }
-});
+type TabType = 'document' | 'graph';
 
-interface IndexPageProps {
-}
-
-type TabType = 'diagrams' | 'query';
-
-class IndexPage extends React.Component<IndexPageProps & WithStyles<'tab'>, {tab: TabType}> {
+class IndexPage extends React.Component<{}, {tab: TabType}> {
     state: {tab: TabType} = {
-        tab: 'diagrams'
+        tab: 'document'
     };
     render() {
-        const {classes} = this.props;
         return (
             <div>
-                <Tabs value={this.state.tab} onChange={(e, v) => this.setState({tab: v})} indicatorColor="primary" textColor="primary" scrollable scrollButtons="auto">
-                    <Tab className={classes.tab} value="diagrams" label="Dashboard"/>
-                    <Tab className={classes.tab} value="query" label="Intelli-QA"/>
+                <Tabs
+                    value={this.state.tab}
+                    onChange={(e, v) => this.setState({tab: v})}
+                    indicatorColor="primary"
+                    textColor="primary"
+                    scrollable={true}
+                    scrollButtons="auto"
+                >
+                    <Tab value="document" label="Document"/>
+                    <Tab value="graph" label="Graph"/>
                 </Tabs>
-                {this.state.tab === 'diagrams' && <DiagramPage/>}
-                {this.state.tab === 'query' && <QueryPage/>}
+                {this.state.tab === 'document' && <DocumentPage/>}
+                {this.state.tab === 'graph' && <QueryPage/>}
             </div>
         );
     }
 }
 
-export default withStyles(styles)<{}>(connect()(IndexPage));
+export default connect()(IndexPage);

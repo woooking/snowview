@@ -25,11 +25,9 @@ const styles = (theme: Theme) => ({
 });
 
 interface RankRowProps {
-    rank: number;
+    id: number;
     title: string;
-    irRank: number;
     detail: string;
-    highlight: boolean;
 }
 
 type RankRowStyle = WithStyles<'detail' | 'cellRank' | 'cellMain' | 'highlight'>;
@@ -48,24 +46,18 @@ class RankRow extends React.Component<RankRowProps & RankRowStyle, { expand: boo
     }
 
     render() {
-        const {classes, rank, title, irRank, detail, highlight} = this.props;
-        let delta = '-';
-        if (irRank > rank) {
-            delta = '↑ ' + (irRank - rank).toString();
-        } else if (irRank < rank) {
-            delta = '↓ ' + (rank - irRank).toString();
-        }
-        delta = highlight ? delta : '';
+        const {classes, id, title, detail} = this.props;
         return (
-            <TableRow style={highlight ? {background: '#6495ED'} : {}}>
-                <TableCell className={classes.cellRank}>{rank}</TableCell>
+            <TableRow>
+                <TableCell className={classes.cellRank}>
+                    {id}
+                </TableCell>
                 <TableCell className={classes.cellMain}>
                     {title}
                     {!this.state.expand && <ExpandMoreIcon onClick={this.handleExpandMore}/>}
                     {this.state.expand && <ExpandLessIcon onClick={this.handleExpandLess}/>}
                     {this.state.expand && <div className={classes.detail} dangerouslySetInnerHTML={{__html: detail}}/>}
                 </TableCell>
-                <TableCell className={classes.cellRank}>{delta}</TableCell>
             </TableRow>
         );
     }

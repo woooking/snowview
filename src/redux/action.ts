@@ -1,22 +1,19 @@
 import * as $ from 'jquery';
 import actionCreatorFactory from 'typescript-fsa';
 import bindThunkAction from 'typescript-fsa-redux-thunk';
-import { CypherQueryResult, DocumentResult, Neo4jRelation, NavResult } from '../model';
+import { CypherQueryResult, DocumentResult, Neo4jRelation } from '../model';
 import { Neo4jNode } from '../model';
 import { RootState } from './reducer';
 import * as _ from 'lodash';
-
-// const URL = 'http://162.105.88.181:8080/SnowGraph';
-// const URL = 'http://127.0.0.1:8080/SnowGraph';
-const URL = 'http://162.105.88.28:8080';
+import { CODE_SEARCH_URL, DOCUMENT_SEARCH_URL, NODE_INFO_URL, RELATION_LIST_URL } from '../config';
 
 const actionCreator = actionCreatorFactory();
 
-export const fetchDocumentResult = actionCreator.async<{ query: string }, DocumentResult>('FETCH_DOCUMENT_RESULT');
+export const fetchDocumentResult = actionCreator.async<{ query: string }, DocumentResult[]>('FETCH_DOCUMENT_RESULT');
 export const fetchDocumentResultWorker = bindThunkAction(
     fetchDocumentResult,
     async (params) => {
-        return await $.post(`${URL}/docSearch`, params);
+        return await $.post(DOCUMENT_SEARCH_URL, params);
     }
 );
 
@@ -35,7 +32,7 @@ export const fetchNodeWorker = bindThunkAction(
                 return node.get.node;
             }
         }
-        return await $.post(`${URL}/node`, {id: params});
+        return await $.post(NODE_INFO_URL, {id: params});
     }
 );
 
@@ -53,7 +50,7 @@ export const fetchRelationListWorker = bindThunkAction(
                 return list.get;
             }
         }
-        const result: Neo4jRelation[] = await $.post(`${URL}/relationList`, {id: params});
+        const result: Neo4jRelation[] = await $.post(RELATION_LIST_URL, {id: params});
         dispatch(addRelations(result));
         return _.uniq(result.map(r => `${r.startNode},${r.endNode}`));
     }
@@ -65,18 +62,11 @@ export const fetchGraph = actionCreator.async<{ query: string }, {}>('FETCH_GRAP
 export const fetchGraphWorker = bindThunkAction(
     fetchGraph,
     async (params, dispatch) => {
-        const result: CypherQueryResult = await $.post(`${URL}/apiLocation`, {query: params.query});
+        const result: CypherQueryResult = await $.post(CODE_SEARCH_URL, {query: params.query});
         const nodes = result.nodes;
         const relations = result.relationships;
 
         dispatch(addNodes(nodes));
         dispatch(addShownRelations(relations));
         return {};
-    });
-
-export const fetchNavGraph = actionCreator.async<{}, NavResult>('FETCH_NAV_GRAPH');
-export const fetchNavGraphWorker = bindThunkAction(
-    fetchNavGraph,
-    async () => {
-        return await $.post(`${URL}/nav`, {});
     });

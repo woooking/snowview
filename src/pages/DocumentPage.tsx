@@ -1,12 +1,17 @@
 import * as React from 'react';
 import { LinearProgress, Table, TableBody, TableCell, TableHead, TableRow, withStyles, WithStyles } from 'material-ui';
 import { Theme } from 'material-ui/styles';
-import { DocumentResultState } from '../redux/reducer';
-import RankRow from './RankRow';
+import { DocumentResultState, RootState } from '../redux/reducer';
+import RankRow from '../components/RankRow';
+import SearchForm from '../components/SearchForm';
+import { connect } from 'react-redux';
+import { fetchDocumentResultWorker } from '../redux/action';
 
 const styles = (theme: Theme) => ({
     container: {
         display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column',
         justifyContent: 'center',
     },
     table: {
@@ -18,37 +23,38 @@ const styles = (theme: Theme) => ({
     }
 }) as React.CSSProperties;
 
+const mapStateToProps = (state: RootState) => ({
+    documentResult: state.documentResult
+});
+
 interface DocumentTabProps {
     documentResult: DocumentResultState;
 }
 
 type DocumentTabStyle = WithStyles<'container' | 'table' | 'progress'>;
 
-class DocumentTab extends React.Component<DocumentTabProps & DocumentTabStyle, {}> {
+class DocumentPage extends React.Component<DocumentTabProps & DocumentTabStyle, {}> {
 
     render() {
         const {classes, documentResult} = this.props;
         return (
             <div className={classes.container}>
+                <SearchForm callback={(param: { query: string }) => fetchDocumentResultWorker(param)}/>
                 {documentResult.fetching && <LinearProgress className={classes.progress}/>}
                 {documentResult.result != null && <Table className={classes.table}>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Ranking</TableCell>
+                            <TableCell>ID</TableCell>
                             <TableCell>Candidate Answer</TableCell>
-                            <TableCell>Up/Down(w.r.t. IR)</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {documentResult.result.rankedResults
-                            .filter(r => r.newRank <= 20)
+                        {documentResult.result
                             .map(r => <RankRow
-                                key={r.newRank}
-                                rank={r.newRank}
-                                title={r.title}
-                                irRank={r.irRank}
-                                detail={r.body}
-                                highlight={r.highlight}
+                                key={r.id}
+                                id={r.id}
+                                title={r.properties.title}
+                                detail={r.properties.html}
                             />)}
                     </TableBody>
                 </Table>}
@@ -57,4 +63,4 @@ class DocumentTab extends React.Component<DocumentTabProps & DocumentTabStyle, {
     }
 }
 
-export default withStyles(styles)<DocumentTabProps>(DocumentTab);
+export default withStyles(styles)<{}>(connect(mapStateToProps)(DocumentPage));

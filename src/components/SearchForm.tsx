@@ -1,25 +1,25 @@
 import * as React from 'react';
-import {fetchDocumentResultWorker, fetchGraphWorker} from '../redux/action';
-import {connect} from 'react-redux';
-import {Input, withStyles, WithStyles} from 'material-ui';
-import {RootState} from '../redux/reducer';
-import {Dispatch} from 'redux';
-import {Theme} from 'material-ui/styles';
-import {ChangeEvent, FormEvent} from 'react';
+import { connect } from 'react-redux';
+import { Input, withStyles, WithStyles } from 'material-ui';
+import { RootState } from '../redux/reducer';
+import { Dispatch } from 'redux';
+import { Theme } from 'material-ui/styles';
+import { ChangeEvent, FormEvent } from 'react';
 import SearchIcon from 'material-ui-icons/Search';
 import Button from 'material-ui/Button';
+import { PREDEFINED_QUERIES } from '../config';
 
 const styles = (theme: Theme) => ({
     container: {
         margin: theme.spacing.unit * 2
     },
     form: {
-        width: '100%',
+        width: '70%',
     },
     search: {
         marginLeft: theme.spacing.unit * 2,
         marginRight: theme.spacing.unit * 2,
-        width: '80%',
+        width: '90%',
         flex: 1,
     },
 });
@@ -30,6 +30,7 @@ const mapStateToProps = (state: RootState) => ({
 
 interface SearchFormProps {
     query: string;
+    callback: Function;
     dispatch: Dispatch<RootState>;
 }
 
@@ -50,11 +51,9 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
 
     handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const {dispatch} = this.props;
+        const {dispatch, callback} = this.props;
 
-        dispatch(fetchDocumentResultWorker({query: this.state.input}));
-        dispatch(fetchGraphWorker({query: this.state.input}));
-
+        dispatch(callback({query: this.state.input}));
     }
 
     handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +71,11 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
                     placeholder="Ask a question here..."
                     value={this.state.input}
                     onChange={this.handleChange}
+                    inputProps={{list: "predefined-queries"}}
                 />
+                <datalist id="predefined-queries">
+                    {PREDEFINED_QUERIES.map(q => <option key={q} value={q}/>)}
+                </datalist>
                 <Button type="submit" style={{fontSize: 24}}>
                     <SearchIcon/>
                 </Button>
@@ -81,4 +84,4 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
     }
 }
 
-export default withStyles(styles)<{}>(connect(mapStateToProps)(SearchForm));
+export default withStyles(styles)<{ callback: Function }>(connect(mapStateToProps)(SearchForm));
