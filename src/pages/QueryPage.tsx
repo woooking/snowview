@@ -5,6 +5,7 @@ import { Theme } from 'material-ui/styles';
 import SearchForm from '../components/SearchForm';
 import GraphTab from '../components/GraphTab';
 import { fetchGraphWorker } from '../redux/action';
+import { GRAPH_PREDEFINED_QUERIES } from '../config';
 
 const styles = (theme: Theme) => ({
     brand: {
@@ -20,7 +21,10 @@ class QueryPage extends React.Component<QueryPageProps & WithStyles<'brand'>> {
     render() {
         return (
             <div>
-                <SearchForm callback={(param: { query: string }) => fetchGraphWorker(param)}/>
+                <SearchForm
+                    predefinedQueries={ GRAPH_PREDEFINED_QUERIES }
+                    callback={(param: { query: string }) => fetchGraphWorker(param)}
+                />
                 <GraphTab/>
             </div>
         );

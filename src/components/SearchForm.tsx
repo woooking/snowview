@@ -7,7 +7,6 @@ import { Theme } from 'material-ui/styles';
 import { ChangeEvent, FormEvent } from 'react';
 import SearchIcon from 'material-ui-icons/Search';
 import Button from 'material-ui/Button';
-import { PREDEFINED_QUERIES } from '../config';
 
 const styles = (theme: Theme) => ({
     container: {
@@ -30,6 +29,7 @@ const mapStateToProps = (state: RootState) => ({
 
 interface SearchFormProps {
     query: string;
+    predefinedQueries: string[];
     callback: Function;
     dispatch: Dispatch<RootState>;
 }
@@ -61,7 +61,7 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
     }
 
     render() {
-        const {classes} = this.props;
+        const {classes, predefinedQueries} = this.props;
 
         return (
             <form className={classes.form} onSubmit={this.handleSubmit}>
@@ -74,7 +74,7 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
                     inputProps={{list: "predefined-queries"}}
                 />
                 <datalist id="predefined-queries">
-                    {PREDEFINED_QUERIES.map(q => <option key={q} value={q}/>)}
+                    {predefinedQueries.map(q => <option key={q} value={q}/>)}
                 </datalist>
                 <Button type="submit" style={{fontSize: 24}}>
                     <SearchIcon/>
@@ -84,4 +84,4 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
     }
 }
 
-export default withStyles(styles)<{ callback: Function }>(connect(mapStateToProps)(SearchForm));
+export default withStyles(styles)<{ predefinedQueries: string[], callback: Function }>(connect(mapStateToProps)(SearchForm));

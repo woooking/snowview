@@ -6,6 +6,7 @@ import RankRow from '../components/RankRow';
 import SearchForm from '../components/SearchForm';
 import { connect } from 'react-redux';
 import { fetchDocumentResultWorker } from '../redux/action';
+import { DOC_PREDEFINED_QUERIES } from '../config';
 
 const styles = (theme: Theme) => ({
     container: {
@@ -39,7 +40,10 @@ class DocumentPage extends React.Component<DocumentTabProps & DocumentTabStyle, 
         const {classes, documentResult} = this.props;
         return (
             <div className={classes.container}>
-                <SearchForm callback={(param: { query: string }) => fetchDocumentResultWorker(param)}/>
+                <SearchForm
+                    predefinedQueries={DOC_PREDEFINED_QUERIES}
+                    callback={(param: { query: string }) => fetchDocumentResultWorker(param)}
+                />
                 {documentResult.fetching && <LinearProgress className={classes.progress}/>}
                 {documentResult.result != null && <Table className={classes.table}>
                     <TableHead>
