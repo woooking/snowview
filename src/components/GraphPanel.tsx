@@ -60,6 +60,7 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
                             getNodeText={n => {
                                 let name = '';
                                 name = n.node.properties['name'] ? n.node.properties['name'] : name;
+                                name = n.node.properties['title'] ? n.node.properties['title'] : name;
                                 name = name.replace(/<(?:.|\s)*?>/g, ' ').trim();
                                 name = name.length > 10 ? name.substr(0, 8) + '...' : name;
                                 return name;

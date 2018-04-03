@@ -27,6 +27,7 @@ const styles = (theme: Theme) => ({
 interface RankRowProps {
     id: number;
     rank: number;
+    initExpand: boolean;
     title: string;
     detail: string;
 }
@@ -35,7 +36,7 @@ type RankRowStyle = WithStyles<'detail' | 'cellRank' | 'cellMain' | 'highlight'>
 
 class RankRow extends React.Component<RankRowProps & RankRowStyle, { expand: boolean }> {
     state = {
-        expand: false
+        expand: this.props.initExpand
     };
 
     handleExpandMore = () => {

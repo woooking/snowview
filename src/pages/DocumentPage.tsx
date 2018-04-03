@@ -57,6 +57,7 @@ class DocumentPage extends React.Component<DocumentTabProps & DocumentTabStyle, 
                         {documentResult.result
                             .map(r => <RankRow
                                 key={r.id}
+                                initExpand={r.rank === 1}
                                 rank={r.rank}
                                 id={r.id}
                                 title={r.properties.title}
