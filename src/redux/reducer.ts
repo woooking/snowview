@@ -35,9 +35,14 @@ export interface RootState {
 const documentResult =
     reducerWithInitialState<DocumentResultState>({fetching: false, query: ''})
         .case(fetchDocumentResult.started, (state, payload) => ({fetching: true, query: payload.query}))
-        .case(fetchDocumentResult.done, (state, payload) => ({
-            fetching: false, query: payload.params.query, result: payload.result
-        }))
+        .case(fetchDocumentResult.done, (state, payload) => {
+            for (let i = 0; i < payload.result.length; ++i) {
+                payload.result[i].rank = i + 1;
+            }
+            return {
+                fetching: false, query: payload.params.query, result: payload.result
+            };
+        })
         .case(fetchDocumentResult.failed, (state, payload) =>
             withError('Failed to rank', {fetching: false, query: payload.params.query}));
 

@@ -8,7 +8,7 @@ type TabType = 'document' | 'graph';
 
 class IndexPage extends React.Component<{}, {tab: TabType}> {
     state: {tab: TabType} = {
-        tab: 'document'
+        tab: 'graph'
     };
     render() {
         return (
@@ -21,8 +21,8 @@ class IndexPage extends React.Component<{}, {tab: TabType}> {
                     scrollable={true}
                     scrollButtons="auto"
                 >
-                    <Tab value="document" label="Document"/>
                     <Tab value="graph" label="Graph"/>
+                    <Tab value="document" label="Document"/>
                 </Tabs>
                 {this.state.tab === 'document' && <DocumentPage/>}
                 {this.state.tab === 'graph' && <QueryPage/>}

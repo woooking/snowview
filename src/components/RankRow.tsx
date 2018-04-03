@@ -26,6 +26,7 @@ const styles = (theme: Theme) => ({
 
 interface RankRowProps {
     id: number;
+    rank: number;
     title: string;
     detail: string;
 }
@@ -46,12 +47,11 @@ class RankRow extends React.Component<RankRowProps & RankRowStyle, { expand: boo
     }
 
     render() {
-        const {classes, id, title, detail} = this.props;
+        const {classes, id, rank, title, detail} = this.props;
         return (
             <TableRow>
-                <TableCell className={classes.cellRank}>
-                    {id}
-                </TableCell>
+                <TableCell className={classes.cellRank}> {rank} </TableCell>
+                <TableCell className={classes.cellRank}> {id} </TableCell>
                 <TableCell className={classes.cellMain}>
                     {title}
                     {!this.state.expand && <ExpandMoreIcon onClick={this.handleExpandMore}/>}

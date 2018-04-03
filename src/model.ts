@@ -70,6 +70,7 @@ export interface DocumentProperty {
 }
 
 export interface DocumentResult {
+    rank: number;
     id: number;
     label: string;
     properties: DocumentProperty;
