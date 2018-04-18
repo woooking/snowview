@@ -48,17 +48,18 @@ class D3Chord extends React.Component<D3GraphProps, {}> {
         const width = parseFloat(svg.style('width').slice(0, -2));
         const height = parseFloat(svg.style('height').slice(0, -2));
 
-        const binary_data:number[][]=[]
-        for (var i=0;i<data.length;i++){
-            binary_data.push([])
-            for (var j=0;j<data[i].length;j++)
-                binary_data[i].push(Math.log(data[i][j]+1))
+        const binaryData: number[][] = [];
+        for (var i = 0; i < data.length; i++) {
+            binaryData.push([]);
+            for (var j = 0; j < data[i].length; j++) {
+                binaryData[i].push(Math.log(data[i][j] + 1));
+            }
         }
 
         this.canvas = svg
             .append<SVGGElement>('g')
             .attr('transform', `translate(${width / 2}, ${height / 2})`)
-            .datum(chord(binary_data))
+            .datum(chord(binaryData))
             .on('mouseleave', this.mouseleave);
 
         this.ribbons = this.canvas.append<SVGGElement>('g')
@@ -80,7 +81,7 @@ class D3Chord extends React.Component<D3GraphProps, {}> {
             .style('fill', d => colors[d.index])
             .attr('d', arc);
 
-        group.append("title").html(d=>labels[d.index]);
+        group.append('title').html(d => labels[d.index]);
 
         this.ribbons
             .append('path')
@@ -93,20 +94,22 @@ class D3Chord extends React.Component<D3GraphProps, {}> {
             .append('title')
             .html(d => data[d.source.index][d.target.index].toString());
 
-        group.append("svg:text")
-            .style('font-size','10px')
-            .style('text-anchor','middle')
-            .attr("dx", function (d) {
-                let anchor=(d.startAngle+d.endAngle)/2
-                let radius=outerRadius+10
-                return radius*Math.sin(anchor)
+        group.append('svg:text')
+            .style('font-size', '10px')
+            .style('text-anchor', 'middle')
+            .attr('dx', function (d: ChordGroup) {
+                let anchor = (d.startAngle + d.endAngle) / 2;
+                let radius = outerRadius + 10;
+                return radius * Math.sin(anchor);
             })
-            .attr("dy", function (d) {
-                let anchor=(d.startAngle+d.endAngle)/2
-                let radius=outerRadius+10
-                return -radius*Math.cos(anchor)
+            .attr('dy', function (d: ChordGroup) {
+                let anchor = (d.startAngle + d.endAngle) / 2;
+                let radius = outerRadius + 10;
+                return -radius * Math.cos(anchor);
             })
-            .text(function(d) { return labels[d.index].substr(0,labels[d.index].indexOf('(')) });
+            .text(function (d: ChordGroup) {
+                return labels[d.index].substr(0, labels[d.index].indexOf('('));
+            });
 
     }
 

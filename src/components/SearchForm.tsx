@@ -71,7 +71,7 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
                     placeholder="Ask a question here..."
                     value={this.state.input}
                     onChange={this.handleChange}
-                    inputProps={{list: "predefined-queries"}}
+                    inputProps={{list: 'predefined-queries'}}
                 />
                 <datalist id="predefined-queries">
                     {predefinedQueries.map(q => <option key={q} value={q}/>)}
@@ -84,4 +84,6 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
     }
 }
 
-export default withStyles(styles)<{ predefinedQueries: string[], callback: Function }>(connect(mapStateToProps)(SearchForm));
+export default withStyles(styles)<{
+    predefinedQueries: string[], callback: Function
+}>(connect(mapStateToProps)(SearchForm));

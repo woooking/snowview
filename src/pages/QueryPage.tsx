@@ -12,6 +12,7 @@ const styles = (theme: Theme) => ({
         textDecoration: 'none'
     }
 });
+
 interface QueryPageProps {
 }
 
@@ -21,7 +22,7 @@ class QueryPage extends React.Component<QueryPageProps & WithStyles<'brand'>> {
         return (
             <div>
                 <SearchForm
-                    predefinedQueries={ GRAPH_PREDEFINED_QUERIES }
+                    predefinedQueries={GRAPH_PREDEFINED_QUERIES}
                     callback={(param: { query: string }) => fetchGraphWorker(param)}
                 />
                 <GraphTab/>

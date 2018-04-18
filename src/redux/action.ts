@@ -5,7 +5,7 @@ import { CypherQueryResult, DocumentResult, NavResult, Neo4jRelation } from '../
 import { Neo4jNode } from '../model';
 import { RootState } from './reducer';
 import * as _ from 'lodash';
-import { CODE_SEARCH_URL, DOCUMENT_SEARCH_URL, NODE_INFO_URL, RELATION_LIST_URL } from '../config';
+import { CODE_SEARCH_URL, DOCUMENT_SEARCH_URL, NAV_URL, NODE_INFO_URL, RELATION_LIST_URL } from '../config';
 
 const actionCreator = actionCreatorFactory();
 
@@ -75,5 +75,5 @@ export const fetchNavGraph = actionCreator.async<{}, NavResult>('FETCH_NAV_GRAPH
 export const fetchNavGraphWorker = bindThunkAction(
     fetchNavGraph,
     async () => {
-        return await $.post(`${URL}/nav`, {});
+        return await $.post(NAV_URL, {});
     });

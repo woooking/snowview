@@ -32,7 +32,10 @@ export interface Neo4jRelation {
 export interface Neo4jNode {
     id: number;
     label: string;
-    properties: object;
+    properties: {
+        name?: string,
+        title?: string
+    };
 }
 
 export interface SnowRelation {
