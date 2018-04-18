@@ -12,7 +12,6 @@ const styles = (theme: Theme) => ({
         textDecoration: 'none'
     }
 });
-
 interface QueryPageProps {
 }
 
