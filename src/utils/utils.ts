@@ -45,6 +45,12 @@ export function colorHash(s: string): number {
 }
 
 export function name2color(name: string): string {
+	if (name=='Class') return '#43CD80';
+	if (name=='Method') return '#9AFF9A';
+	if (name=='Field') return '#C1FFC1';
+	if (name=='GitUser') return '#D3D3D3';
+	if (name=='Commit') return '#708090';
+	if (name=='Docx') return '#4169E1';
     const h = colorHash(name) % 360;
     return Math.ceil(h / 30) % 2 === 0 ?
         hsl(h, 1, 0.8).rgb().toString() :
