@@ -49,7 +49,7 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
                 <CardHeader title="Knowledge Graph Inference Result"/>
                 <CardContent>
                     {this.props.nodes.isEmpty() ?
-                        '//TODO: list some question examples.' :
+                        '' :
                         <Graph
                             id="neo4jd3"
                             highlight={selectedNode}
