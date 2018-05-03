@@ -4,6 +4,7 @@ import QueryPage from './QueryPage';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import DocumentPage from './DocumentPage';
 import DiagramPage from './DiagramPage';
+import logo from '../assets/img/logo.jpg';
 
 type TabType = 'document' | 'graph' | 'diagram';
 
@@ -14,6 +15,9 @@ class IndexPage extends React.Component<{}, {tab: TabType}> {
     render() {
         return (
             <div>
+                <div style={{float: 'left'}}>
+                    <img style={{marginLeft: '16px', display: 'inline'}} height={48} src={logo} alt="logo"/>
+                </div>
                 <Tabs
                     value={this.state.tab}
                     onChange={(e, v) => this.setState({tab: v})}

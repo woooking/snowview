@@ -3,7 +3,7 @@ import {
     addNodes, addRelations, addShownRelations,
     fetchGraph, fetchNode, fetchRelationList,
     removeNode,
-    selectNode, showRelations
+    selectNode, setCypher, showRelations
 } from './action';
 import { combineReducers } from 'redux';
 import { Neo4jRelation, SnowNode, SnowRelation } from '../model';
@@ -21,6 +21,7 @@ export type RelationListsState = Map<number, Option<string[]>>;
 export interface GraphState {
     fetching: boolean;
     selectedNode: Option<number>;
+    cypher: string;
     nodes: NodesState;
     relations: RelationsState;
     relationLists: RelationListsState;
@@ -41,7 +42,7 @@ const selectedNode = reducerWithInitialState<Option<number>>(none)
     .case(removeNode, (s, p) => s.exists(num => num === p) ? none : s);
 
 const nodes = reducerWithInitialState<NodesState>(Map())
-    .case(fetchGraph.started, (s, p) => Map())
+    .case(fetchGraph.started, () => Map())
     .case(fetchNode.started, (s, p) => s.update(p, (val = none) => val))
     .case(fetchNode.done, (s, p) => s.set(p.params, some(new SnowNode(true, p.result))))
     .case(fetchNode.failed, (s, p) => withError('Failed to get node', s.get(p.params).isEmpty ? s.remove(p.params) : s))
@@ -81,13 +82,16 @@ const relations = reducerWithInitialState<RelationsState>(Map())
     ));
 
 const relationLists = reducerWithInitialState<RelationListsState>(Map())
-    .case(fetchGraph.started, (state, payload) => Map())
+    .case(fetchGraph.started, () => Map())
     .case(fetchRelationList.started, (state, payload) => state.set(payload, state.get(payload, none)))
     .case(fetchRelationList.done, (state, payload) => state.set(payload.params, some(payload.result)))
     .case(fetchRelationList.failed, (state, payload) =>
         withError('Failed to get relation list', state.remove(payload.params))
     );
 
+const cypher = reducerWithInitialState<string>('')
+    .case(setCypher, (state, payload) => payload);
+
 export const graph = combineReducers({
-    fetching, selectedNode, nodes, relations, relationLists
+    fetching, selectedNode, cypher, nodes, relations, relationLists
 });
