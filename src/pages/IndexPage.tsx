@@ -10,7 +10,7 @@ type TabType = 'document' | 'graph' | 'diagram';
 
 class IndexPage extends React.Component<{}, {tab: TabType}> {
     state: {tab: TabType} = {
-        tab: 'graph'
+        tab: 'diagram'
     };
     render() {
         return (
@@ -26,9 +26,9 @@ class IndexPage extends React.Component<{}, {tab: TabType}> {
                     scrollable={true}
                     scrollButtons="auto"
                 >
-                    <Tab value="graph" label="Graph"/>
-                    <Tab value="document" label="Document"/>
-                    <Tab value="diagram" label="Nav Graph"/>
+					<Tab value="diagram" label="图谱概览"/>
+                    <Tab value="graph" label="智能问答"/>
+                    <Tab value="document" label="语义搜索"/>
                 </Tabs>
                 {this.state.tab === 'document' && <DocumentPage/>}
                 {this.state.tab === 'graph' && <QueryPage/>}

@@ -7,13 +7,11 @@ export const RELATION_LIST_URL = `${SERVER_URL}/relationList`;
 export const NAV_URL = `${SERVER_URL}/nav`;
 
 export const DOC_PREDEFINED_QUERIES = [
-    'Doc Query 1',
-    'Doc Query 2',
-    'Doc Query 3',
+    '判断资源路径并打包',
 ];
 
 export const GRAPH_PREDEFINED_QUERIES = [
-    'Graph Query 1',
-    'Graph Query 2',
-    'Graph Query 3',
+	'谁修改过RasPackager?',
+    '谁修改过调用了setTags方法的类？',
+    '判断资源路径并打包',
 ];
