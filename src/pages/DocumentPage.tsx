@@ -48,9 +48,7 @@ class DocumentPage extends React.Component<DocumentTabProps & DocumentTabStyle, 
                 {documentResult.result != null && <Table className={classes.table}>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Rank</TableCell>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Candidate Answer</TableCell>
+                            <TableCell>Answer</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

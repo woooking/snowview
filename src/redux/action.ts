@@ -17,6 +17,8 @@ export const fetchDocumentResultWorker = bindThunkAction(
     }
 );
 
+export const setCypher = actionCreator<string>('SET_CYPHER');
+
 export const selectNode = actionCreator<number>('SELECT_NODE');
 export const removeNode = actionCreator<number>('REMOVE_NODE');
 export const addNodes = actionCreator<Neo4jNode[]>('ADD_NODES');
@@ -63,9 +65,15 @@ export const fetchGraphWorker = bindThunkAction(
     fetchGraph,
     async (params, dispatch) => {
         const result: CypherQueryResult = await $.post(CODE_SEARCH_URL, {query: params.query});
+        const cypher = result.cypher;
         const nodes = result.nodes;
         const relations = result.relationships;
 
+        if (cypher && cypher.length > 0) {
+            dispatch(setCypher(cypher));
+        } else {
+            dispatch(setCypher(''));
+        }
         dispatch(addNodes(nodes));
         dispatch(addShownRelations(relations));
         return {};

@@ -11,6 +11,8 @@ import { RootState } from '../redux/reducer';
 import { NavGraphState } from '../redux/navGraphReducer';
 import D3Chord from '../components/D3Chord';
 import { name2color } from '../utils/utils';
+import Grid from 'material-ui/Grid';
+import Statistic from '../components/Statistic';
 
 const styles = (theme: Theme) => ({
     container: {
@@ -18,8 +20,10 @@ const styles = (theme: Theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '50%',
-        width: '50%',
+    },
+    info: {
+        fontSize: '1.5rem',
+        margin: '20px'
     }
 }) as React.CSSProperties;
 
@@ -34,8 +38,7 @@ interface DiagramPageProps {
 }
 
 type DiagramPageStyles =
-    WithStyles<'page1' | 'page2' | 'container' | 'white' | 'introduction' | 'featureList' | 'search' | 'searchInput'
-        | 'progress'>;
+    WithStyles<'container' | 'white' | 'progress' | 'info'>;
 
 class DiagramPage extends Component<DiagramPageProps & DiagramPageStyles, { input: string }> {
 
@@ -51,12 +54,39 @@ class DiagramPage extends Component<DiagramPageProps & DiagramPageStyles, { inpu
         if (!navGraph.fetching) {
             navBody = navGraph.matrix.isEmpty ?
                 <Typography className={classes.white}>Failed to load nav graph</Typography> : (
-                    <D3Chord
-                        id="nav-d3"
-                        data={navGraph.matrix.get}
-                        colors={navGraph.nodes.map(n => name2color(n.label))}
-                        labels={navGraph.nodes.map(n => `${n.label}(${n.count})`)}
-                    />
+                    <Grid container={true} spacing={0}>
+                        <Grid item={true} xs={5}>
+                            <D3Chord
+                                id="nav-d3"
+                                data={navGraph.matrix.get}
+                                colors={navGraph.nodes.map(n => name2color(n.label))}
+                                labels={navGraph.nodes.map(n => `${n.label}(${n.count})`)}
+                            />
+                        </Grid>
+                        <Grid item={true} xs={6}>
+                            <Typography className={classes.info}>Nodes:</Typography>
+                            <Grid container={true} spacing={0}>
+                                {navGraph.nodes.map(node => (
+                                    <Grid style={{textAlign: 'center'}} key={node.label} item={true} xs={3}>
+                                        <Statistic num={node.count} label={node.label}/>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                            <Typography className={classes.info}>Edges:</Typography>
+                            <Grid container={true} spacing={0}>
+                                {navGraph.relations.map(relation => (
+                                    <Grid
+                                        style={{textAlign: 'center'}}
+                                        key={`${relation.startNode}-${relation.endNode}-${relation.type}`}
+                                        item={true}
+                                        xs={3}
+                                    >
+                                        <Statistic num={relation.count} label={relation.type}/>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </Grid>
+                    </Grid>
                 );
         }
 

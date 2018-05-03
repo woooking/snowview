@@ -3,21 +3,30 @@ import { TableCell, TableRow, withStyles, WithStyles } from 'material-ui';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import ExpandLessIcon from 'material-ui-icons/ExpandLess';
 import { Theme } from 'material-ui/styles';
+import Typography from 'material-ui/Typography';
 
 const styles = (theme: Theme) => ({
     detail: {
-        borderLeft: '0.25rem',
-        borderLeftStyle: 'solid',
-        borderLeftColor: theme.palette.secondary[500],
-        paddingLeft: theme.spacing.unit
+        borderWidth: '0.25px',
+        borderStyle: 'solid',
+        borderColor: '0x7F7F7F',
+        padding: '8px',
+        margin: '8px',
     },
     cellRank: {
         width: '12%'
     },
     cellMain: {
         width: '76%',
+        borderBottom: 'none',
         overflowWrap: 'normal',
         whiteSpace: 'normal'
+    },
+    cellTitle: {
+        fontSize: 16,
+        color: '#3f51b5',
+        fontWeight: 'bold' as 'bold',
+        display: 'inline',
     },
     highlight: {
         background: theme.palette.primary[50]
@@ -32,7 +41,7 @@ interface RankRowProps {
     detail: string;
 }
 
-type RankRowStyle = WithStyles<'detail' | 'cellRank' | 'cellMain' | 'highlight'>;
+type RankRowStyle = WithStyles<'detail' | 'cellRank' | 'cellMain' | 'cellTitle' | 'highlight'>;
 
 class RankRow extends React.Component<RankRowProps & RankRowStyle, { expand: boolean }> {
     state = {
@@ -51,10 +60,8 @@ class RankRow extends React.Component<RankRowProps & RankRowStyle, { expand: boo
         const {classes, id, rank, title, detail} = this.props;
         return (
             <TableRow>
-                <TableCell className={classes.cellRank}> {rank} </TableCell>
-                <TableCell className={classes.cellRank}> {id} </TableCell>
                 <TableCell className={classes.cellMain}>
-                    {title}
+                    <Typography className={classes.cellTitle}>{`[No.${rank}][ID=${id}]${title}`}</Typography>
                     {!this.state.expand && <ExpandMoreIcon onClick={this.handleExpandMore}/>}
                     {this.state.expand && <ExpandLessIcon onClick={this.handleExpandLess}/>}
                     {this.state.expand && <div className={classes.detail} dangerouslySetInnerHTML={{__html: detail}}/>}

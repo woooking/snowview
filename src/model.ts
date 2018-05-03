@@ -1,4 +1,5 @@
 export interface CypherQueryResult {
+    cypher?: string;
     nodes: Neo4jNode[];
     relationships: Neo4jRelation[];
 }
