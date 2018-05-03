@@ -1,4 +1,3 @@
-
 export const SERVER_URL = 'http://162.105.88.28:8080';
 export const DOCUMENT_SEARCH_URL = `${SERVER_URL}/docSearch`;
 export const CODE_SEARCH_URL = `${SERVER_URL}/codeSearch`;
@@ -11,7 +10,7 @@ export const DOC_PREDEFINED_QUERIES = [
 ];
 
 export const GRAPH_PREDEFINED_QUERIES = [
-	'谁修改过RasPackager?',
+    '谁修改过RasPackager?',
     '谁修改过调用了setTags方法的类？',
     '判断资源路径并打包',
 ];
