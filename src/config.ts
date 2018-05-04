@@ -16,4 +16,5 @@ export const GRAPH_PREDEFINED_QUERIES = [
 	'谁修改过调用了setTags函数的类',
 	'判断资源路径并生成ras压缩包',
 	'编辑web服务资源的可信等级并保存',
+	'根据日期生成资源可信等级的统计图表'
 ];
