@@ -43,9 +43,12 @@ const selectedNode = reducerWithInitialState<Option<number>>(none)
 
 const nodes = reducerWithInitialState<NodesState>(Map())
     .case(fetchGraph.started, () => Map())
-    .case(fetchNode.started, (s, p) => s.update(p, (val = none) => val))
-    .case(fetchNode.done, (s, p) => s.set(p.params, some(new SnowNode(true, p.result))))
-    .case(fetchNode.failed, (s, p) => withError('Failed to get node', s.get(p.params).isEmpty ? s.remove(p.params) : s))
+    .case(fetchNode.started, (s, p) => s.update(p.id, (val = none) => val))
+    .case(fetchNode.done, (s, p) => s.set(p.params.id, some(new SnowNode(true, p.result))))
+    .case(
+        fetchNode.failed,
+        (s, p) => withError('Failed to get node', s.get(p.params.id).isEmpty ? s.remove(p.params.id) : s)
+    )
     .case(addNodes, (s, p) => p.reduce((prev, n) => prev.set(n.id, some(new SnowNode(true, n))), s))
     .case(removeNode, (s, p) => s.set(p, s.get(p).map(sn => new SnowNode(false, sn.node))));
 
@@ -83,10 +86,10 @@ const relations = reducerWithInitialState<RelationsState>(Map())
 
 const relationLists = reducerWithInitialState<RelationListsState>(Map())
     .case(fetchGraph.started, () => Map())
-    .case(fetchRelationList.started, (state, payload) => state.set(payload, state.get(payload, none)))
-    .case(fetchRelationList.done, (state, payload) => state.set(payload.params, some(payload.result)))
-    .case(fetchRelationList.failed, (state, payload) =>
-        withError('Failed to get relation list', state.remove(payload.params))
+    .case(fetchRelationList.started, (s, p) => s.set(p.id, s.get(p.id, none)))
+    .case(fetchRelationList.done, (s, p) => s.set(p.params.id, some(p.result)))
+    .case(fetchRelationList.failed, (s, p) =>
+        withError('Failed to get relation list', s.remove(p.params.id))
     );
 
 const cypher = reducerWithInitialState<string>('')

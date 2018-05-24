@@ -30,19 +30,20 @@ const mapStateToProps = (state: RootState) => ({
 
 interface DocumentTabProps {
     documentResult: DocumentResultState;
+    project: string;
 }
 
 type DocumentTabStyle = WithStyles<'container' | 'table' | 'progress'>;
 
-class DocumentPage extends React.Component<DocumentTabProps & DocumentTabStyle, {}> {
+class DocumentTab extends React.Component<DocumentTabProps & DocumentTabStyle, {}> {
 
     render() {
-        const {classes, documentResult} = this.props;
+        const {classes, documentResult, project} = this.props;
         return (
             <div className={classes.container}>
                 <SearchForm
                     predefinedQueries={DOC_PREDEFINED_QUERIES}
-                    callback={(param: { query: string }) => fetchDocumentResultWorker(param)}
+                    callback={(param: { query: string }) => fetchDocumentResultWorker({project, query: param.query})}
                 />
                 {documentResult.fetching && <LinearProgress className={classes.progress}/>}
                 {documentResult.result != null && <Table className={classes.table}>
@@ -68,4 +69,4 @@ class DocumentPage extends React.Component<DocumentTabProps & DocumentTabStyle, 
     }
 }
 
-export default withStyles(styles)<{}>(connect(mapStateToProps)(DocumentPage));
+export default withStyles(styles)<{ project: string }>(connect(mapStateToProps)(DocumentTab));

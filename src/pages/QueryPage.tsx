@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { withStyles, WithStyles } from 'material-ui';
-import { Theme } from 'material-ui/styles';
 import SearchForm from '../components/SearchForm';
 import GraphTab from '../components/GraphTab';
 import { fetchGraphWorker } from '../redux/action';
@@ -9,7 +8,7 @@ import { GRAPH_PREDEFINED_QUERIES } from '../config';
 import { RootState } from '../redux/reducer';
 import Typography from 'material-ui/Typography';
 
-const styles = (theme: Theme) => ({
+const styles = () => ({
     brand: {
         textDecoration: 'none'
     },
@@ -24,16 +23,19 @@ const mapStateToProps = (state: RootState) => ({
 
 interface QueryPageProps {
     cypher: string;
+    project: string;
 }
 
 class QueryPage extends React.Component<QueryPageProps & WithStyles<'brand' | 'cypher'>> {
 
     render() {
+        const {project} = this.props;
+
         return (
             <div>
                 <SearchForm
                     predefinedQueries={GRAPH_PREDEFINED_QUERIES}
-                    callback={(param: { query: string }) => fetchGraphWorker(param)}
+                    callback={(param: { query: string }) => fetchGraphWorker({project, query: param.query})}
                 />
                 {this.props.cypher.length > 0 &&
                 <div className={this.props.classes.cypher}>
@@ -41,10 +43,10 @@ class QueryPage extends React.Component<QueryPageProps & WithStyles<'brand' | 'c
                     <Typography>{this.props.cypher}</Typography>
                 </div>
                 }
-                <GraphTab/>
+                <GraphTab project={project}/>
             </div>
         );
     }
 }
 
-export default withStyles(styles)<{}>(connect(mapStateToProps)(QueryPage));
+export default withStyles(styles)<{ project: string }>(connect(mapStateToProps)(QueryPage));

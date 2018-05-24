@@ -21,6 +21,7 @@ interface GraphPanelProps {
     relations: RelationsState;
     selectedNode: Option<number>;
     dispatch: Dispatch<RootState>;
+    project: string;
 }
 
 class Graph extends D3Force<SnowNode, SnowRelation> {
@@ -29,7 +30,7 @@ class Graph extends D3Force<SnowNode, SnowRelation> {
 class GraphPanel extends React.Component<GraphPanelProps, {}> {
 
     render() {
-        const {dispatch, selectedNode} = this.props;
+        const {dispatch, selectedNode, project} = this.props;
 
         const nodes = this.props.nodes
             .valueSeq()
@@ -70,7 +71,7 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
                             getSourceNodeID={d => d.source.toString()}
                             getTargetNodeID={d => d.target.toString()}
                             onNodeClick={id => {
-                                dispatch(fetchRelationListWorker(parseInt(id, 10)));
+                                dispatch(fetchRelationListWorker({project, id: parseInt(id, 10)}));
                                 dispatch(selectNode(parseInt(id, 10)));
                             }}
                         />}

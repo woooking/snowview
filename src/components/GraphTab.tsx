@@ -29,6 +29,7 @@ const mapStateToProps = (state: RootState) => {
 
 interface GraphTabProps {
     fetchingGraph: boolean;
+    project: string;
     dispatch: Dispatch<RootState>;
 }
 
@@ -36,14 +37,14 @@ type GraphTabStyles = WithStyles<'leftPanel' | 'rightPanel' | 'informationPanel'
 
 class GraphTab extends React.Component<GraphTabProps & GraphTabStyles, {}> {
     render() {
-        const {classes, fetchingGraph} = this.props;
+        const {classes, fetchingGraph, project} = this.props;
         const show = (
             <Grid container={true} spacing={0}>
                 <Grid item={true} xs={8} className={classes.leftPanel}>
-                    <GraphPanel/>
+                    <GraphPanel project={project}/>
                 </Grid>
                 <Grid item={true} xs={4} className={classes.rightPanel}>
-                    <FindEntityPanel/>
+                    <FindEntityPanel project={project}/>
                     <div className={classes.informationPanel}>
                         <InformationPanel/>
                     </div>
@@ -59,4 +60,4 @@ class GraphTab extends React.Component<GraphTabProps & GraphTabStyles, {}> {
     }
 }
 
-export default withStyles(styles)<{}>(connect(mapStateToProps)(GraphTab));
+export default withStyles(styles)<{project: string}>(connect(mapStateToProps)(GraphTab));

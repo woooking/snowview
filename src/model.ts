@@ -79,3 +79,8 @@ export interface DocumentResult {
     label: string;
     properties: DocumentProperty;
 }
+
+export interface ProjectInfo {
+    name: string;
+    description: string;
+}

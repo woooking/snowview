@@ -38,6 +38,7 @@ interface FindEntityPanelProps {
     relations: RelationsState;
     relationLists: RelationListsState;
     dispatch: Dispatch<RootState>;
+    project: string;
 }
 
 class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<'formControl'>, {}> {
@@ -47,7 +48,7 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
         event.preventDefault();
 
         const catalog = this.input.value;
-        const {dispatch, selectedNode, relationLists, relations} = this.props;
+        const {dispatch, selectedNode, relationLists, relations, project} = this.props;
 
         const relationList = relationLists.get(selectedNode.get);
 
@@ -61,7 +62,7 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
         readyToShow.forEach(r => {
             const source = r.source, target = r.target;
             const otherID = source === selectedNode.get ? target : source;
-            dispatch(fetchNodeWorker(otherID));
+            dispatch(fetchNodeWorker({project, id: otherID}));
         });
 
         dispatch(showRelations(readyToShow.map(x => x.id)));
@@ -117,4 +118,4 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
     }
 }
 
-export default withStyles(styles)<{}>(connect(mapStateToProps)(FindEntityPanel));
+export default withStyles(styles)<{project: string}>(connect(mapStateToProps)(FindEntityPanel));
