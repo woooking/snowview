@@ -81,9 +81,9 @@ export const fetchGraphWorker = bindThunkAction(
         return {};
     });
 
-export const fetchNavGraph = actionCreator.async<{}, NavResult>('FETCH_NAV_GRAPH');
+export const fetchNavGraph = actionCreator.async<{project: string}, NavResult>('FETCH_NAV_GRAPH');
 export const fetchNavGraphWorker = bindThunkAction(
     fetchNavGraph,
-    async () => {
-        return await $.post(NAV_URL, {});
+    async (params) => {
+        return await $.post(NAV_URL, params);
     });

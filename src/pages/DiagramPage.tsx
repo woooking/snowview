@@ -33,6 +33,7 @@ const mapStateToProps = (state: RootState) => ({
 
 interface DiagramPageProps {
     navGraph: NavGraphState;
+    project: string;
     dispatch: Dispatch<RootState>;
     history: History;
 }
@@ -43,7 +44,7 @@ type DiagramPageStyles =
 class DiagramPage extends Component<DiagramPageProps & DiagramPageStyles, { input: string }> {
 
     componentDidMount() {
-        this.props.dispatch(fetchNavGraphWorker({}));
+        this.props.dispatch(fetchNavGraphWorker({project: this.props.project}));
     }
 
     render() {
@@ -98,4 +99,4 @@ class DiagramPage extends Component<DiagramPageProps & DiagramPageStyles, { inpu
     }
 }
 
-export default withStyles(styles)<{}>(connect(mapStateToProps)(withRouter(DiagramPage)));
+export default withStyles(styles)<{project: string}>(connect(mapStateToProps)(withRouter(DiagramPage)));

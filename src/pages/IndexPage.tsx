@@ -33,10 +33,14 @@ const styles = (theme: Theme) => ({
 }) as StyleRules<IndexPageStyleKeys>;
 
 class IndexPage extends React.Component<IndexPageStyle, IndexPageState> {
-    state: IndexPageState = {
-        filter: '',
-        projects: []
-    };
+    constructor(props: IndexPageStyle) {
+        super(props);
+
+        this.state = {
+          filter: '',
+          projects: []
+        };
+    }
 
     componentDidMount() {
         fetch(PROJECTS_INFO_URL)

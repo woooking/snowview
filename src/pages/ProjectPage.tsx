@@ -42,7 +42,7 @@ class ProjectPage extends React.Component<RouteComponentProps<ProjectPageRoutePr
                 </Tabs>
                 {this.state.tab === 'document' && <DocumentTab project={project}/>}
                 {this.state.tab === 'graph' && <QueryPage project={project}/>}
-                {this.state.tab === 'diagram' && <DiagramPage/>}
+                {this.state.tab === 'diagram' && <DiagramPage project={project}/>}
             </div>
         );
     }
