@@ -80,7 +80,7 @@ class DiagramPage extends Component<DiagramPageProps & DiagramPageStyles, { inpu
                                         style={{textAlign: 'center'}}
                                         key={`${relation.startNode}-${relation.endNode}-${relation.type}`}
                                         item={true}
-                                        xs={3}
+                                        xs={4}
                                     >
                                         <Statistic num={relation.count} label={relation.type}/>
                                     </Grid>
