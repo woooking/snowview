@@ -9,7 +9,7 @@ const styles = (theme: Theme) => ({
   detail: {
     borderWidth: '0.25px',
     borderStyle: 'solid',
-    borderColor: '0x7F7F7F',
+    borderColor: '#7F7F7F',
     padding: '8px',
     margin: '8px',
   },
@@ -17,7 +17,6 @@ const styles = (theme: Theme) => ({
     width: '12%'
   },
   cellMain: {
-    width: '76%',
     borderBottom: 'none',
     overflowWrap: 'normal',
     whiteSpace: 'normal'

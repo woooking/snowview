@@ -41,8 +41,8 @@ const card = {
 } as React.CSSProperties;
 
 const defaultFont = {
-  fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-  fontWeight: 400,
+  fontFamily: '"Roboto" , "Noto Sans CJK SC", "Helvetica", "Arial", sans-serif',
+  fontWeight: 300,
   lineHeight: '1.5em'
 } as React.CSSProperties;
 

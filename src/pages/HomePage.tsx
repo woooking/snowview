@@ -42,17 +42,13 @@ class HomePage extends React.Component<HomePageStyle, {}> {
           </Typography>
           <ul>
             <li>
-              <Typography component="h3" type="body1">
-                It automatically extracts domain-specific knowledge graphs from the clutter of heterogeneous
-                software resources (e.g. source code, user tutorial, commit history, mailing lists, issue
-                reports and forum discussions).
-              </Typography>
+              It automatically extracts domain-specific knowledge graphs from the clutter of heterogeneous
+              software resources (e.g. source code, user tutorial, commit history, mailing lists, issue
+              reports and forum discussions).
             </li>
             <li>
-              <Typography component="h3" type="body1">
-                It provides intelligent question answering services for programmers to query these software
-                knowledge graphs.
-              </Typography>
+              It provides intelligent question answering services for programmers to query these software
+              knowledge graphs.
             </li>
           </ul>
         </div>
