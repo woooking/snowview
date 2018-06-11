@@ -12,9 +12,8 @@ import createMuiTheme from 'material-ui/styles/createMuiTheme';
 import 'typeface-roboto';
 import { BrowserRouter } from 'react-router-dom';
 
-/// <reference path='./index.d.ts'/>
-
 require('../node_modules/js-snackbar/dist/snackbar.css');
+require('./assets/css/snowgraph.css');
 
 const store = createStore(appReducer, composeWithDevTools(applyMiddleware(thunk)));
 

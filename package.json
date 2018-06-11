@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@types/chance": "^0.7.35",
+    "@types/classnames": "^2.2.4",
     "@types/d3": "^4.11.1",
     "@types/jquery": "^3.2.16",
     "@types/lodash": "^4.14.85",
@@ -11,6 +12,7 @@
     "@types/react-redux": "^5.0.12",
     "@types/react-router-dom": "^4.2.2",
     "chance": "^1.0.12",
+    "classnames": "^2.2.6",
     "d3": "^4.11.0",
     "immutable": "^3.8.2",
     "jquery": "^3.2.1",
