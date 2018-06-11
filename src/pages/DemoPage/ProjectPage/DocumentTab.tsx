@@ -1,23 +1,19 @@
 import * as React from 'react';
-import { LinearProgress, Table, TableBody, TableCell, TableHead, TableRow, withStyles, WithStyles } from 'material-ui';
+import { LinearProgress, withStyles, WithStyles } from 'material-ui';
 import { Theme } from 'material-ui/styles';
-import { DocumentResultState, RootState } from '../redux/reducer';
-import RankRow from '../components/RankRow';
-import SearchForm from '../components/SearchForm';
+import { DocumentResultState, RootState } from '../../../redux/reducer';
+import RankRow from '../../../components/RankRow';
+import SearchForm from '../../../components/SearchForm';
 import { connect } from 'react-redux';
-import { fetchDocumentResultWorker } from '../redux/action';
-import { DOC_PREDEFINED_QUERIES } from '../config';
+import { fetchDocumentResultWorker } from '../../../redux/action';
+import { DOC_PREDEFINED_QUERIES } from '../../../config';
 import { RouteComponentProps } from 'react-router';
+import MatTable from '../../../components/MatTable/MatTable';
+import { container } from '../../../variables/styles';
 
 const styles = (theme: Theme) => ({
   container: {
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-  table: {
-    width: '70%',
+    ...container,
   },
   progress: {
     flexGrow: 1,
@@ -37,38 +33,36 @@ interface DocumentTabProps extends RouteComponentProps<DocumentTabRouteProps> {
   documentResult: DocumentResultState;
 }
 
-type DocumentTabStyle = WithStyles<'container' | 'table' | 'progress'>;
+type DocumentTabStyle = WithStyles<'container' | 'progress'>;
 
 class DocumentTab extends React.Component<DocumentTabProps & DocumentTabStyle, {}> {
 
   render() {
     const {classes, documentResult} = this.props;
     const project = this.props.match.params.project;
+
     return (
-      <div className={classes.container}>
+      <div>
         <SearchForm
+          query={documentResult.query}
           predefinedQueries={DOC_PREDEFINED_QUERIES}
           callback={(param: { query: string }) => fetchDocumentResultWorker({project, query: param.query})}
         />
-        {documentResult.fetching && <LinearProgress className={classes.progress}/>}
-        {documentResult.result != null && <Table className={classes.table}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Answer</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {documentResult.result
-              .map(r => <RankRow
+        <div className={classes.container}>
+          {documentResult.fetching && <LinearProgress className={classes.progress}/>}
+          {documentResult.result != null &&
+          <MatTable
+            tableHead={['Rank', 'ID', 'Answer']}
+            tableData={documentResult.result.map(r => ({
+              columns: [`${r.rank}`, `${r.id}`, <RankRow
                 key={r.id}
                 initExpand={r.rank === 1}
-                rank={r.rank}
-                id={r.id}
                 title={r.properties.title}
                 detail={r.properties.html}
-              />)}
-          </TableBody>
-        </Table>}
+              />]
+            }))}
+          />}
+        </div>
       </div>
     );
   }

@@ -3,7 +3,7 @@ import {
   blueCardHeader, card, cardHeader, defaultFont, greenCardHeader, orangeCardHeader, purpleCardHeader,
   redCardHeader
 } from '../styles';
-import { StyleRules, Theme } from 'material-ui/styles';
+import { StyleRules } from 'material-ui/styles';
 
 type RegularCardStyleKeys = 'card' |
   'cardPlain' |
@@ -20,7 +20,7 @@ type RegularCardStyleKeys = 'card' |
 
 export type RegularCardStyle = WithStyles<RegularCardStyleKeys>;
 
-const regularCardStyle = (theme: Theme) => ({
+const regularCardStyle = () => ({
   card,
   cardPlain: {
     background: 'transparent',
@@ -28,7 +28,7 @@ const regularCardStyle = (theme: Theme) => ({
   },
   cardHeader: {
     // display: 'inline-block',
-    width: '200px',
+    // width: '200px',
     ...cardHeader,
     ...defaultFont
   },

@@ -5,30 +5,24 @@ import { RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
 import { Theme } from 'material-ui/styles';
 import { ChangeEvent, FormEvent } from 'react';
-import SearchIcon from 'material-ui-icons/Search';
-import Button from 'material-ui/Button';
 
 const styles = (theme: Theme) => ({
     container: {
         margin: theme.spacing.unit * 2
     },
     form: {
-        width: '70%',
+        width: '100%',
     },
     search: {
         marginLeft: theme.spacing.unit * 2,
         marginRight: theme.spacing.unit * 2,
-        width: '90%',
+        width: `calc(100% - ${theme.spacing.unit * 4}px)`,
         flex: 1,
     },
 });
 
-const mapStateToProps = (state: RootState) => ({
-    query: state.documentResult.query
-});
-
 interface SearchFormProps {
-    query: string;
+    query?: string;
     predefinedQueries: string[];
     callback: Function;
     dispatch: Dispatch<RootState>;
@@ -42,11 +36,11 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
     };
 
     componentDidMount() {
-        this.setState({input: this.props.query});
+        this.setState({input: this.props.query || ''});
     }
 
     componentWillReceiveProps(nextProps: SearchFormProps & SearchFormStyles) {
-        this.setState({input: nextProps.query});
+        this.setState({input: nextProps.query || ''});
     }
 
     handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -76,14 +70,11 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
                 <datalist id="predefined-queries">
                     {predefinedQueries.map(q => <option key={q} value={q}/>)}
                 </datalist>
-                <Button type="submit" style={{fontSize: 24}}>
-                    <SearchIcon/>
-                </Button>
             </form>
         );
     }
 }
 
 export default withStyles(styles)<{
-    predefinedQueries: string[], callback: Function
-}>(connect(mapStateToProps)(SearchForm));
+    predefinedQueries: string[], callback: Function, query?: string
+}>(connect()(SearchForm));

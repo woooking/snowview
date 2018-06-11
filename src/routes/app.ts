@@ -11,7 +11,7 @@ import {
 } from 'material-ui-icons';
 import { SvgIconProps } from 'material-ui/SvgIcon';
 import HomePage from '../pages/HomePage';
-import DemoPage from '../pages/DemoPage';
+import DemoPage from '../pages/DemoPage/DemoPage';
 import ResourcePage from '../pages/ResourcePage';
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';

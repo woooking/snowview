@@ -5,15 +5,15 @@ import { Dispatch } from 'redux';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { LinearProgress, Typography, withStyles, WithStyles } from 'material-ui';
 import { History } from 'history';
-import { RootState } from '../redux/reducer';
-import D3Chord from '../components/D3Chord';
-import { name2color } from '../utils/utils';
+import { RootState } from '../../../redux/reducer';
+import D3Chord from '../../../components/D3Chord';
+import { name2color } from '../../../utils/utils';
 import Grid from 'material-ui/Grid';
-import Statistic from '../components/Statistic';
-import { container } from '../variables/styles';
+import Statistic from '../../../components/Statistic';
+import { container } from '../../../variables/styles';
 import { StyleRules } from 'material-ui/styles';
-import { NAV_URL } from '../config';
-import { NavNode, NavRelation, NavResult } from '../model';
+import { NAV_URL } from '../../../config';
+import { NavNode, NavRelation, NavResult } from '../../../model';
 import { none, Option, some } from 'ts-option';
 
 interface DiagramTabState {
@@ -61,10 +61,7 @@ class DiagramTab extends Component<DiagramTabProps & DiagramTabStyles, DiagramTa
 
   changeFetch = (fetching: boolean) => {
     this.setState(prevState => ({
-      navGraph: {
-        fetching,
-        ...prevState.navGraph
-      }
+      navGraph: Object.assign(prevState, {fetching})
     }));
   }
 

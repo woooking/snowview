@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import CatalogPage from './CatalogPage';
-import ProjectPage from './ProjectPage';
+import ProjectPage from './ProjectPage/ProjectPage';
 
 class DemoPage extends React.Component<{}, {}> {
   render() {

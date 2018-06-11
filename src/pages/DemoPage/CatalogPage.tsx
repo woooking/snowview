@@ -1,15 +1,15 @@
 import * as React from 'react';
-import logo from '../assets/img/logo.png';
+import logo from '../../assets/img/logo.png';
 import { TextField, WithStyles } from 'material-ui';
 import { withStyles } from 'material-ui/styles';
 import { StyleRules } from 'material-ui/styles/withStyles';
 import { ChangeEvent } from 'react';
-import { ProjectInfo } from '../model';
-import { PROJECTS_INFO_URL } from '../config';
+import { ProjectInfo } from '../../model';
+import { PROJECTS_INFO_URL } from '../../config';
 import { Link } from 'react-router-dom';
-import MatTable from '../components/MatTable/MatTable';
-import { container, flexContainer } from '../variables/styles';
-import RegularCard from '../components/Cards/RegularCard';
+import MatTable from '../../components/MatTable/MatTable';
+import { container, flexContainer } from '../../variables/styles';
+import RegularCard from '../../components/Cards/RegularCard';
 
 interface CatalogPageState {
   filter: string;

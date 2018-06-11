@@ -20,7 +20,7 @@ class D3ForceNode extends React.Component<D3ForceNodeProps, {}> {
     g: SVGGElement | null;
 
     componentDidMount() {
-        const {simulation, dragCallback, nodeRadius, onNodeClick, id} = this.props;
+        const {simulation, dragCallback, onNodeClick, id} = this.props;
 
         const node = d3.select(this.g)
             .call(d3.drag<SVGGElement, {}>()
@@ -30,7 +30,7 @@ class D3ForceNode extends React.Component<D3ForceNodeProps, {}> {
                     }
                 })
                 .on('drag', () => {
-                    dragCallback(this, d3.event.x - nodeRadius, d3.event.y - nodeRadius);
+                    dragCallback(this, d3.event.x, d3.event.y);
                 })
                 .on('end', () => {
                     if (!d3.event.active) {
@@ -51,14 +51,14 @@ class D3ForceNode extends React.Component<D3ForceNodeProps, {}> {
             <g ref={i => this.g = i} className="node" transform={`translate(${x}, ${y})`}>
                 <circle
                     r={nodeRadius}
-                    cx={nodeRadius}
-                    cy={nodeRadius}
+                    cx={0}
+                    cy={0}
                     style={{fill: color}}
                     strokeWidth={highlight ? 3 : 0}
                     stroke="black"
                 />
-                <text textAnchor="middle" x={nodeRadius} y={nodeRadius - 5} fontWeight="bold">{label}</text>
-                <text textAnchor="middle" x={nodeRadius} y={nodeRadius + 15}>{text}</text>
+                <text textAnchor="middle" x={0} y={-5} fontWeight="bold">{label}</text>
+                <text textAnchor="middle" x={0} y={15}>{text}</text>
             </g>
         );
     }
