@@ -1,60 +1,106 @@
 import * as React from 'react';
+import * as $ from 'jquery';
 import { Component } from 'react';
 import { Dispatch } from 'redux';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
+import { RouteComponentProps, withRouter } from 'react-router';
 import { LinearProgress, Typography, withStyles, WithStyles } from 'material-ui';
 import { History } from 'history';
-import { fetchNavGraphWorker } from '../redux/action';
 import { RootState } from '../redux/reducer';
-import { NavGraphState } from '../redux/navGraphReducer';
 import D3Chord from '../components/D3Chord';
 import { name2color } from '../utils/utils';
 import Grid from 'material-ui/Grid';
 import Statistic from '../components/Statistic';
+import { container } from '../variables/styles';
+import { StyleRules } from 'material-ui/styles';
+import { NAV_URL } from '../config';
+import { NavNode, NavRelation, NavResult } from '../model';
+import { none, Option, some } from 'ts-option';
+
+interface DiagramTabState {
+  navGraph: {
+    fetching: boolean;
+    nodes: NavNode[];
+    relations: NavRelation[];
+    matrix: Option<number[][]>;
+  };
+}
+
+interface DiagramTabRouteProps {
+  project: string;
+}
+
+interface DiagramTabProps extends RouteComponentProps<DiagramTabRouteProps> {
+  dispatch: Dispatch<RootState>;
+  history: History;
+}
+
+type DiagramTabStyleKeys = 'container' | 'white' | 'progress' | 'info';
+
+type DiagramTabStyles = WithStyles<DiagramTabStyleKeys>;
 
 const styles = () => ({
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: '60px',
+    ...container
   },
   info: {
     fontSize: '1.5rem',
     margin: '20px'
   }
-}) as React.CSSProperties;
+}) as StyleRules<DiagramTabStyleKeys>;
 
-const mapStateToProps = (state: RootState) => ({
-  navGraph: state.navGraph
-});
+class DiagramTab extends Component<DiagramTabProps & DiagramTabStyles, DiagramTabState> {
+  state: DiagramTabState = {
+    navGraph: {
+      fetching: false,
+      nodes: [],
+      relations: [],
+      matrix: none
+    }
+  };
 
-interface DiagramTabProps {
-  navGraph: NavGraphState;
-  project: string;
-  dispatch: Dispatch<RootState>;
-  history: History;
-}
+  changeFetch = (fetching: boolean) => {
+    this.setState(prevState => ({
+      navGraph: {
+        fetching,
+        ...prevState.navGraph
+      }
+    }));
+  }
 
-type DiagramTabStyles =
-  WithStyles<'container' | 'white' | 'progress' | 'info'>;
+  resultToState = (result: NavResult) => {
+    const ns = result.nodes;
+    const d = ns.map(() => ns.map(() => 0));
+    result.relationships.forEach(r => d[r.startNode][r.endNode] += r.count);
 
-class DiagramTab extends Component<DiagramTabProps & DiagramTabStyles, { input: string }> {
+    return {
+      navGraph: {
+        fetching: false,
+        nodes: result.nodes,
+        relations: result.relationships,
+        matrix: some(d)
+      }
+    };
+  }
 
   componentDidMount() {
-    this.props.dispatch(fetchNavGraphWorker({project: this.props.project}));
+    this.changeFetch(true);
+
+    $.post(NAV_URL, {project: this.props.match.params.project})
+      .then((result: NavResult) => this.setState(this.resultToState(result)))
+      .catch(() => this.changeFetch(false));
   }
 
   render() {
-    const {classes, navGraph} = this.props;
+    const {classes} = this.props;
+    const {navGraph} = this.state;
 
     let navBody = <LinearProgress className={classes.progress}/>;
 
     if (!navGraph.fetching) {
       navBody = navGraph.matrix.isEmpty ?
         <Typography className={classes.white}>Failed to load nav graph</Typography> : (
-          <Grid container={true} spacing={0}>
+          <Grid container={true} spacing={8}>
             <Grid item={true} xs={5}>
               <D3Chord
                 id="nav-d3"
@@ -63,11 +109,11 @@ class DiagramTab extends Component<DiagramTabProps & DiagramTabStyles, { input: 
                 labels={navGraph.nodes.map(n => `${n.label}(${n.count})`)}
               />
             </Grid>
-            <Grid item={true} xs={6}>
+            <Grid item={true} xs={7}>
               <Typography className={classes.info}>Nodes:</Typography>
               <Grid container={true} spacing={8}>
                 {navGraph.nodes.map(node => (
-                  <Grid style={{textAlign: 'center'}} key={node.label} item={true} xs={4}>
+                  <Grid style={{textAlign: 'center'}} key={node.label} item={true} lg={3} sm={4}>
                     <Statistic num={node.count} label={node.label}/>
                   </Grid>
                 ))}
@@ -79,7 +125,8 @@ class DiagramTab extends Component<DiagramTabProps & DiagramTabStyles, { input: 
                     style={{textAlign: 'center'}}
                     key={`${relation.startNode}-${relation.endNode}-${relation.type}`}
                     item={true}
-                    xs={4}
+                    lg={3}
+                    sm={4}
                   >
                     <Statistic num={relation.count} label={relation.type}/>
                   </Grid>
@@ -98,4 +145,4 @@ class DiagramTab extends Component<DiagramTabProps & DiagramTabStyles, { input: 
   }
 }
 
-export default withStyles(styles)<{ project: string }>(connect(mapStateToProps)(withRouter(DiagramTab)));
+export default withStyles(styles)<{}>(withRouter(DiagramTab));

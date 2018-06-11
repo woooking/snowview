@@ -35,7 +35,7 @@ interface GraphTabProps {
 
 type GraphTabStyles = WithStyles<'leftPanel' | 'rightPanel' | 'informationPanel'>;
 
-class GraphTab extends React.Component<GraphTabProps & GraphTabStyles, {}> {
+class GraphPanels extends React.Component<GraphTabProps & GraphTabStyles, {}> {
     render() {
         const {classes, fetchingGraph, project} = this.props;
         const show = (
@@ -60,4 +60,4 @@ class GraphTab extends React.Component<GraphTabProps & GraphTabStyles, {}> {
     }
 }
 
-export default withStyles(styles)<{project: string}>(connect(mapStateToProps)(GraphTab));
+export default withStyles(styles)<{project: string}>(connect(mapStateToProps)(GraphPanels));

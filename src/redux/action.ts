@@ -1,11 +1,11 @@
 import * as $ from 'jquery';
 import actionCreatorFactory from 'typescript-fsa';
 import bindThunkAction from 'typescript-fsa-redux-thunk';
-import { CypherQueryResult, DocumentResult, NavResult, Neo4jRelation } from '../model';
+import { CypherQueryResult, DocumentResult, Neo4jRelation } from '../model';
 import { Neo4jNode } from '../model';
 import { RootState } from './reducer';
 import * as _ from 'lodash';
-import { CODE_SEARCH_URL, DOCUMENT_SEARCH_URL, NAV_URL, NODE_INFO_URL, RELATION_LIST_URL } from '../config';
+import { CODE_SEARCH_URL, DOCUMENT_SEARCH_URL, NODE_INFO_URL, RELATION_LIST_URL } from '../config';
 
 const actionCreator = actionCreatorFactory();
 
@@ -79,11 +79,4 @@ export const fetchGraphWorker = bindThunkAction(
         dispatch(addNodes(nodes));
         dispatch(addShownRelations(relations));
         return {};
-    });
-
-export const fetchNavGraph = actionCreator.async<{project: string}, NavResult>('FETCH_NAV_GRAPH');
-export const fetchNavGraphWorker = bindThunkAction(
-    fetchNavGraph,
-    async (params) => {
-        return await $.post(NAV_URL, params);
     });

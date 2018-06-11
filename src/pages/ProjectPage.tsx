@@ -1,29 +1,26 @@
 import * as React from 'react';
-import QueryPage from './QueryPage';
+import QueryTab from './GraphTab';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import DocumentTab from './DocumentTab';
-import DiagramPage from './DiagramTab';
-import { RouteComponentProps } from 'react-router';
+import DiagramTab from './DiagramTab';
+import { Route, RouteComponentProps, Switch } from 'react-router';
 
 interface ProjectPageRouteProps {
   project: string;
+  tab: TabType;
 }
 
 type TabType = 'diagram' | 'graph' | 'document';
 
-class ProjectPage extends React.Component<RouteComponentProps<ProjectPageRouteProps>, { tab: TabType }> {
-  state: { tab: TabType } = {
-    tab: 'document'
-  };
-
+class ProjectPage extends React.Component<RouteComponentProps<ProjectPageRouteProps>> {
   render() {
-    const {project} = this.props.match.params;
+    const {project, tab} = this.props.match.params;
 
     return (
       <div>
         <Tabs
-          value={this.state.tab}
-          onChange={(e, v) => this.setState({tab: v})}
+          value={tab}
+          onChange={(e, v) => this.props.history.push(`/demo/${project}/${v}`)}
           indicatorColor="primary"
           textColor="primary"
           scrollable={true}
@@ -33,9 +30,11 @@ class ProjectPage extends React.Component<RouteComponentProps<ProjectPageRoutePr
           <Tab value="graph" label="智能问答"/>
           <Tab value="document" label="语义搜索"/>
         </Tabs>
-        {this.state.tab === 'document' && <DocumentTab project={project}/>}
-        {this.state.tab === 'graph' && <QueryPage project={project}/>}
-        {this.state.tab === 'diagram' && <DiagramPage project={project}/>}
+        <Switch>
+          <Route path="/demo/:project/diagram" component={DiagramTab}/>
+          <Route path="/demo/:project/graph" component={QueryTab}/>
+          <Route path="/demo/:project/document" component={DocumentTab}/>
+        </Switch>
       </div>
     );
   }

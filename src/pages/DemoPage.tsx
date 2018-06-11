@@ -9,7 +9,7 @@ class DemoPage extends React.Component<{}, {}> {
       <div>
         <Switch>
           <Route exact={true} path="/demo" component={CatalogPage}/>
-          <Route path="/demo/:project" component={ProjectPage}/>
+          <Route path="/demo/:project/:tab" component={ProjectPage}/>
         </Switch>
       </div>
     );

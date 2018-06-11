@@ -57,7 +57,7 @@ class CatalogPage extends React.Component<CatalogPageStyle, CatalogPageState> {
     const data = projects.filter(p => p.name.toLowerCase().includes(filter.toLowerCase())).map(p => ({
       key: p.name,
       columns: [
-        <Link key={p.name} to={`/demo/${p.name}`}> {p.name} </Link>,
+        <Link key={p.name} to={`/demo/${p.name}/document`}> {p.name} </Link>,
         p.description
       ]
     }));
