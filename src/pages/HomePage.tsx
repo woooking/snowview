@@ -49,7 +49,7 @@ class HomePage extends React.Component<HomePageStyle, {}> {
             <img className={classes.logoTitle} src={logo} alt="SnowGraph"/>
           </h1>
           <Typography component="h2" type="headline">
-            SnowGraph ({emph('S')}oftware k{emph('NOW')}ledge {emph('Graph')})
+            SnowGraph ({emph('S')}oftware K{emph('now')}ledge {emph('Graph')})
             helps programmers learn how to reuse open source software
             projects.
           </Typography>
