@@ -4,14 +4,21 @@ import { WithStyles, Typography } from 'material-ui';
 import { withStyles } from 'material-ui/styles';
 import { StyleRules } from 'material-ui/styles/withStyles';
 import { container, flexContainer, primaryColor } from '../variables/styles';
+import Carousel from '../components/Carousel/Carousel';
 
-type HomePageStyleKeys = 'container' | 'flexContainer' | 'logoTitle';
+type HomePageStyleKeys = 'container' | 'flexContainer' | 'logoTitle' | 'img' | 'swipe';
 
 type HomePageStyle = WithStyles<HomePageStyleKeys>;
 
 const styles = () => ({
   container,
   flexContainer,
+  swipe: {
+    width: '800px',
+  },
+  img: {
+    maxWidth: 800,
+  },
   logoTitle: {
     position: 'relative',
     width: '300px',
@@ -23,6 +30,12 @@ const styles = () => ({
 const emph = (text: string) => (
   <span style={{color: primaryColor}}>{text}</span>
 );
+
+const carousels = [
+  require('../assets/img/carousel1.png'),
+  require('../assets/img/carousel2.png'),
+  require('../assets/img/carousel3.png'),
+];
 
 class HomePage extends React.Component<HomePageStyle, {}> {
   render() {
@@ -51,6 +64,11 @@ class HomePage extends React.Component<HomePageStyle, {}> {
               knowledge graphs.
             </li>
           </ul>
+          <div className={classes.swipe}>
+            <Carousel slideCount={carousels.length}>
+              {carousels.map(c => <img className={classes.img} src={c} alt={c} key={c} />)}
+            </Carousel>
+          </div>
         </div>
       </div>
     );
