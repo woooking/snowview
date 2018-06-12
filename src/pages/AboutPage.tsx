@@ -74,19 +74,19 @@ class AboutPage extends React.Component<AboutPageStyle, {}> {
 
     return (
       <div className={classes.container}>
-        <RegularCard cardTitle="Faulty" headerColor="red">
+        <RegularCard cardTitle="Authors" headerColor="purple">
+          <p>
+            SnowGraph由北京大学信息科学技术学院软件复用小组研发。
+            该小组以谢冰教授为核心，主要研究内容涵盖软件工程、软件复用技术的多个方面，包括：软件构建技术、软件资源管理、软件数据挖掘、智能软件开发方法等。
+            SnowGraph的主要研发人员包括（2016年至今）：
+          </p>
+          <h5>Faulty:</h5>
           <MatTable tableData={faulty}/>
-        </RegularCard>
-
-        <RegularCard cardTitle="Project Managers" headerColor="green">
+          <h5>Project Manager:</h5>
           <MatTable tableData={projectManager}/>
-        </RegularCard>
-
-        <RegularCard cardTitle="Committers" headerColor="orange">
+          <h5>Committers:</h5>
           <MatTable tableData={committers}/>
-        </RegularCard>
-
-        <RegularCard cardTitle="Sponsors" headerColor="blue">
+          <h5>Sponsors:</h5>
           <MatTable tableData={sponsors}/>
         </RegularCard>
       </div>
