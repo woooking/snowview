@@ -21,7 +21,7 @@ class Carousel extends React.Component<CarouselProp, CarouselState> {
       window.clearInterval(this.timer);
     }
 
-    this.timer = window.setInterval(this.handleInterval, 3000);
+    this.timer = window.setInterval(this.handleInterval, 6000);
   }
 
   handleInterval = () => {

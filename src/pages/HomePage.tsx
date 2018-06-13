@@ -5,6 +5,7 @@ import { withStyles } from 'material-ui/styles';
 import { StyleRules } from 'material-ui/styles/withStyles';
 import { container, flexContainer, primaryColor } from '../variables/styles';
 import Carousel from '../components/Carousel/Carousel';
+import { Link } from 'react-router-dom';
 
 type HomePageStyleKeys = 'container' | 'flexContainer' | 'logoTitle' | 'img' | 'swipe';
 
@@ -64,6 +65,9 @@ class HomePage extends React.Component<HomePageStyle, {}> {
               knowledge graphs.
             </li>
           </ul>
+          <h5>
+            SnowGraph for {<Link to="/demo/Lucene/document">Lucene</Link>}
+          </h5>
           <div className={classes.swipe}>
             <Carousel slideCount={carousels.length}>
               {carousels.map(c => <img className={classes.img} src={c} alt={c} key={c} />)}

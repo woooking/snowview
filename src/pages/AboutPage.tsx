@@ -16,7 +16,7 @@ const styles = () => ({
   }
 }) as StyleRules<AboutPageStyleStyleKeys>;
 
-const faulty = [{
+const faculty = [{
   key: 'Bing Xie',
   columns: ['Bing Xie', 'Professor, Peking University'],
 }, {
@@ -80,8 +80,8 @@ class AboutPage extends React.Component<AboutPageStyle, {}> {
             该小组以谢冰教授为核心，主要研究内容涵盖软件工程、软件复用技术的多个方面，包括：软件构建技术、软件资源管理、软件数据挖掘、智能软件开发方法等。
             SnowGraph的主要研发人员包括（2016年至今）：
           </p>
-          <h5>Faulty:</h5>
-          <MatTable tableData={faulty}/>
+          <h5>Faculty:</h5>
+          <MatTable tableData={faculty}/>
           <h5>Project Manager:</h5>
           <MatTable tableData={projectManager}/>
           <h5>Committers:</h5>

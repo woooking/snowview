@@ -29,16 +29,16 @@ export interface AppRoute {
 const appRoutes: AppRoute[] = [
   {
     path: '/',
-    sidebarName: 'Home',
-    navbarName: 'Home',
+    sidebarName: 'Intro',
+    navbarName: 'Intro',
     icon: Home,
     exact: true,
     component: HomePage
   },
   {
     path: '/demo',
-    sidebarName: 'Demo',
-    navbarName: 'Demo',
+    sidebarName: 'Use It',
+    navbarName: 'Use It',
     icon: Dashboard,
     exact: false,
     component: DemoPage
