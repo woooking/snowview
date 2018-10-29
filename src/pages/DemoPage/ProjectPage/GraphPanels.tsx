@@ -45,7 +45,7 @@ class GraphPanels extends React.Component<GraphPanelsProps & GraphPanelsStyles, 
       <Grid container={true} spacing={0}>
         <Grid item={true} xs={12} className={classes.leftPanel}>
           {cypher.length > 0 &&
-          <RegularCard cardTitle="Cypher">
+          <RegularCard headerColor="blue" cardTitle="Cypher">
             <h5>This natural language is translated as the SQL:</h5>
             <code>{cypher}</code>
           </RegularCard>
