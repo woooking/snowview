@@ -1,4 +1,4 @@
-export const SERVER_URL = 'http://localhost:8080';
+export const SERVER_URL = 'http://localhost:8004';
 export const PROJECTS_INFO_URL = `${SERVER_URL}/projects`;
 export const DOCUMENT_SEARCH_URL = `${SERVER_URL}/docSearch`;
 export const CODE_SEARCH_URL = `${SERVER_URL}/codeSearch`;
