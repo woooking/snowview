@@ -57,7 +57,7 @@ class DocumentTab extends React.Component<DocumentTabProps & DocumentTabStyle, {
               columns: [`${r.rank}`, `${r.id}`, <RankRow
                 key={r.id}
                 initExpand={r.rank === 1}
-                title={'[' + r.label + '] ' + r.properties.title == null ? "" : r.properties.title}
+                title={'['  + r.label + '] ' + (r.properties.title == null ? "" : r.properties.title)}
                 detail={r.properties.html}
               />]
             }))}

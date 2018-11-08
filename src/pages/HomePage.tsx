@@ -15,10 +15,10 @@ const styles = () => ({
   container,
   flexContainer,
   swipe: {
-    width: '800px',
+    width: '1000px',
   },
   img: {
-    maxWidth: 800,
+    maxWidth: 1000,
   },
   logoTitle: {
     position: 'relative',
@@ -33,9 +33,7 @@ const emph = (text: string) => (
 );
 
 const carousels = [
-  require('../assets/img/carousel1.png'),
-  require('../assets/img/carousel2.png'),
-  require('../assets/img/carousel3.png'),
+  require('../assets/img/carousel.png'),
 ];
 
 class HomePage extends React.Component<HomePageStyle, {}> {
@@ -66,7 +64,7 @@ class HomePage extends React.Component<HomePageStyle, {}> {
             </li>
           </ul>
           <h5>
-            SnowGraph for {<Link to="/demo/Lucene/document">Lucene</Link>}
+            SnowGraph for {<Link to="/demo/Lucene/diagram">Lucene</Link>}
           </h5>
           <div className={classes.swipe}>
             <Carousel slideCount={carousels.length}>

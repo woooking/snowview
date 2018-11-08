@@ -46,7 +46,7 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
       .toArray();
 
     return (
-      <RegularCard cardTitle="Knowledge Graph Inference Result">
+      <RegularCard headerColor="blue" cardTitle="Knowledge Graph Inference Result">
         {this.props.nodes.isEmpty() ?
           '' :
           <Graph

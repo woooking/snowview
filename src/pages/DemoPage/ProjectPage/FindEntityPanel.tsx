@@ -108,7 +108,7 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
     }
 
     return (
-      <RegularCard cardTitle="Surf in the knowledge graph">
+      <RegularCard headerColor="blue" cardTitle="Surf in the knowledge graph">
         {body}
       </RegularCard>
 

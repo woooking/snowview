@@ -90,7 +90,7 @@ class InformationPanel extends React.Component<InformationPanelProps & WithStyle
     }
 
     return (
-      <RegularCard cardTitle="Read detailed properties">
+      <RegularCard headerColor="blue" cardTitle="Read detailed properties">
         {body}
       </RegularCard>
     );
