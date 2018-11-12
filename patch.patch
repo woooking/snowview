@@ -1,0 +1,171 @@
+diff --git a/src/assets/img/carousel.png b/src/assets/img/carousel.png
+deleted file mode 100644
+index 84d6fc6..0000000
+Binary files a/src/assets/img/carousel.png and /dev/null differ
+diff --git a/src/assets/img/carousel1.png b/src/assets/img/carousel1.png
+new file mode 100644
+index 0000000..3932578
+Binary files /dev/null and b/src/assets/img/carousel1.png differ
+diff --git a/src/assets/img/carousel2.png b/src/assets/img/carousel2.png
+new file mode 100644
+index 0000000..cc49653
+Binary files /dev/null and b/src/assets/img/carousel2.png differ
+diff --git a/src/assets/img/carousel3.png b/src/assets/img/carousel3.png
+new file mode 100644
+index 0000000..391bd3d
+Binary files /dev/null and b/src/assets/img/carousel3.png differ
+diff --git a/src/config.ts b/src/config.ts
+index 277158a..bfd3156 100644
+--- a/src/config.ts
++++ b/src/config.ts
+@@ -1,4 +1,4 @@
+-export const SERVER_URL = 'http://localhost:8004';
++export const SERVER_URL = 'http://127.0.0.1:8004';
+ export const PROJECTS_INFO_URL = `${SERVER_URL}/projects`;
+ export const DOCUMENT_SEARCH_URL = `${SERVER_URL}/docSearch`;
+ export const CODE_SEARCH_URL = `${SERVER_URL}/codeSearch`;
+@@ -7,15 +7,7 @@ export const RELATION_LIST_URL = `${SERVER_URL}/relationList`;
+ export const NAV_URL = `${SERVER_URL}/nav`;
+ 
+ export const DOC_PREDEFINED_QUERIES = [
+-  'How to write a document into an index?',
+-  'How to get all field names in an IndexReader?',
+-  'How to parse wildcard query using TokenFilter?',
+ ];
+ 
+ export const GRAPH_PREDEFINED_QUERIES = [
+-  'Who change class named IndexReader',
+-  'How to write a document into an index?',
+-  'How to get all field names in an IndexReader?',
+-  'How to parse wildcard query using TokenFilter?',
+-  'list method of Class IndexWriter'
+ ];
+\ No newline at end of file
+diff --git a/src/pages/AboutPage.tsx b/src/pages/AboutPage.tsx
+index 2a73769..3192636 100644
+--- a/src/pages/AboutPage.tsx
++++ b/src/pages/AboutPage.tsx
+@@ -74,7 +74,7 @@ class AboutPage extends React.Component<AboutPageStyle, {}> {
+ 
+     return (
+       <div className={classes.container}>
+-        <RegularCard cardTitle="Authors" headerColor="blue">
++        <RegularCard cardTitle="Authors" headerColor="purple">
+           <p>
+             SnowGraph由北京大学信息科学技术学院软件复用小组研发。
+             该小组以谢冰教授为核心，主要研究内容涵盖软件工程、软件复用技术的多个方面，包括：软件构建技术、软件资源管理、软件数据挖掘、智能软件开发方法等。
+diff --git a/src/pages/DemoPage/CatalogPage.tsx b/src/pages/DemoPage/CatalogPage.tsx
+index 16e14cc..5dca747 100644
+--- a/src/pages/DemoPage/CatalogPage.tsx
++++ b/src/pages/DemoPage/CatalogPage.tsx
+@@ -57,7 +57,7 @@ class CatalogPage extends React.Component<CatalogPageStyle, CatalogPageState> {
+     const data = projects.filter(p => p.name.toLowerCase().includes(filter.toLowerCase())).map(p => ({
+       key: p.name,
+       columns: [
+-        <Link key={p.name} to={`/demo/${p.name}/diagram`}> {p.name} </Link>,
++        <Link key={p.name} to={`/demo/${p.name}/document`}> {p.name} </Link>,
+         p.description
+       ]
+     }));
+diff --git a/src/pages/DemoPage/ProjectPage/DocumentTab.tsx b/src/pages/DemoPage/ProjectPage/DocumentTab.tsx
+index 93145dc..e31a2ac 100644
+--- a/src/pages/DemoPage/ProjectPage/DocumentTab.tsx
++++ b/src/pages/DemoPage/ProjectPage/DocumentTab.tsx
+@@ -57,7 +57,7 @@ class DocumentTab extends React.Component<DocumentTabProps & DocumentTabStyle, {
+               columns: [`${r.rank}`, `${r.id}`, <RankRow
+                 key={r.id}
+                 initExpand={r.rank === 1}
+-                title={'['  + r.label + '] ' + (r.properties.title == null ? "" : r.properties.title)}
++                title={'[' + r.label + '] ' + r.properties.title == null ? "" : r.properties.title}
+                 detail={r.properties.html}
+               />]
+             }))}
+diff --git a/src/pages/DemoPage/ProjectPage/FindEntityPanel.tsx b/src/pages/DemoPage/ProjectPage/FindEntityPanel.tsx
+index 6aa7a54..8860e9f 100644
+--- a/src/pages/DemoPage/ProjectPage/FindEntityPanel.tsx
++++ b/src/pages/DemoPage/ProjectPage/FindEntityPanel.tsx
+@@ -108,7 +108,7 @@ class FindEntityPanel extends React.Component<FindEntityPanelProps & WithStyles<
+     }
+ 
+     return (
+-      <RegularCard headerColor="blue" cardTitle="Surf in the knowledge graph">
++      <RegularCard cardTitle="Surf in the knowledge graph">
+         {body}
+       </RegularCard>
+ 
+diff --git a/src/pages/DemoPage/ProjectPage/GraphPanel.tsx b/src/pages/DemoPage/ProjectPage/GraphPanel.tsx
+index d35b2f8..08a9f5d 100644
+--- a/src/pages/DemoPage/ProjectPage/GraphPanel.tsx
++++ b/src/pages/DemoPage/ProjectPage/GraphPanel.tsx
+@@ -46,7 +46,7 @@ class GraphPanel extends React.Component<GraphPanelProps, {}> {
+       .toArray();
+ 
+     return (
+-      <RegularCard headerColor="blue" cardTitle="Knowledge Graph Inference Result">
++      <RegularCard cardTitle="Knowledge Graph Inference Result">
+         {this.props.nodes.isEmpty() ?
+           '' :
+           <Graph
+diff --git a/src/pages/DemoPage/ProjectPage/GraphPanels.tsx b/src/pages/DemoPage/ProjectPage/GraphPanels.tsx
+index 5e53bca..6e3356b 100644
+--- a/src/pages/DemoPage/ProjectPage/GraphPanels.tsx
++++ b/src/pages/DemoPage/ProjectPage/GraphPanels.tsx
+@@ -45,7 +45,7 @@ class GraphPanels extends React.Component<GraphPanelsProps & GraphPanelsStyles,
+       <Grid container={true} spacing={0}>
+         <Grid item={true} xs={12} className={classes.leftPanel}>
+           {cypher.length > 0 &&
+-          <RegularCard headerColor="blue" cardTitle="Cypher">
++          <RegularCard cardTitle="Cypher">
+             <h5>This natural language is translated as the SQL:</h5>
+             <code>{cypher}</code>
+           </RegularCard>
+diff --git a/src/pages/DemoPage/ProjectPage/InformationPanel.tsx b/src/pages/DemoPage/ProjectPage/InformationPanel.tsx
+index 5d9e3f5..db1d171 100644
+--- a/src/pages/DemoPage/ProjectPage/InformationPanel.tsx
++++ b/src/pages/DemoPage/ProjectPage/InformationPanel.tsx
+@@ -90,7 +90,7 @@ class InformationPanel extends React.Component<InformationPanelProps & WithStyle
+     }
+ 
+     return (
+-      <RegularCard headerColor="blue" cardTitle="Read detailed properties">
++      <RegularCard cardTitle="Read detailed properties">
+         {body}
+       </RegularCard>
+     );
+diff --git a/src/pages/HomePage.tsx b/src/pages/HomePage.tsx
+index d57dee1..e8dd114 100644
+--- a/src/pages/HomePage.tsx
++++ b/src/pages/HomePage.tsx
+@@ -15,10 +15,10 @@ const styles = () => ({
+   container,
+   flexContainer,
+   swipe: {
+-    width: '1000px',
++    width: '800px',
+   },
+   img: {
+-    maxWidth: 1000,
++    maxWidth: 800,
+   },
+   logoTitle: {
+     position: 'relative',
+@@ -33,7 +33,9 @@ const emph = (text: string) => (
+ );
+ 
+ const carousels = [
+-  require('../assets/img/carousel.png'),
++  require('../assets/img/carousel1.png'),
++  require('../assets/img/carousel2.png'),
++  require('../assets/img/carousel3.png'),
+ ];
+ 
+ class HomePage extends React.Component<HomePageStyle, {}> {
+@@ -64,7 +66,7 @@ class HomePage extends React.Component<HomePageStyle, {}> {
+             </li>
+           </ul>
+           <h5>
+-            SnowGraph for {<Link to="/demo/Lucene/diagram">Lucene</Link>}
++            SnowGraph for {<Link to="/demo/Lucene/document">Lucene</Link>}
+           </h5>
+           <div className={classes.swipe}>
+             <Carousel slideCount={carousels.length}>
