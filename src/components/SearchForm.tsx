@@ -1,45 +1,30 @@
 import * as React from 'react';
-import { fetchDocumentResultWorker, fetchGraphWorker, fetchRandomQuestionWorker } from '../redux/action';
 import { connect } from 'react-redux';
 import { Input, withStyles, WithStyles } from 'material-ui';
 import { RootState } from '../redux/reducer';
 import { Dispatch } from 'redux';
 import { Theme } from 'material-ui/styles';
 import { ChangeEvent, FormEvent } from 'react';
-import SearchIcon from 'material-ui-icons/Search';
-import Button from 'material-ui/Button';
 
 const styles = (theme: Theme) => ({
     container: {
         margin: theme.spacing.unit * 2
     },
     form: {
-        width: '50%'
+        width: '100%',
     },
     search: {
         marginLeft: theme.spacing.unit * 2,
         marginRight: theme.spacing.unit * 2,
-        width: '80%',
+        width: `calc(100% - ${theme.spacing.unit * 4}px)`,
         flex: 1,
-        color: theme.palette.common.white,
-        '&:before': {
-            backgroundColor: theme.palette.primary[400],
-        },
-        '&:hover:not(.disabled):before': {
-            backgroundColor: theme.palette.primary[200],
-        },
-        '&:after': {
-            backgroundColor: theme.palette.primary[50],
-        },
     },
 });
 
-const mapStateToProps = (state: RootState) => ({
-    query: state.documentResult.query
-});
-
 interface SearchFormProps {
-    query: string;
+    query?: string;
+    predefinedQueries: string[];
+    callback: Function;
     dispatch: Dispatch<RootState>;
 }
 
@@ -51,23 +36,18 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
     };
 
     componentDidMount() {
-        this.setState({input: this.props.query});
+        this.setState({input: this.props.query || ''});
     }
 
     componentWillReceiveProps(nextProps: SearchFormProps & SearchFormStyles) {
-        this.setState({input: nextProps.query});
+        this.setState({input: nextProps.query || ''});
     }
 
     handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const {dispatch} = this.props;
-        
-        if (this.state.input === '') {
-            dispatch(fetchRandomQuestionWorker((result: string) => this.setState({input: result})));
-        } else {
-            dispatch(fetchDocumentResultWorker({query: this.state.input}));
-            dispatch(fetchGraphWorker({query: this.state.input}));
-        }
+        const {dispatch, callback} = this.props;
+
+        dispatch(callback({query: this.state.input}));
     }
 
     handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -75,23 +55,26 @@ class SearchForm extends React.Component<SearchFormProps & SearchFormStyles, { i
     }
 
     render() {
-        const {classes} = this.props;
+        const {classes, predefinedQueries} = this.props;
 
         return (
             <form className={classes.form} onSubmit={this.handleSubmit}>
                 <Input
                     className={classes.search}
                     type="search"
-                    placeholder="Search"
+                    placeholder="Ask a question here..."
                     value={this.state.input}
                     onChange={this.handleChange}
+                    inputProps={{list: 'predefined-queries'}}
                 />
-                <Button type="submit" color="contrast">
-                    <SearchIcon/>
-                </Button>
+                <datalist id="predefined-queries">
+                    {predefinedQueries.map(q => <option key={q} value={q}/>)}
+                </datalist>
             </form>
         );
     }
 }
 
-export default withStyles(styles)<{}>(connect(mapStateToProps)(SearchForm));
+export default withStyles(styles)<{
+    predefinedQueries: string[], callback: Function, query?: string
+}>(connect()(SearchForm));

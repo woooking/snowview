@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dialog, withStyles, Button, WithStyles } from 'material-ui';
+import { Dialog, withStyles, WithStyles, Typography } from 'material-ui';
 import * as Prism from 'prismjs';
 import { Theme } from 'material-ui/styles';
 
@@ -17,7 +17,6 @@ const styles = (theme: Theme) => ({
 
 interface CodeModalProps {
     content: string;
-    contrast: boolean;
     label: string;
     code: boolean;
 }
@@ -38,20 +37,16 @@ class CodeModal extends React.Component<CodeModalProps & CodeModalStyle, { open:
     }
 
     render() {
-        const {classes, code, content, contrast, label} = this.props;
+        const {classes, code, content, label} = this.props;
 
         const c = code ? Prism.highlight(content, Prism.languages.javascript) : content;
 
         return (
             <span>
-                <Button
-                    className={classes.button}
-                    color={contrast ? 'contrast' : 'default'}
-                    onClick={this.handleClickOpen}
-                >
+                <Typography component="a" {...{href: '#', onClick: this.handleClickOpen}}>
                     {label}
-                </Button>
-                <Dialog fullWidth={true} maxWidth="md" onRequestClose={this.handleRequestClose} open={this.state.open}>
+                </Typography>
+                <Dialog fullWidth={true} maxWidth="md"  onRequestClose={this.handleRequestClose} open={this.state.open}>
                     <pre className={classes.container} dangerouslySetInnerHTML={{__html: c}}/>
                 </Dialog>
             </span>

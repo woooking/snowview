@@ -1,18 +1,34 @@
 import * as React from 'react';
-import { Route } from 'react-router';
-import ResultPage from './pages/ResultPage';
-import IndexPage from './pages/IndexPage';
+import { Route, Switch } from 'react-router';
+import Sidebar from './components/Sidebar/Sidebar';
+import appRoutes from './routes/app';
+import { withStyles } from 'material-ui';
+import appStyle, { AppStyle } from './variables/styles/AppStyle';
+import Footer from './components/Footer/Footer';
 
-class App extends React.Component<{}, {}> {
-    render() {
-        return (
-            <div>
-                <Route exact={true} path="/" component={IndexPage}/>
-                <Route exact={true} path="/index" component={IndexPage}/>
-                <Route path="/result" component={ResultPage}/>
-            </div>
-        );
-    }
+const image = require('./assets/img/sidebar.jpg');
+const logo = require('./assets/img/logo.png');
+
+class App extends React.Component<AppStyle, {}> {
+  render() {
+    const {classes} = this.props;
+
+    return (
+      <div>
+        <Sidebar logo={logo} logoText="" image={image} routes={appRoutes}/>
+        <div className={classes.mainPanel}>
+          <div className={classes.content}>
+            <Switch>
+              {appRoutes.map((prop, key) =>
+                <Route exact={prop.exact} path={prop.path} component={prop.component} key={key}/>
+              )}
+            </Switch>
+          </div>
+          <Footer/>
+        </div>
+      </div>
+    );
+  }
 }
 
-export default App;
+export default withStyles(appStyle)<{}>(App);
