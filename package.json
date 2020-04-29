@@ -16,7 +16,7 @@
     "classnames": "^2.2.6",
     "d3": "^4.11.0",
     "immutable": "^3.8.2",
-    "jquery": "^3.2.1",
+    "jquery": "^3.5.0",
     "js-snackbar": "^0.3.1",
     "lodash": "^4.17.4",
     "material-ui": "1.0.0-beta.21",
